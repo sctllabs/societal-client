@@ -56,7 +56,7 @@ export default function Home() {
       </Head>
 
       <main>
-        <Icon name={"add"} color={"green"} />
+        <Icon name={"add"} color={"white"} size={"large"} />
         {/*<div>*/}
         {/*  <AccountSelector />*/}
         {/*  <Container>*/}

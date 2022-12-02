@@ -1,0 +1,27 @@
+.root {
+  display: inline-block;
+  font-size: 0;
+  height: var(--icon-size);
+  line-height: 0;
+  user-select: none;
+  vertical-align: middle;
+  width: var(--icon-size);
+}
+
+.x-small {
+  --icon-size: 1rem;
+}
+
+.small {
+  --icon-size: 1.25rem;
+}
+
+.medium {
+  --icon-size: 1.5rem;
+}
+
+.large {
+  --icon-size: 2.5rem;
+}
+
+
