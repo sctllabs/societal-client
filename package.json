@@ -3,20 +3,39 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "rm -rf .next && next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "build-svg-sprite": "node scripts/generateIcons.mjs",
+    "prebuild": "npm run build-svg-sprite"
   },
   "dependencies": {
+    "@polkadot/api": "^9.9.4",
+    "@polkadot/extension-dapp": "^0.44.6",
+    "@polkadot/keyring": "^10.1.14",
+    "@polkadot/networks": "^10.1.14",
+    "@polkadot/types": "^9.9.4",
+    "@polkadot/ui-keyring": "^2.9.13",
+    "@polkadot/ui-settings": "^2.9.13",
+    "@polkadot/util": "^10.1.14",
+    "@polkadot/util-crypto": "^10.1.14",
     "@types/node": "18.11.10",
     "@types/react": "18.0.25",
     "@types/react-dom": "18.0.9",
+    "clsx": "^1.2.1",
     "eslint": "8.28.0",
     "eslint-config-next": "13.0.6",
     "next": "13.0.6",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "semantic-ui-css": "github:Semantic-Org/Semantic-UI-CSS#master",
+    "semantic-ui-react": "^2.1.4",
     "typescript": "4.9.3"
+  },
+  "devDependencies": {
+    "camelcase": "^7.0.0",
+    "sass": "^1.56.1",
+    "svg-sprite-loader": "^6.0.11"
   }
 }
