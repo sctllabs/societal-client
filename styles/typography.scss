@@ -1,0 +1,238 @@
+@use 'fonts';
+@use 'mixins';
+@use 'fonts';
+
+
+%display {
+  @include mixins.typography(
+          $font-size: 3.375rem,
+          $font-weight: 600,
+  );
+}
+
+%h-48 {
+  @include mixins.typography(
+          $font-size: 3rem,
+          $font-weight: 600
+  );
+}
+
+%h-40 {
+  @include mixins.typography(
+          $font-size: 2.5rem,
+          $font-weight: 600
+  );
+}
+
+%h-36 {
+  @include mixins.typography(
+          $font-size: 2rem,
+          $font-weight: 600
+  );
+}
+
+%title-28 {
+  @include mixins.typography(
+          $font-size: 1.75rem,
+          $font-weight: 700
+  );
+}
+
+%title-20 {
+  @include mixins.typography(
+          $font-size: 1.25rem,
+          $font-weight: 700
+  );
+}
+
+%title-18 {
+  @include mixins.typography(
+          $font-size: 1.125rem,
+          $font-weight: 700
+  );
+}
+
+%title-16 {
+  @include mixins.typography(
+          $font-size: 1rem,
+          $font-weight: 700
+  );
+}
+
+%title-14 {
+  @include mixins.typography(
+          $font-size: 0.875rem,
+          $font-weight: 700
+  );
+}
+
+%title-13 {
+  @include mixins.typography(
+          $font-size: 0.8125rem,
+          $font-weight: 700
+  );
+}
+
+%title-12 {
+  @include mixins.typography(
+          $font-size: 0.75rem,
+          $font-weight: 700
+  );
+}
+
+%title-11 {
+  @include mixins.typography(
+          $font-size: 0.6875rem,
+          $font-weight: 600
+  );
+}
+
+%para-28 {
+  @include mixins.typography(
+          $font-size: 1.75rem,
+          $font-weight: 500
+  );
+}
+
+%para-20 {
+  @include mixins.typography(
+          $font-size: 1.25rem,
+          $font-weight: 500
+  );
+}
+
+%body-16 {
+  @include mixins.typography(
+          $font-size: 1rem,
+          $font-weight: 500
+  );
+}
+
+%body-14 {
+  @include mixins.typography(
+          $font-size: 0.875rem,
+          $font-weight: 500
+  );
+}
+
+%label-14 {
+  @include mixins.typography(
+          $font-size: 0.875rem,
+          $font-weight: 600
+  );
+}
+
+%label-13 {
+  @include mixins.typography(
+          $font-size: 0.8125rem,
+          $font-weight: 600
+  );
+}
+
+%label-12 {
+  @include mixins.typography(
+          $font-size: 0.75rem,
+          $font-weight: 600
+  );
+}
+
+%caption-13 {
+  @include mixins.typography(
+          $font-size: 0.8125rem,
+          $font-weight: 400,
+          $font-family: fonts.$dosis-font,
+  );
+}
+
+%caption-12 {
+  @include mixins.typography(
+          $font-size: 0.75rem,
+          $font-weight: 400,
+          $font-family: fonts.$dosis-font,
+  );
+}
+
+%caption-11 {
+  @include mixins.typography(
+          $font-size: 0.6875rem,
+          $font-weight: 400,
+          $font-family: fonts.$dosis-font,
+  );
+}
+
+%value-36 {
+  @include mixins.typography(
+          $font-size: 2.25rem,
+          $font-weight: 700,
+  );
+}
+
+%value-28 {
+  @include mixins.typography(
+          $font-size: 1.75rem,
+          $font-weight: 700,
+  );
+}
+
+%value-20 {
+  @include mixins.typography(
+          $font-size: 1.25rem,
+          $font-weight: 700,
+  );
+}
+
+%value-18 {
+  @include mixins.typography(
+          $font-size: 1.125rem,
+          $font-weight: 700,
+  );
+}
+
+%value-16 {
+  @include mixins.typography(
+          $font-size: 1rem,
+          $font-weight: 700,
+  );
+}
+
+%value-14 {
+  @include mixins.typography(
+          $font-size: 0.875rem,
+          $font-weight: 700,
+  );
+}
+
+%value-13 {
+  @include mixins.typography(
+          $font-size: 0.8125rem,
+          $font-weight: 700,
+  );
+}
+
+%value-12 {
+  @include mixins.typography(
+          $font-size: 0.75rem,
+          $font-weight: 700,
+  );
+}
+
+%button-14 {
+  @include mixins.typography(
+          $font-size: 0.875rem,
+          $font-weight: 700,
+  );
+}
+
+%button-13 {
+  @include mixins.typography(
+          $font-size: 0.8125rem,
+          $font-weight: 700,
+  );
+}
+
+%button-12 {
+  @include mixins.typography(
+          $font-size: 0.75rem,
+          $font-weight: 700,
+  );
+}
