@@ -1,5 +1,5 @@
-const path = require("path");
-const SpriteLoaderPlugin = require("svg-sprite-loader/plugin");
+const path = require('path');
+const SpriteLoaderPlugin = require('svg-sprite-loader/plugin');
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -8,14 +8,14 @@ const nextConfig = {
   webpack: (config, context) => {
     config.module.rules.push({
       test: /\.svg$/i,
-      include: path.join(__dirname, "icons"),
+      include: path.join(__dirname, 'icons'),
       use: [
         {
-          loader: "svg-sprite-loader",
+          loader: 'svg-sprite-loader',
           options: {
             extract: true,
-            outputPath: "static/",
-            publicPath: "_next/static/",
+            outputPath: 'static/',
+            publicPath: '_next/static/',
             esModule: false
           }
         }
@@ -24,10 +24,10 @@ const nextConfig = {
 
     config.module.rules.push({
       test: /\.svg$/i,
-      include: path.join(__dirname, "public", "images"),
+      include: path.join(__dirname, 'public', 'images'),
       use: [
         {
-          loader: "@svgr/webpack",
+          loader: '@svgr/webpack',
           // https://react-svgr.com/docs/options/
           options: {
             prettier: false,
@@ -36,11 +36,11 @@ const nextConfig = {
             svgoConfig: {
               plugins: [
                 {
-                  name: "removeViewBox",
+                  name: 'removeViewBox',
                   active: false
                 },
                 {
-                  name: "prefixIds",
+                  name: 'prefixIds',
                   active: false
                 }
               ]
@@ -48,7 +48,7 @@ const nextConfig = {
           }
         },
         {
-          loader: "url-loader"
+          loader: 'url-loader'
         }
       ]
     });

@@ -11,6 +11,7 @@
     "prebuild": "npm run build-svg-sprite"
   },
   "dependencies": {
+    "@next/font": "^13.0.6",
     "@polkadot/api": "^9.9.4",
     "@polkadot/extension-dapp": "^0.44.6",
     "@polkadot/keyring": "^10.1.14",
