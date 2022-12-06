@@ -1,24 +1,24 @@
-import React from "react";
-import clsx from "clsx";
+import { MouseEventHandler, HTMLAttributes } from 'react';
+import clsx from 'clsx';
 
-import icons from "icons";
+import icons from 'icons';
 
-import styles from "./Icon.module.scss";
+import styles from './Icon.module.scss';
 
 export type IconNamesType = keyof typeof icons;
 
-export interface IconProps extends React.HTMLAttributes<SVGElement> {
+export interface IconProps extends HTMLAttributes<SVGElement> {
   className?: string;
   name: IconNamesType;
-  size?: "small" | "medium" | "large" | "x-small";
-  onClick?: (e: React.MouseEvent<SVGSVGElement, MouseEvent>) => void;
+  size?: 'small' | 'medium' | 'large' | 'x-small';
+  onClick?: MouseEventHandler<SVGElement> | undefined;
 }
 
 export function Icon({
   className,
   name,
   onClick,
-  size = "medium",
+  size = 'medium',
   ...other
 }: IconProps) {
   const { viewBox, url } = icons[name] as never;

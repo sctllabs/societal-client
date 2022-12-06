@@ -1,4 +1,5 @@
 import Head from 'next/head';
+import { Typography } from 'components/ui-kit/Typography';
 
 export default function Home() {
   return (
@@ -9,7 +10,9 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <p>Hello, world!</p>
+      <Typography variant={'h1'}>Hello, world!</Typography>
+      <Typography variant={'h2'}>Hello, world!</Typography>
+      <Typography variant={'h3'}>Hello, world!</Typography>
     </>
   );
 }
