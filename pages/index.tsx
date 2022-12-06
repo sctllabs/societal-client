@@ -1,5 +1,6 @@
 import Head from 'next/head';
 import { Typography } from 'components/ui-kit/Typography';
+import { Button } from '../components/ui-kit/Button';
 
 export default function Home() {
   return (
@@ -13,6 +14,86 @@ export default function Home() {
       <Typography variant={'h1'}>Hello, world!</Typography>
       <Typography variant={'h2'}>Hello, world!</Typography>
       <Typography variant={'h3'}>Hello, world!</Typography>
+
+      {/*  link buttons   */}
+      <div
+        style={{
+          display: 'flex',
+          gap: '16px',
+          padding: '16px'
+        }}
+      >
+        <Button disabled variant={'link'}>
+          Button
+        </Button>
+      </div>
+
+      {/*  filled buttons   */}
+      <div
+        style={{
+          display: 'flex',
+          gap: '16px',
+          padding: '16px'
+        }}
+      >
+        <Button disabled variant={'filled'} color={'primary'}>
+          Button
+        </Button>
+        <Button disabled variant={'filled'} color={'destructive'}>
+          Button
+        </Button>
+      </div>
+
+      {/*  outlined buttons   */}
+      <div
+        style={{
+          display: 'flex',
+          gap: '16px',
+          padding: '16px'
+        }}
+      >
+        <Button disabled variant={'outlined'} color={'primary'}>
+          Button
+        </Button>
+        <Button disabled variant={'outlined'} color={'destructive'}>
+          Button
+        </Button>
+      </div>
+
+      {/*  text buttons   */}
+      <div
+        style={{
+          display: 'flex',
+          gap: '16px',
+          padding: '16px'
+        }}
+      >
+        <Button disabled variant={'text'} color={'primary'}>
+          Button
+        </Button>
+        <Button disabled variant={'text'} color={'destructive'}>
+          Button
+        </Button>
+      </div>
+
+      {/*  size buttons   */}
+      <div
+        style={{
+          display: 'flex',
+          gap: '16px',
+          padding: '16px'
+        }}
+      >
+        <Button variant={'filled'} size={'large'}>
+          Button
+        </Button>
+        <Button variant={'filled'} size={'medium'}>
+          Button
+        </Button>
+        <Button variant={'filled'} size={'small'}>
+          Button
+        </Button>
+      </div>
     </>
   );
 }

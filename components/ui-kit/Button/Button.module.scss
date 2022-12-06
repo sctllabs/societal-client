@@ -1,0 +1,194 @@
+@use 'styles/colors';
+@use 'styles/typography';
+@use 'styles/mixins';
+
+$schema: (
+        'filled-primary': (
+                theme-button-text: #{colors.$grayscale-100},
+                theme-button-text-hover: #{colors.$grayscale-100},
+                theme-button-bg: #{colors.$purple-1},
+                theme-button-bg-hover: #{colors.$purple-3},
+                theme-button-bg-active: #{colors.$purple-4},
+                theme-button-shadow-hover: #{rgba(158, 143, 221, 0.25)}
+        ),
+        'filled-destructive': (
+                theme-button-text: #{colors.$grayscale-100},
+                theme-button-text-hover: #{colors.$grayscale-100},
+                theme-button-bg: #{colors.$red-1},
+                theme-button-bg-hover: #{colors.$red-1},
+                theme-button-bg-active: #{colors.$red-2},
+                theme-button-shadow-hover: #{rgba(158, 143, 221, 0.25)}
+        ),
+        'outlined-primary': (
+                theme-border-width: 0.0625rem,
+                theme-border-color: #{colors.$purple-3},
+                theme-border-hover: #{colors.$purple-3},
+                theme-border-active: #{colors.$purple-4},
+                theme-button-text: #{colors.$grayscale-0},
+                theme-button-text-hover: #{colors.$grayscale-100},
+                theme-button-bg-hover: #{colors.$purple-3},
+                theme-button-bg-active: #{colors.$purple-4},
+                theme-button-shadow-hover: #{rgba(158, 143, 221, 0.25)}
+        ),
+        'outlined-destructive': (
+                theme-border-width: 0.0625rem,
+                theme-border-color: #{colors.$red-1},
+                theme-border-hover: #{colors.$red-1},
+                theme-border-active: #{colors.$red-2},
+                theme-button-text: #{colors.$grayscale-0},
+                theme-button-text-hover: #{colors.$grayscale-100},
+                theme-button-bg-hover: #{colors.$red-1},
+                theme-button-bg-active: #{colors.$red-2},
+                theme-button-shadow-hover: #{rgba(158, 143, 221, 0.25)}
+        ),
+        'text-primary': (
+                theme-button-text: #{colors.$grayscale-0},
+                theme-button-text-hover: #{colors.$purple-3},
+                theme-button-text-active: #{colors.$purple-4},
+        ),
+        'text-destructive': (
+                theme-button-text: #{colors.$red-1},
+                theme-button-text-hover: #{colors.$red-1},
+                theme-button-text-active: #{colors.$red-2},
+        ),
+        'link': (
+                theme-button-text: #{colors.$grayscale-0},
+                theme-button-text-hover: #{colors.$purple-3},
+                theme-button-text-active: #{colors.$purple-4},
+                theme-text-decoration: underline
+        ),
+);
+
+.root {
+  --theme-border-radius: 0.25rem;
+  --theme-border-width: 0rem;
+  --theme-border-color: transparent;
+  --theme-button-shadow-hover: transparent;
+  --theme-button-bg: transparent;
+  --theme-button-bg-active: var(--theme-button-bg);
+  --theme-button-bg-focus: var(--theme-button-bg);
+  --theme-height: 2.5rem;
+  @extend %button-2;
+
+  background-color: var(--theme-button-bg);
+  border: var(--theme-border-width) solid var(--theme-border-color);
+  border-color: var(--theme-border-color);
+  border-radius: var(--theme-border-radius);
+  color: var(--theme-button-text);
+  cursor: pointer;
+  display: block;
+  flex: 0 0 auto;
+  flex-wrap: nowrap;
+  height: var(--theme-height);
+  justify-content: center;
+  min-width: 2.5rem;
+  overflow: hidden;
+  padding: 0.5rem 1rem;
+  text-overflow: ellipsis;
+  transition: all 0.1s linear;
+  user-select: none;
+  white-space: nowrap;
+  width: auto;
+  text-decoration: var(--theme-text-decoration);
+
+  &:hover {
+    color: var(--theme-button-text-hover);
+    background-color: var(--theme-button-bg-hover);
+    box-shadow: -0.3125rem 0.3125rem 0.75rem var(--theme-button-shadow-hover);
+    border-color: var(--theme-border-color-hover);
+  }
+
+  &:active {
+    color: var(--theme-button-text-active);
+    background-color: var(--theme-button-bg-active);
+    border-color: var(--theme-border-color-active);
+  }
+
+  &:disabled {
+    opacity: 0.3;
+    pointer-events: none;
+  }
+
+  .content {
+    align-items: center;
+    display: inline-flex;
+    vertical-align: middle;
+
+    &Gutters {
+      margin: 0rem 0.25rem;
+    }
+  }
+}
+
+.fullWidth {
+  width: 100%;
+}
+
+.filled {
+  @include mixins.color-variants($schema, 'primaryDark');
+
+  &.primary {
+    @include mixins.color-variants($schema, 'filled-primary');
+  }
+
+  &.destructive {
+    @include mixins.color-variants($schema, 'filled-destructive');
+  }
+}
+
+.outlined {
+  @include mixins.color-variants($schema, 'outlined-primary');
+
+  &.primary {
+    @include mixins.color-variants($schema, 'outlined-primary');
+  }
+
+  &.destructive {
+    @include mixins.color-variants($schema, 'outlined-destructive');
+  }
+}
+
+.text {
+  @include mixins.color-variants($schema, 'text-primary');
+
+  &.primary {
+    @include mixins.color-variants($schema, 'text-primary');
+  }
+
+  &.destructive {
+    @include mixins.color-variants($schema, 'text-destructive');
+  }
+}
+
+
+.link {
+  @include mixins.color-variants($schema, 'link');
+}
+
+.fullWidth {
+  width: 100%;
+}
+
+.text-large {
+  @extend %button-1;
+}
+
+.text-medium {
+  @extend %button-2;
+}
+
+.text-small {
+  @extend %button-3;
+}
+
+//.button-large {
+//  --theme-height: 2.5rem;
+//}
+//
+//.button-medium {
+//  --theme-height: 2rem;
+//}
+//
+//.button-small {
+//  --theme-height: 2rem;
+//}
