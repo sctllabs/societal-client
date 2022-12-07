@@ -1,0 +1,88 @@
+@use 'styles/colors';
+
+
+.checkbox {
+  --checkbox-border-color: #{colors.$purple-3};
+  --color-checkbox: #{colors.$purple-3};
+  --color-checkbox-hover: #{colors.$purple-4};
+  --color-checkbox-active: #{colors.$purple-3};
+  appearance: none;
+  background-color: var(--theme-inputs-default-bg);
+  border: 0.0625rem solid var(--checkbox-border-color);
+  border-radius: 0.375rem;
+  cursor: pointer;
+  height: 1.25rem;
+  outline: none;
+  position: relative;
+  transition: background-color 0.3s, border-color 0.3s;
+  user-select: none;
+  width: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &::before {
+    content: '';
+    cursor: pointer;
+    height: 0.875rem;
+    position: absolute;
+    transition: all 0.3s;
+    width: 0.875rem;
+  }
+
+  &:checked::before {
+    background: url('/icons/tick.svg') no-repeat;
+    background-size: 0.875rem 0.875rem;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.3;
+
+    &::before {
+      cursor: not-allowed;
+    }
+  }
+
+  &::after {
+    border-radius: 50%;
+    bottom: 0.41rem;
+    content: '';
+    cursor: pointer;
+    height: 0.125rem;
+    left: 0.4rem;
+    position: absolute;
+    top: 0.4rem;
+    transition: all 0.3s;
+    width: 0.4rem;
+    z-index: -1;
+  }
+
+  &:focus-visible::after {
+    //box-shadow: 0 0 0 0.25rem var(--theme-inputs-default-hover);
+  }
+
+  &:hover:not(:disabled)::after {
+    //box-shadow: 0 0 0 0.25rem var(--theme-inputs-default-hover);
+  }
+
+  &:active:not(:disabled)::after {
+    //box-shadow: 0 0 0 0.25rem var(--theme-inputs-default-active);
+  }
+
+  &:checked {
+    background-color: var(--color-checkbox);
+
+    &:focus-visible::after {
+      //box-shadow: 0 0 0 0.25rem var(--color-checkbox-hover);
+    }
+
+    &:hover:not(:disabled)::after {
+      //box-shadow: 0 0 0 0.25rem var(--color-checkbox-hover);
+    }
+
+    &:active:not(:disabled)::after {
+      //box-shadow: 0 0 0 0.25rem var(--color-checkbox-active);
+    }
+  }
+}

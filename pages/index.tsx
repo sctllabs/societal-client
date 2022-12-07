@@ -4,6 +4,7 @@ import { Button } from 'components/ui-kit/Button';
 import { Icon } from 'components/ui-kit/Icon';
 import { RadioGroup } from 'components/ui-kit/Radio/RadioGroup';
 import { Radio } from 'components/ui-kit/Radio/Radio';
+import { Checkbox } from 'components/ui-kit/Checkbox';
 
 export default function Home() {
   return (
@@ -17,6 +18,12 @@ export default function Home() {
       <Typography variant={'h1'}>Hello, world!</Typography>
       <Typography variant={'h2'}>Hello, world!</Typography>
       <Typography variant={'h3'}>Hello, world!</Typography>
+
+      {/*  checkbox  */}
+      <div>
+        <Checkbox />
+        <label htmlFor="defaultRule">Checkbox</label>
+      </div>
 
       {/*  radio group  */}
       <RadioGroup>
