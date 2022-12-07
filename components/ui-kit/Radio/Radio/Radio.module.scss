@@ -1,0 +1,65 @@
+@use 'styles/colors';
+
+
+.radio {
+  --radio-border-color: #{colors.$purple-3};
+  --radio-selected: #{colors.$purple-3};
+  --radio-active: #{colors.$purple-3};
+  --radio-hover: #{colors.$purple-4};
+  appearance: none;
+  background-color: transparent;
+  border: 0.0625rem solid var(--radio-border-color);
+  border-radius: 50%;
+  cursor: pointer;
+  display: grid;
+  height: 1.5rem;
+  outline: none;
+  place-content: center;
+  transition: 300ms ease-out;
+  transition-property: bacgkround-color, box-shadow;
+  width: 1.5rem;
+
+  .clicked {
+    background-color: var(--radio-active);
+    box-shadow: 0 0 0 0.625rem var(--radio-active);
+  }
+
+  &::before {
+    border-radius: 50%;
+    box-shadow: inset 1rem 1rem var(--radio-selected);
+    content: '';
+    height: 0.75rem;
+    transform: scale(0);
+    transition: 100ms transform ease-in-out;
+    width: 0.75rem;
+  }
+
+  &:checked {
+    border-color: var(--radio-selected);
+  }
+
+  &:checked::before {
+    transform: scale(1);
+  }
+
+  &:disabled {
+    border-color: var(--radio-selected);
+    cursor: not-allowed;
+    opacity: 0.3;
+  }
+
+  &:active:not(:disabled) {
+    background-color: var(--radio-active);
+    box-shadow: 0 0 0 0.0625rem var(--radio-active);
+  }
+
+  &:hover:not(:disabled):not(.clicked) {
+    background-color: var(--radio-hover);
+    box-shadow: 0 0 0 0.0625rem var(--radio-hover);
+  }
+
+  &:focus-visible:not(:disabled):not(.clicked) {
+    background-color: var(--radio-hover);
+    box-shadow: 0 0 0 0.0625rem var(--radio-hover);
+  }
+}

@@ -1,7 +1,9 @@
 import Head from 'next/head';
 import { Typography } from 'components/ui-kit/Typography';
 import { Button } from 'components/ui-kit/Button';
-import { Icon } from '../components/ui-kit/Icon';
+import { Icon } from 'components/ui-kit/Icon';
+import { RadioGroup } from 'components/ui-kit/Radio/RadioGroup';
+import { Radio } from 'components/ui-kit/Radio/Radio';
 
 export default function Home() {
   return (
@@ -15,6 +17,18 @@ export default function Home() {
       <Typography variant={'h1'}>Hello, world!</Typography>
       <Typography variant={'h2'}>Hello, world!</Typography>
       <Typography variant={'h3'}>Hello, world!</Typography>
+
+      {/*  radio group  */}
+      <RadioGroup>
+        <div>
+          <Radio value={'One'} id="defaultRule" name="royaltyRule" />
+          <label htmlFor="defaultRule">Default</label>
+        </div>
+        <div>
+          <Radio value={'Two'} id="manualRule" name="royaltyRule" />
+          <label htmlFor="manualRule">Manual</label>
+        </div>
+      </RadioGroup>
 
       {/*  link buttons   */}
       <div
