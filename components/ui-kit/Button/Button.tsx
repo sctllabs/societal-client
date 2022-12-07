@@ -5,8 +5,14 @@ import { Icon, IconNamesType } from 'components/ui-kit/Icon';
 
 import styles from './Button.module.scss';
 
-type ButtonVariants = 'filled' | 'outlined' | 'text' | 'link' | 'icon';
-type ButtonColors = 'primary' | 'secondary' | 'tertiary' | 'destructive';
+type ButtonVariants =
+  | 'filled'
+  | 'outlined'
+  | 'text'
+  | 'link'
+  | 'icon'
+  | 'ghost';
+type ButtonColors = 'primary' | 'destructive';
 type ButtonSize = 'sm' | 'md' | 'lg';
 
 export interface ButtonProps extends ComponentProps<'button'> {
@@ -49,11 +55,11 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         )}
         {...btnProps}
       >
+        {iconLeft && <Icon name={iconLeft} className={styles.iconLeft} />}
         <span className={clsx(styles.content, styles[`text-${size}`])}>
-          {iconLeft && <Icon name={iconLeft} className={styles.iconLeft} />}
           {children}
-          {iconRight && <Icon name={iconRight} className={styles.iconRight} />}
         </span>
+        {iconRight && <Icon name={iconRight} className={styles.iconRight} />}
       </button>
     );
   }

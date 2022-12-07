@@ -104,7 +104,13 @@ export default function Home() {
       >
         <IconButton icon={'placeholder'} variant={'outlined'} />
         <IconButton icon={'placeholder'} variant={'icon'} />
+        <IconButton
+          icon={'placeholder'}
+          variant={'outlined'}
+          color={'destructive'}
+        />
         <IconButton icon={'dashboard'} variant={'icon'} />
+        <IconButton icon={'dashboard'} variant={'ghost'} />
       </div>
 
       {/*  buttons with icon   */}
