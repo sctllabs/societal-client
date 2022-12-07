@@ -1,7 +1,7 @@
 import Head from 'next/head';
 import { Typography } from 'components/ui-kit/Typography';
 import { Button } from 'components/ui-kit/Button';
-import { IconButton } from '../components/ui-kit/IconButton';
+import { Icon } from '../components/ui-kit/Icon';
 
 export default function Home() {
   return (
@@ -102,15 +102,21 @@ export default function Home() {
           padding: '16px'
         }}
       >
-        <IconButton icon={'placeholder'} variant={'outlined'} />
-        <IconButton icon={'placeholder'} variant={'icon'} />
-        <IconButton
-          icon={'placeholder'}
-          variant={'outlined'}
-          color={'destructive'}
-        />
-        <IconButton icon={'dashboard'} variant={'icon'} />
-        <IconButton icon={'dashboard'} variant={'ghost'} />
+        <Button variant={'outlined'} icon>
+          <Icon name={'placeholder'} />
+        </Button>
+        <Button variant={'icon'} icon>
+          <Icon name={'placeholder'} />
+        </Button>
+        <Button variant={'outlined'} color={'destructive'} icon>
+          <Icon name={'placeholder'} />
+        </Button>
+        <Button variant={'icon'} icon>
+          <Icon name={'placeholder'} />
+        </Button>
+        <Button variant={'ghost'} icon>
+          <Icon name={'placeholder'} />
+        </Button>
       </div>
 
       {/*  buttons with icon   */}

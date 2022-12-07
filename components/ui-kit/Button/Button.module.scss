@@ -103,7 +103,7 @@ $schema: (
   align-items: center;
   min-width: 2.5rem;
   overflow: hidden;
-  padding: 0.5rem 1rem;
+  padding: var(--theme-button-padding);
   text-overflow: ellipsis;
   transition: all 0.1s linear;
   user-select: none;
@@ -202,11 +202,11 @@ $schema: (
   @extend %button-2;
 }
 
-.iconLeft {
+.icon-left {
   margin-right: 0.5rem;
 }
 
-.iconRight {
+.icon-right {
   margin-left: 0.5rem;
 }
 
@@ -217,10 +217,27 @@ $schema: (
 
 .button-md {
   --theme-button-height: 2rem;
-  //--theme-button-padding: 0.5rem 4rem;
+  --theme-button-padding: 0.5rem 4rem;
 }
 
 .button-sm {
   --theme-button-height: 2rem;
-  //--theme-button-padding: 0.5rem 4rem;
+  --theme-button-padding: 0.5rem 4rem;
 }
+
+.icon-lg {
+  height: 2.75rem;
+  min-width: 2.75rem;
+}
+
+.icon-md {
+  height: 2rem;
+  min-width: 2rem;
+}
+
+.icon-sm {
+  height: 1.5rem;
+  min-width: 1.5rem;
+}
+
+

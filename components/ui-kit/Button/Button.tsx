@@ -10,8 +10,8 @@ type ButtonVariants =
   | 'outlined'
   | 'text'
   | 'link'
-  | 'icon'
-  | 'ghost';
+  | 'ghost'
+  | 'icon';
 type ButtonColors = 'primary' | 'destructive';
 type ButtonSize = 'sm' | 'md' | 'lg';
 
@@ -22,6 +22,7 @@ export interface ButtonProps extends ComponentProps<'button'> {
   iconLeft?: IconNamesType;
   iconRight?: IconNamesType;
   fullWidth?: boolean;
+  icon?: boolean;
 }
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
@@ -29,13 +30,14 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     {
       variant = 'filled',
       color = 'primary',
-      size = 'medium',
+      size = 'md',
       className,
       children,
       iconLeft,
       iconRight,
       type = 'button',
       fullWidth = false,
+      icon = false,
       ...btnProps
     },
     ref
@@ -43,23 +45,29 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     return (
       <button
         ref={ref}
-        // eslint-disable-next-line react/button-has-type
         type={type}
         className={clsx(
           styles.root,
           styles[variant],
           styles[color],
-          styles[`button-${size}`],
+          {
+            [styles[`icon-${size}`]]: icon
+          },
+          {
+            [styles[`button-${size}`]]: !icon
+          },
           { [styles.fullWidth]: fullWidth },
           className
         )}
         {...btnProps}
       >
-        {iconLeft && <Icon name={iconLeft} className={styles.iconLeft} />}
+        {iconLeft && <Icon name={iconLeft} className={styles['icon-left']} />}
         <span className={clsx(styles.content, styles[`text-${size}`])}>
           {children}
         </span>
-        {iconRight && <Icon name={iconRight} className={styles.iconRight} />}
+        {iconRight && (
+          <Icon name={iconRight} className={styles['icon-right']} />
+        )}
       </button>
     );
   }
