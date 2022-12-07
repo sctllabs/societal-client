@@ -8,20 +8,18 @@
   width: var(--icon-size);
 }
 
-.x-small {
+.sm {
   --icon-size: 1rem;
 }
 
-.small {
+.md {
   --icon-size: 1.25rem;
 }
 
-.medium {
+.lg {
   --icon-size: 1.5rem;
 }
 
-.large {
+.xl {
   --icon-size: 2.5rem;
 }
-
-

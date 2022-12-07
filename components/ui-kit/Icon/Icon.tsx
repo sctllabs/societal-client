@@ -10,7 +10,7 @@ export type IconNamesType = keyof typeof icons;
 export interface IconProps extends HTMLAttributes<SVGElement> {
   className?: string;
   name: IconNamesType;
-  size?: 'small' | 'medium' | 'large' | 'x-small';
+  size?: 'sm' | 'md' | 'lg' | 'xl';
   onClick?: MouseEventHandler<SVGElement> | undefined;
 }
 
@@ -18,7 +18,7 @@ export function Icon({
   className,
   name,
   onClick,
-  size = 'medium',
+  size = 'md',
   ...other
 }: IconProps) {
   const { viewBox, url } = icons[name] as never;

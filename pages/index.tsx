@@ -1,6 +1,7 @@
 import Head from 'next/head';
 import { Typography } from 'components/ui-kit/Typography';
-import { Button } from '../components/ui-kit/Button';
+import { Button } from 'components/ui-kit/Button';
+import { IconButton } from '../components/ui-kit/IconButton';
 
 export default function Home() {
   return (
@@ -23,9 +24,7 @@ export default function Home() {
           padding: '16px'
         }}
       >
-        <Button disabled variant={'link'}>
-          Button
-        </Button>
+        <Button variant={'link'}>Button</Button>
       </div>
 
       {/*  filled buttons   */}
@@ -36,10 +35,10 @@ export default function Home() {
           padding: '16px'
         }}
       >
-        <Button disabled variant={'filled'} color={'primary'}>
+        <Button variant={'filled'} color={'primary'}>
           Button
         </Button>
-        <Button disabled variant={'filled'} color={'destructive'}>
+        <Button variant={'filled'} color={'destructive'}>
           Button
         </Button>
       </div>
@@ -52,10 +51,10 @@ export default function Home() {
           padding: '16px'
         }}
       >
-        <Button disabled variant={'outlined'} color={'primary'}>
+        <Button variant={'outlined'} color={'primary'}>
           Button
         </Button>
-        <Button disabled variant={'outlined'} color={'destructive'}>
+        <Button variant={'outlined'} color={'destructive'}>
           Button
         </Button>
       </div>
@@ -68,10 +67,10 @@ export default function Home() {
           padding: '16px'
         }}
       >
-        <Button disabled variant={'text'} color={'primary'}>
+        <Button variant={'text'} color={'primary'}>
           Button
         </Button>
-        <Button disabled variant={'text'} color={'destructive'}>
+        <Button variant={'text'} color={'destructive'}>
           Button
         </Button>
       </div>
@@ -84,14 +83,51 @@ export default function Home() {
           padding: '16px'
         }}
       >
-        <Button variant={'filled'} size={'large'}>
+        <Button variant={'filled'} size={'lg'}>
           Button
         </Button>
-        <Button variant={'filled'} size={'medium'}>
+        <Button variant={'filled'} size={'md'}>
           Button
         </Button>
-        <Button variant={'filled'} size={'small'}>
+        <Button variant={'filled'} size={'sm'}>
           Button
+        </Button>
+      </div>
+
+      {/*  icon buttons   */}
+      <div
+        style={{
+          display: 'flex',
+          gap: '16px',
+          padding: '16px'
+        }}
+      >
+        <IconButton icon={'placeholder'} variant={'outlined'} />
+        <IconButton icon={'placeholder'} variant={'icon'} />
+        <IconButton icon={'dashboard'} variant={'icon'} />
+      </div>
+
+      {/*  buttons with icon   */}
+      <div
+        style={{
+          display: 'flex',
+          gap: '16px',
+          padding: '16px'
+        }}
+      >
+        <Button
+          style={{ width: '216px' }}
+          iconLeft={'social-google'}
+          variant={'outlined'}
+        >
+          Google
+        </Button>
+        <Button
+          style={{ width: '216px' }}
+          iconLeft={'social-apple'}
+          variant={'outlined'}
+        >
+          Apple
         </Button>
       </div>
     </>

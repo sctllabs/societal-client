@@ -5,9 +5,9 @@ import { Icon, IconNamesType } from 'components/ui-kit/Icon';
 
 import styles from './Button.module.scss';
 
-type ButtonVariants = 'filled' | 'outlined' | 'text' | 'link';
-type ButtonColors = 'primary' | 'destructive' | 'cta' | 'destructive';
-type ButtonSize = 'small' | 'medium' | 'large';
+type ButtonVariants = 'filled' | 'outlined' | 'text' | 'link' | 'icon';
+type ButtonColors = 'primary' | 'secondary' | 'tertiary' | 'destructive';
+type ButtonSize = 'sm' | 'md' | 'lg';
 
 export interface ButtonProps extends ComponentProps<'button'> {
   variant?: ButtonVariants;
@@ -16,7 +16,6 @@ export interface ButtonProps extends ComponentProps<'button'> {
   iconLeft?: IconNamesType;
   iconRight?: IconNamesType;
   fullWidth?: boolean;
-  contentGutters?: boolean;
 }
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
@@ -31,7 +30,6 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       iconRight,
       type = 'button',
       fullWidth = false,
-      contentGutters = true,
       ...btnProps
     },
     ref
@@ -51,15 +49,11 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         )}
         {...btnProps}
       >
-        {iconLeft && <Icon name={iconLeft} />}
-        <span
-          className={clsx(styles.content, styles[`text-${size}`], {
-            [styles.contentGutters]: contentGutters
-          })}
-        >
+        <span className={clsx(styles.content, styles[`text-${size}`])}>
+          {iconLeft && <Icon name={iconLeft} className={styles.iconLeft} />}
           {children}
+          {iconRight && <Icon name={iconRight} className={styles.iconRight} />}
         </span>
-        {iconRight && <Icon name={iconRight} />}
       </button>
     );
   }
