@@ -1,0 +1,79 @@
+@use 'styles/colors';
+
+.root {
+  --switch-color-bg: #{colors.$grayscale-90};
+  --switch-color-border: transparent;
+  --switch-color: #{colors.$grayscale-100};
+  --switch-color-checked: #{colors.$purple-3};
+  --switch-color-checked-hover: #{colors.$purple-4};
+  --switch-color-checked-active: #{colors.$purple-3};
+  appearance: none;
+  background-color: var(--switch-color-bg);
+  border-radius: 3.125rem;
+  cursor: pointer;
+  height: 1.5rem;
+  margin: 0;
+  outline: none;
+  position: relative;
+  transition: background-color 0.3s;
+  user-select: none;
+  width: 2.5rem;
+  border: 0.0625rem solid var(--switch-color-border);
+
+  &::before {
+    background-color: var(--switch-color);
+    border-radius: 50%;
+    content: '';
+    cursor: pointer;
+    height: 1.125rem;
+    left: 0.09375rem;
+    position: absolute;
+    top: calc(50% - 0.5625rem);
+    transition: all 0.3s;
+    width: 1.125rem;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.3;
+
+    &::before {
+      cursor: not-allowed;
+    }
+  }
+
+  &:checked::before {
+    background-color: var(--switch-color-checked);
+    left: unset;
+    transform: translateX(100%);
+  }
+
+  &:focus-visible::before {
+    //box-shadow: 0 0 0 functions.rem(6) var(--theme-inputs-default-hover);
+  }
+
+  &:hover:not(:disabled)::before {
+    //box-shadow: 0 0 0 functions.rem(6) var(--theme-inputs-default-hover);
+  }
+
+  &:active:not(:disabled)::before {
+    //box-shadow: 0 0 0 functions.rem(6) var(--theme-inputs-default-active);
+  }
+
+  &:checked {
+    --switch-color-border: #{colors.$purple-3};
+    --switch-color-bg: transparent;
+
+    &:focus-visible::before {
+      //box-shadow: 0 0 0 functions.rem(6) var(--switch-color-checked-hover);
+    }
+
+    &:hover:not(:disabled)::before {
+      //box-shadow: 0 0 0 functions.rem(6) var(--switch-color-checked-hover);
+    }
+
+    &:active:not(:disabled)::before {
+      //box-shadow: 0 0 0 functions.rem(6) var(--switch-color-checked-active);
+    }
+  }
+}

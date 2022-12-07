@@ -1,7 +1,7 @@
 @use 'styles/colors';
 
 
-.checkbox {
+.root {
   --checkbox-border-color: #{colors.$purple-3};
   --color-checkbox: #{colors.$purple-3};
   --color-checkbox-hover: #{colors.$purple-4};

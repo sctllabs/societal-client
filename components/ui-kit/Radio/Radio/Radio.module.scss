@@ -1,7 +1,7 @@
 @use 'styles/colors';
 
 
-.radio {
+.root {
   --radio-border-color: #{colors.$purple-3};
   --radio-selected: #{colors.$purple-3};
   --radio-active: #{colors.$purple-3};

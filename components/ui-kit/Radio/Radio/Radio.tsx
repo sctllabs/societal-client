@@ -49,7 +49,7 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(function Radio(
       name={name}
       type="radio"
       className={clsx(
-        styles.radio,
+        styles.root,
         {
           [styles.clicked]: clicked
         },

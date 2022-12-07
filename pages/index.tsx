@@ -5,6 +5,7 @@ import { Icon } from 'components/ui-kit/Icon';
 import { RadioGroup } from 'components/ui-kit/Radio/RadioGroup';
 import { Radio } from 'components/ui-kit/Radio/Radio';
 import { Checkbox } from 'components/ui-kit/Checkbox';
+import Switch from 'components/ui-kit/Switch/Switch';
 
 export default function Home() {
   return (
@@ -18,6 +19,9 @@ export default function Home() {
       <Typography variant={'h1'}>Hello, world!</Typography>
       <Typography variant={'h2'}>Hello, world!</Typography>
       <Typography variant={'h3'}>Hello, world!</Typography>
+
+      {/*  switch  */}
+      <Switch />
 
       {/*  checkbox  */}
       <div>

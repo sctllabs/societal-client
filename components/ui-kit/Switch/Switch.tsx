@@ -1,19 +1,19 @@
-import React, { forwardRef, InputHTMLAttributes } from 'react';
+import { forwardRef, ChangeEvent, InputHTMLAttributes } from 'react';
 import clsx from 'clsx';
 import { useControlled } from 'hooks/components';
 
-import styles from './Checkbox.module.scss';
+import styles from './Switch.module.scss';
 
-export const Checkbox = forwardRef<
+export const Switch = forwardRef<
   HTMLInputElement,
   InputHTMLAttributes<HTMLInputElement>
->(function Checkbox(
+>(function Switch(
   {
     checked: checkedProp,
-    className,
     onChange,
     color,
     defaultChecked,
+    className,
     ...otherProps
   },
   ref
@@ -21,11 +21,11 @@ export const Checkbox = forwardRef<
   const [checked, setCheckedState] = useControlled({
     controlled: checkedProp,
     default: Boolean(defaultChecked),
-    name: 'CheckboxBase',
+    name: 'SwitchBase',
     state: 'checked'
   });
 
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.nativeEvent.defaultPrevented) {
       return;
     }
@@ -42,10 +42,13 @@ export const Checkbox = forwardRef<
       className={clsx(styles.root, className)}
       checked={checked}
       onChange={handleInputChange}
-      {...otherProps}
       type="checkbox"
+      role="switch"
       aria-checked={checked}
       ref={ref}
+      {...otherProps}
     />
   );
 });
+
+export default Switch;
