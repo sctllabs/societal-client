@@ -1,5 +1,6 @@
 import type { AppProps } from 'next/app';
 import { Rajdhani, Dosis } from '@next/font/google';
+
 import 'styles/globals.scss';
 
 const rajdhani = Rajdhani({
