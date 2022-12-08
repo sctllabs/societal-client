@@ -1,0 +1,118 @@
+@use 'styles/typography';
+@use 'styles/colors';
+
+.root {
+  --input-wrapper-border-bottom: #{colors.$grayscale-55};
+  --input-wrapper-border-bottom-hover: #{colors.$grayscale-55};
+  --input-wrapper-border-bottom-focus: #{colors.$grayscale-0};
+  --input-text: #{colors.$grayscale-0};
+  --input-text-empty: #{colors.$grayscale-55};
+  --input-text-disabled: #{colors.$grayscale-80};
+  --input-label-text-color: #{colors.$grayscale-55};
+  --input-label-transform: translate(0px, 0px) scale(1);
+
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  margin-top: 1rem;
+
+  &::before {
+    border-bottom: 1px solid var(--input-wrapper-border-bottom);
+    left: 0px;
+    bottom: 0px;
+    content: " ";
+    position: absolute;
+    right: 0px;
+    transition: border-bottom-color 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+    pointer-events: none;
+  }
+
+  &::after {
+    content: "";
+    border-bottom: 0.125rem solid var(--input-wrapper-border-bottom-focus);
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    pointer-events: none;
+    transform: scaleX(0);
+    transition: transform 200ms cubic-bezier(0, 0, 0.2, 1) 0ms;
+  }
+
+  &:hover:not(:disabled) {
+    .label {
+      --input-label-text-color: #{colors.$grayscale-0};
+    }
+
+    &::before {
+      border-bottom: 0.125rem solid var(--input-wrapper-border-bottom);
+    }
+  }
+
+  &:focus-within:not(:disabled) {
+    .label {
+      --input-label-text-color: #{colors.$grayscale-0};
+      --input-label-transform: translate(0px, -1.25rem) scale(0.75);
+      @extend %caption-2;
+    }
+
+    &::before {
+      border-bottom: 0.125rem solid var(--input-wrapper-border-bottom);
+    }
+
+    &::after {
+      transform: scaleX(1) translateX(0px);
+    }
+  }
+
+}
+
+
+.label {
+  @extend %title-4;
+  position: absolute;
+
+  color: var(--input-label-text-color);
+
+  transform: var(--input-label-transform);
+  transition: all 200ms cubic-bezier(0, 0, 0.2, 1) 0ms;
+}
+
+.invalid {
+  --input-wrapper-border-bottom: #{colors.$orange-1};
+  --input-wrapper-border-bottom-focus: #{colors.$orange-1};
+}
+
+.input {
+  @extend %title-4;
+
+  border: 0;
+  align-items: center;
+  appearance: none;
+  background-color: transparent;
+  color: var(--input-text);
+  display: flex;
+  height: 1.75rem;
+  justify-content: center;
+  padding: 0.625rem;
+  width: auto;
+
+  &::placeholder {
+    opacity: 0;
+  }
+
+  &:disabled {
+    color: var(--input-text-disabled);
+    cursor: not-allowed;
+  }
+
+  &:focus {
+    outline: none;
+  }
+
+  &:not([value='']) + .label {
+    --input-label-text-color: #{colors.$grayscale-0};
+    --input-label-transform: translate(0px, -1.25rem) scale(0.75);
+    @extend %caption-2;
+  }
+}

@@ -19,8 +19,8 @@ export interface ButtonProps extends ComponentProps<'button'> {
   variant?: ButtonVariants;
   color?: ButtonColors;
   size?: ButtonSize;
-  iconLeft?: IconNamesType;
-  iconRight?: IconNamesType;
+  startIcon?: IconNamesType;
+  endIcon?: IconNamesType;
   fullWidth?: boolean;
   icon?: boolean;
 }
@@ -33,8 +33,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       size = 'md',
       className,
       children,
-      iconLeft,
-      iconRight,
+      startIcon,
+      endIcon,
       type = 'button',
       fullWidth = false,
       icon = false,
@@ -61,13 +61,13 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         )}
         {...btnProps}
       >
-        {iconLeft && <Icon name={iconLeft} className={styles['icon-left']} />}
+        {startIcon && (
+          <Icon name={startIcon} className={styles['icon-start']} />
+        )}
         <span className={clsx(styles.content, styles[`text-${size}`])}>
           {children}
         </span>
-        {iconRight && (
-          <Icon name={iconRight} className={styles['icon-right']} />
-        )}
+        {endIcon && <Icon name={endIcon} className={styles['icon-end']} />}
       </button>
     );
   }

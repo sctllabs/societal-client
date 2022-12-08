@@ -165,6 +165,10 @@ $schema: (
   }
 }
 
+.ghost {
+  @include mixins.color-variants($schema, 'ghost');
+}
+
 .text {
   @include mixins.color-variants($schema, 'text-primary');
 
@@ -202,11 +206,11 @@ $schema: (
   @extend %button-2;
 }
 
-.icon-left {
+.icon-start {
   margin-right: 0.5rem;
 }
 
-.icon-right {
+.icon-end {
   margin-left: 0.5rem;
 }
 

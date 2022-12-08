@@ -6,6 +6,7 @@ import { RadioGroup } from 'components/ui-kit/Radio/RadioGroup';
 import { Radio } from 'components/ui-kit/Radio/Radio';
 import { Checkbox } from 'components/ui-kit/Checkbox';
 import Switch from 'components/ui-kit/Switch/Switch';
+import { Input } from 'components/ui-kit/Input';
 
 export default function Home() {
   return (
@@ -20,6 +21,12 @@ export default function Home() {
       <Typography variant={'h2'}>Hello, world!</Typography>
       <Typography variant={'h3'}>Hello, world!</Typography>
 
+      {/*  Input  */}
+
+      <div style={{ padding: '8px' }}>
+        <Input label={'Label'} />
+      </div>
+
       {/*  switch  */}
       <Switch />
 
@@ -32,12 +39,12 @@ export default function Home() {
       {/*  radio group  */}
       <RadioGroup>
         <div>
-          <Radio value={'One'} id="defaultRule" name="royaltyRule" />
           <label htmlFor="defaultRule">Default</label>
+          <Radio value={'One'} id="defaultRule" name="royaltyRule" />
         </div>
         <div>
-          <Radio value={'Two'} id="manualRule" name="royaltyRule" />
           <label htmlFor="manualRule">Manual</label>
+          <Radio value={'Two'} id="manualRule" name="royaltyRule" />
         </div>
       </RadioGroup>
 
@@ -154,14 +161,14 @@ export default function Home() {
       >
         <Button
           style={{ width: '216px' }}
-          iconLeft={'social-google'}
+          startIcon={'social-google'}
           variant={'outlined'}
         >
           Google
         </Button>
         <Button
           style={{ width: '216px' }}
-          iconLeft={'social-apple'}
+          startIcon={'social-apple'}
           variant={'outlined'}
         >
           Apple
