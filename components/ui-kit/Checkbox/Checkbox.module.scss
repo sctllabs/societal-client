@@ -6,20 +6,20 @@
   --color-checkbox: #{colors.$purple-3};
   --color-checkbox-hover: #{colors.$purple-4};
   --color-checkbox-active: #{colors.$purple-3};
+  align-items: center;
   appearance: none;
   background-color: var(--theme-inputs-default-bg);
   border: 0.0625rem solid var(--checkbox-border-color);
   border-radius: 0.375rem;
   cursor: pointer;
+  display: flex;
   height: 1.25rem;
+  justify-content: center;
   outline: none;
   position: relative;
   transition: background-color 0.3s, border-color 0.3s;
   user-select: none;
   width: 1.25rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 
   &::before {
     content: '';

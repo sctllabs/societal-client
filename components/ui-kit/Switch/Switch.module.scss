@@ -9,6 +9,7 @@
   --switch-color-checked-active: #{colors.$purple-3};
   appearance: none;
   background-color: var(--switch-color-bg);
+  border: 0.0625rem solid var(--switch-color-border);
   border-radius: 3.125rem;
   cursor: pointer;
   height: 1.5rem;
@@ -18,7 +19,6 @@
   transition: background-color 0.3s;
   user-select: none;
   width: 2.5rem;
-  border: 0.0625rem solid var(--switch-color-border);
 
   &::before {
     background-color: var(--switch-color);
