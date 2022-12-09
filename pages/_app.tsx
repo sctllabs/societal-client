@@ -1,6 +1,8 @@
 import type { AppProps } from 'next/app';
 import { Rajdhani, Dosis } from '@next/font/google';
 
+import { Layout } from 'components/layout/Layout';
+
 import 'styles/globals.scss';
 
 const rajdhani = Rajdhani({
@@ -19,7 +21,9 @@ export default function App({ Component, pageProps }: AppProps) {
           --dosis-font: ${dosis.style.fontFamily};
         }
       `}</style>
-      <Component {...pageProps} />
+      <Layout>
+        <Component {...pageProps} />
+      </Layout>
     </>
   );
 }

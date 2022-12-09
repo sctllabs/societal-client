@@ -1,0 +1,11 @@
+@use 'styles/colors';
+@use 'styles/variables';
+
+.root {
+  --layout-root-bg: #{colors.$grayscale-98};
+
+  background-color: var(--layout-root-bg);
+  height: calc(100vh - #{variables.$header-height});
+  display: flex;
+  flex-direction: column;
+}

@@ -1,4 +1,5 @@
-import { forwardRef, ComponentProps } from 'react';
+import { useRef, forwardRef, ComponentProps } from 'react';
+import { Transition } from 'react-transition-group';
 import clsx from 'clsx';
 
 import { Icon, IconNamesType } from 'components/ui-kit/Icon';
@@ -42,6 +43,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     },
     ref
   ) {
+    const iconRef = useRef(null);
+
     return (
       <button
         ref={ref}
@@ -50,9 +53,11 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           styles.root,
           styles[variant],
           styles[color],
+          styles[`text-${size}`],
           {
             [styles[`icon-${size}`]]: icon
           },
+
           {
             [styles[`button-${size}`]]: !icon
           },
@@ -61,13 +66,29 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         )}
         {...btnProps}
       >
-        {startIcon && (
-          <Icon name={startIcon} className={styles['icon-start']} />
-        )}
-        <span className={clsx(styles.content, styles[`text-${size}`])}>
+        {startIcon && <Icon name={startIcon} size={size} />}
+        <span
+          className={clsx(
+            styles.content,
+            {
+              [styles[`icon-start`]]: startIcon
+            },
+            {
+              [styles[`icon-end`]]: endIcon
+            }
+          )}
+        >
           {children}
         </span>
-        {endIcon && <Icon name={endIcon} className={styles['icon-end']} />}
+        <Transition
+          nodeRef={iconRef}
+          mountOnEnter
+          unmountOnExit
+          in={!!endIcon}
+          timeout={500}
+        >
+          {endIcon && <Icon size={size} name={endIcon} />}
+        </Transition>
       </button>
     );
   }

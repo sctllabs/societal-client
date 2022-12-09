@@ -79,6 +79,8 @@ $schema: (
 );
 
 .root {
+  @extend %button-2;
+
   --theme-button-padding: 0;
   --theme-button-box-shadow-hover: none;
   --theme-button-box-shadow-active: none;
@@ -92,7 +94,6 @@ $schema: (
   --theme-button-bg-active: var(--theme-button-bg);
   --theme-button-bg-focus: var(--theme-button-bg);
   --theme-button-height: 2.5rem;
-  @extend %button-2;
   align-items: center;
 
   background-color: var(--theme-button-bg);
@@ -101,7 +102,7 @@ $schema: (
   border-radius: var(--theme-button-border-radius);
   color: var(--theme-button-text);
   cursor: pointer;
-  display: flex;
+  display: inline-flex;
   flex: 0 0 auto;
   flex-wrap: nowrap;
   height: var(--theme-button-height);
@@ -217,17 +218,14 @@ $schema: (
 
 .button-lg {
   --theme-button-height: 2.5rem;
-  --theme-button-padding: 0.5rem 4rem;
 }
 
 .button-md {
   --theme-button-height: 2rem;
-  --theme-button-padding: 0.5rem 4rem;
 }
 
 .button-sm {
   --theme-button-height: 2rem;
-  --theme-button-padding: 0.5rem 4rem;
 }
 
 .icon-lg {

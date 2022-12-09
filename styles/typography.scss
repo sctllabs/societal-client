@@ -156,7 +156,7 @@
 %caption-1 {
   @include mixins.typography(
           $font-size: 0.8125rem,
-          $font-weight: 400,
+          $font-weight: 500,
           $line-height: 1.25rem,
           $font-family: fonts.$dosis-font,
   );
@@ -165,7 +165,7 @@
 %caption-2 {
   @include mixins.typography(
           $font-size: 0.75rem,
-          $font-weight: 400,
+          $font-weight: 500,
           $line-height: 1rem,
           $font-family: fonts.$dosis-font,
   );
@@ -174,7 +174,7 @@
 %caption-3 {
   @include mixins.typography(
           $font-size: 0.6875rem,
-          $font-weight: 400,
+          $font-weight: 500,
           $line-height: 1rem,
           $font-family: fonts.$dosis-font,
   );

@@ -14,12 +14,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-*,
-*::before,
-*::after {
-  box-sizing: inherit;
-  color: inherit;
-  font-family: inherit;
-  font-size: inherit;
+* {
+  box-sizing: border-box;
 }
 

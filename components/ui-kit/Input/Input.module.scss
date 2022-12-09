@@ -8,9 +8,9 @@
 }
 
 .hint {
-  position: absolute;
-  left: 0;
   bottom: -1.25rem;
+  left: 0;
+  position: absolute;
 }
 
 .label {
@@ -108,8 +108,8 @@
 
   align-items: center;
   display: inline-flex;
-  margin-top: 1rem;
   margin-bottom: 1rem;
+  margin-top: 1rem;
   position: relative;
 
   &.disabled > * {
