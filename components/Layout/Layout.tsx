@@ -1,7 +1,7 @@
 import { ReactNode } from 'react';
 
-import { Header } from 'components/layout/Header';
-import { Drawer } from 'components/layout/Drawer';
+import { Header } from 'components/Layout/Header';
+import { Sidebar } from 'components/Layout/Sidebar';
 
 import styles from './Layout.module.scss';
 
@@ -13,7 +13,7 @@ export function Layout({ children }: LayoutProps) {
   return (
     <>
       <Header />
-      <Drawer />
+      <Sidebar />
       <main className={styles.root}>{children}</main>
     </>
   );

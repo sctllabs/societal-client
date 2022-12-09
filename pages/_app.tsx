@@ -1,7 +1,7 @@
 import type { AppProps } from 'next/app';
 import { Rajdhani, Dosis } from '@next/font/google';
 
-import { Layout } from 'components/layout/Layout';
+import { Layout } from 'components/Layout';
 
 import 'styles/globals.scss';
 

@@ -1,12 +1,10 @@
-import clsx from 'clsx';
-
-import styles from './Drawer.module.scss';
+import styles from './Sidebar.module.scss';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Button } from 'components/ui-kit/Button';
 import { Icon } from 'components/ui-kit/Icon';
 
-export function Drawer() {
+export function Sidebar() {
   return (
     <div className={styles.root}>
       <Link href={'/'} className={styles['logo-container']}>
@@ -21,7 +19,7 @@ export function Drawer() {
 
       <div className={styles['center-container']}>
         {Array.from(Array(100).keys()).map((x) => (
-          <Button variant={'nav'} icon size={'lg'}>
+          <Button variant={'nav'} icon size={'lg'} key={x}>
             <div className={styles['center-logo']}>
               <Image
                 src={'/logo/societal-symbol.svg'}

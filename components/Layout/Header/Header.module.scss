@@ -3,7 +3,7 @@
 @use 'styles/typography';
 
 .root {
-  --header-padding-left: #{variables.$drawer-width};
+  --header-padding-left: #{variables.$sidebar-width};
   --header-padding-right: 1.25rem;
   --header-box-shadow-color: rgba(102, 78, 200, 0.2);
   background-color: #{colors.$grayscale-100};
