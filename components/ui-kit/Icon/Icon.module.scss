@@ -1,4 +1,9 @@
 .root {
+  --icon-size: 1.25rem;
+  display: inline-block;
+}
+
+.icon {
   display: inline-block;
   font-size: 0;
   height: var(--icon-size);

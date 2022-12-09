@@ -2,7 +2,7 @@
 
 
 .root {
-  --radio-border-color: #{colors.$purple-3};
+  --radio-border-color: #{colors.$grayscale-0};
   --radio-selected: #{colors.$purple-3};
   --radio-active: #{colors.$purple-3};
   --radio-hover: #{colors.$purple-4};
@@ -21,7 +21,6 @@
 
   .clicked {
     background-color: var(--radio-active);
-    box-shadow: 0 0 0 0.625rem var(--radio-active);
   }
 
   &::before {
@@ -48,18 +47,7 @@
     opacity: 0.3;
   }
 
-  &:active:not(:disabled) {
-    background-color: var(--radio-active);
-    box-shadow: 0 0 0 0.0625rem var(--radio-active);
-  }
-
   &:hover:not(:disabled):not(.clicked) {
-    background-color: var(--radio-hover);
-    box-shadow: 0 0 0 0.0625rem var(--radio-hover);
-  }
-
-  &:focus-visible:not(:disabled):not(.clicked) {
-    background-color: var(--radio-hover);
-    box-shadow: 0 0 0 0.0625rem var(--radio-hover);
+    --radio-border-color: #{colors.$purple-3};
   }
 }

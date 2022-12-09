@@ -24,13 +24,15 @@ export function Icon({
   const { viewBox, url } = icons[name] as never;
 
   return (
-    <svg
-      viewBox={viewBox}
-      className={clsx(styles.root, styles[size], className)}
-      onClick={onClick}
-      {...other}
-    >
-      <use xlinkHref={`/${String(url)}`} />
-    </svg>
+    <span className={clsx(styles.root, styles[size])}>
+      <svg
+        viewBox={viewBox}
+        className={clsx(styles.icon, className)}
+        onClick={onClick}
+        {...other}
+      >
+        <use xlinkHref={`/${String(url)}`} />
+      </svg>
+    </span>
   );
 }

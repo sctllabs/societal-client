@@ -23,12 +23,90 @@ export default function Home() {
 
       {/*  Input  */}
 
-      <div style={{ padding: '8px' }}>
-        <Input label={'Label'} />
+      {/*<div*/}
+      {/*  style={{*/}
+      {/*    padding: '8px',*/}
+      {/*    display: 'flex',*/}
+      {/*    gap: '8px',*/}
+      {/*    flexDirection: 'column',*/}
+      {/*    maxWidth: '328px'*/}
+      {/*  }}*/}
+      {/*>*/}
+      {/*  <Input*/}
+      {/*    variant={'outlined'}*/}
+      {/*    padding={'lg'}*/}
+      {/*    placeholder={'Search'}*/}
+      {/*    hint={'Text'}*/}
+      {/*  />*/}
+      {/*  <Input*/}
+      {/*    padding={'lg'}*/}
+      {/*    startAdornment={*/}
+      {/*      <Button variant={'ghost'} icon size={'sm'}>*/}
+      {/*        <Icon name={'search'} size={'sm'} />*/}
+      {/*      </Button>*/}
+      {/*    }*/}
+      {/*    endAdornment={*/}
+      {/*      <Button variant={'ghost'} icon size={'sm'}>*/}
+      {/*        <Icon name={'close'} size={'sm'} />*/}
+      {/*      </Button>*/}
+      {/*    }*/}
+      {/*    hint={'Text'}*/}
+      {/*    placeholder={'Search'}*/}
+      {/*    variant={'outlined'}*/}
+      {/*  />*/}
+      {/*  <Input*/}
+      {/*    endAdornment={*/}
+      {/*      <Button variant={'ghost'} icon size={'sm'}>*/}
+      {/*        <Icon name={'close'} size={'sm'} />*/}
+      {/*      </Button>*/}
+      {/*    }*/}
+      {/*    hint={'Text'}*/}
+      {/*    variant={'outlined'}*/}
+      {/*    label={'Label'}*/}
+      {/*  />*/}
+
+      {/*  <Input*/}
+      {/*    placeholder={'Fata'}*/}
+      {/*    endAdornment={*/}
+      {/*      <Button variant={'ghost'} icon size={'sm'}>*/}
+      {/*        <Icon name={'close'} size={'sm'} />*/}
+      {/*      </Button>*/}
+      {/*    }*/}
+      {/*    variant={'outlined'}*/}
+      {/*  />*/}
+      {/*</div>*/}
+
+      <div
+        style={{
+          padding: '8px',
+          display: 'flex',
+          gap: '8px',
+          flexDirection: 'column',
+          maxWidth: '328px'
+        }}
+      >
+        <Input
+          variant={'standard'}
+          label={'Label'}
+          error
+          hint={<Typography variant={'caption2'}>Hint</Typography>}
+        />
+        <Input
+          hint={<Typography variant={'caption2'}>Hint</Typography>}
+          endAdornment={
+            <Button variant={'ghost'} icon>
+              <Icon name={'eye-open'} />
+            </Button>
+          }
+          variant={'standard'}
+          label={'Label'}
+        />
       </div>
 
       {/*  switch  */}
-      <Switch />
+      <div style={{ padding: '8px' }}>
+        <Switch />
+      </div>
 
       {/*  checkbox  */}
       <div>

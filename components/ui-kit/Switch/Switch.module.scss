@@ -5,8 +5,6 @@
   --switch-color-border: transparent;
   --switch-color: #{colors.$grayscale-100};
   --switch-color-checked: #{colors.$purple-3};
-  --switch-color-checked-hover: #{colors.$purple-4};
-  --switch-color-checked-active: #{colors.$purple-3};
   appearance: none;
   background-color: var(--switch-color-bg);
   border: 0.0625rem solid var(--switch-color-border);
@@ -26,7 +24,7 @@
     content: '';
     cursor: pointer;
     height: 1.125rem;
-    left: 0.09375rem;
+    left: 0.125rem;
     position: absolute;
     top: calc(50% - 0.5625rem);
     transition: all 0.3s;
@@ -44,36 +42,11 @@
 
   &:checked::before {
     background-color: var(--switch-color-checked);
-    left: unset;
-    transform: translateX(100%);
-  }
-
-  &:focus-visible::before {
-    //box-shadow: 0 0 0 functions.rem(6) var(--theme-inputs-default-hover);
-  }
-
-  &:hover:not(:disabled)::before {
-    //box-shadow: 0 0 0 functions.rem(6) var(--theme-inputs-default-hover);
-  }
-
-  &:active:not(:disabled)::before {
-    //box-shadow: 0 0 0 functions.rem(6) var(--theme-inputs-default-active);
+    left: calc(100% - 1.25rem);
   }
 
   &:checked {
     --switch-color-border: #{colors.$purple-3};
     --switch-color-bg: transparent;
-
-    &:focus-visible::before {
-      //box-shadow: 0 0 0 functions.rem(6) var(--switch-color-checked-hover);
-    }
-
-    &:hover:not(:disabled)::before {
-      //box-shadow: 0 0 0 functions.rem(6) var(--switch-color-checked-hover);
-    }
-
-    &:active:not(:disabled)::before {
-      //box-shadow: 0 0 0 functions.rem(6) var(--switch-color-checked-active);
-    }
   }
 }

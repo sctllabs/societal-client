@@ -71,6 +71,11 @@ $schema: (
                 theme-button-text-active: #{colors.$purple-4},
                 theme-button-text-decoration: underline
         ),
+        'ghost': (
+                theme-button-text: #{colors.$grayscale-0},
+                theme-button-text-hover: #{colors.$purple-3},
+                theme-button-text-active: #{colors.$purple-4},
+        ),
 );
 
 .root {

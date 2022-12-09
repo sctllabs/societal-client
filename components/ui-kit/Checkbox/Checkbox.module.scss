@@ -2,10 +2,8 @@
 
 
 .root {
-  --checkbox-border-color: #{colors.$purple-3};
+  --checkbox-border-color: #{colors.$grayscale-0};
   --color-checkbox: #{colors.$purple-3};
-  --color-checkbox-hover: #{colors.$purple-4};
-  --color-checkbox-active: #{colors.$purple-3};
   align-items: center;
   appearance: none;
   background-color: var(--theme-inputs-default-bg);
@@ -58,31 +56,13 @@
     z-index: -1;
   }
 
-  &:focus-visible::after {
-    //box-shadow: 0 0 0 0.25rem var(--theme-inputs-default-hover);
-  }
-
-  &:hover:not(:disabled)::after {
-    //box-shadow: 0 0 0 0.25rem var(--theme-inputs-default-hover);
-  }
-
-  &:active:not(:disabled)::after {
-    //box-shadow: 0 0 0 0.25rem var(--theme-inputs-default-active);
-  }
-
   &:checked {
     background-color: var(--color-checkbox);
-
-    &:focus-visible::after {
-      //box-shadow: 0 0 0 0.25rem var(--color-checkbox-hover);
-    }
-
-    &:hover:not(:disabled)::after {
-      //box-shadow: 0 0 0 0.25rem var(--color-checkbox-hover);
-    }
-
-    &:active:not(:disabled)::after {
-      //box-shadow: 0 0 0 0.25rem var(--color-checkbox-active);
-    }
   }
+
+  &:hover:not(:disabled) {
+    --checkbox-border-color: #{colors.$purple-3};
+  }
+
+
 }
