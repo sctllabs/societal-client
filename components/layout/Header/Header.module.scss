@@ -8,9 +8,9 @@
   --header-box-shadow-color: rgba(102, 78, 200, 0.2);
   background-color: #{colors.$grayscale-100};
 
-  height: variables.$header-height;
-
   box-shadow: 0 -0.3125rem 1.875rem var(--header-box-shadow-color);
+
+  height: variables.$header-height;
   position: relative;
 }
 

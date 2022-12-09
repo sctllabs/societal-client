@@ -34,13 +34,13 @@ export default function Home() {
       </Head>
 
       <div className={styles.content}>
-        <span className={styles.logo}>
+        <div className={styles.logo}>
           <Image
             src={'/logo/societal-primary.svg'}
             alt={'societal-symbol'}
             fill
           />
-        </span>
+        </div>
 
         <Typography className={styles.title} variant={'paragraph1'}>
           Welcome to society 3.0

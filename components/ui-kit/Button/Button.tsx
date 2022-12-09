@@ -12,7 +12,8 @@ type ButtonVariants =
   | 'text'
   | 'link'
   | 'ghost'
-  | 'icon';
+  | 'icon'
+  | 'nav';
 type ButtonColors = 'primary' | 'destructive';
 type ButtonSize = 'sm' | 'md' | 'lg';
 

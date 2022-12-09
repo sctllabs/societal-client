@@ -65,6 +65,12 @@ $schema: (
                 theme-button-border-color-active: transparent,
                 theme-button-box-shadow-active: inset 0rem 0rem 0.75rem #{colors.$shadow-button-purple},
         ),
+        'nav': (
+                theme-button-text: #{colors.$grayscale-0},
+                theme-button-bg: #{colors.$grayscale-98},
+                theme-button-bg-hover: #{colors.$grayscale-90},
+                theme-button-bg-active: #{colors.$grayscale-80},
+        ),
         'link': (
                 theme-button-text: #{colors.$grayscale-0},
                 theme-button-text-hover: #{colors.$purple-3},
@@ -82,6 +88,7 @@ $schema: (
   @extend %button-2;
 
   --theme-button-padding: 0;
+  --theme-button-box-shadow: none;
   --theme-button-box-shadow-hover: none;
   --theme-button-box-shadow-active: none;
   --theme-button-border-radius: 0.25rem;
@@ -169,6 +176,10 @@ $schema: (
 
 .ghost {
   @include mixins.color-variants($schema, 'ghost');
+}
+
+.nav {
+  @include mixins.color-variants($schema, 'nav');
 }
 
 .text {
