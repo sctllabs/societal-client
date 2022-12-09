@@ -6,10 +6,10 @@
   --header-padding-left: #{variables.$sidebar-width};
   --header-padding-right: 1.25rem;
   --header-box-shadow-color: rgba(102, 78, 200, 0.2);
+
   background-color: #{colors.$grayscale-100};
-
   box-shadow: 0 -0.3125rem 1.875rem var(--header-box-shadow-color);
-
+  grid-area: header;
   height: variables.$header-height;
   position: relative;
 }
@@ -43,7 +43,7 @@
 
 .dropdown-button {
   @extend %title-4;
-  justify-content: start;
 
+  justify-content: start;
   min-height: 3.5rem;
 }

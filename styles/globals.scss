@@ -14,6 +14,16 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+#__next {
+  display: grid;
+  grid-template-areas: 'sidebar header'
+                       'sidebar content';
+  grid-template-columns: #{variables.$sidebar-width} auto;
+  grid-template-rows: #{variables.$header-height} auto;
+  max-height: 100vh;
+  overflow: hidden;
+}
+
 * {
   box-sizing: border-box;
 }

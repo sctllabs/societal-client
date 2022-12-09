@@ -4,45 +4,42 @@
 .root {
   --sidebar-bg: #{colors.$grayscale-100};
   --sidebar-box-shadow-color: rgba(102, 78, 200, 0.1);
+  --sidebar-container-border-color: #{colors.$grayscale-95};
+
   align-items: center;
   background-color: var(--sidebar-bg);
   box-shadow: -0.5625rem 0.75rem 2rem var(--sidebar-box-shadow-color);
   display: flex;
   flex-direction: column;
+  grid-area: sidebar;
   height: 100vh;
-  justify-content: start;
-  left: 0;
+  justify-content: flex-start;
   overflow: hidden;
-  position: absolute;
-  top: 0;
-
   width: #{variables.$sidebar-width};
-  z-index: 10;
+  z-index: 1;
 }
 
 .logo-container {
   --sidebar-logo-container-width: #{variables.$sidebar-width};
   --sidebar-logo-container-height: #{variables.$header-height};
+
   align-items: center;
   display: flex;
   height: var(--sidebar-logo-container-height);
   justify-content: center;
-
   position: absolute;
   top: 0;
   width: var(--sidebar-logo-container-width);
+
+  border-bottom: 0.0625rem solid var(--sidebar-container-border-color);
 }
 
 .center-container {
-  --sidebar-center-container-border-color: #{colors.$grayscale-95};
   --sidebar-center-container-margin-top: #{variables.$header-height};
-  --sidebar-center-container-margin-bottom: 4.0625rem;
-  border-top: 0.0625rem solid var(--sidebar-center-container-border-color);
 
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-  margin-bottom: var(--sidebar-center-container-margin-bottom);
   margin-top: var(--sidebar-center-container-margin-top);
 
   -ms-overflow-style: none; /* IE and Edge */
@@ -68,10 +65,7 @@
 }
 
 .bottom-container {
-  --sidebar-bottom-container-border-color: #{colors.$grayscale-95};
-  border-top: 0.0625rem solid var(--sidebar-bottom-container-border-color);
-  bottom: 0;
-  padding: 0.625rem 0.5rem;
 
-  position: absolute;
+  border-top: 0.0625rem solid var(--sidebar-container-border-color);
+  padding: 0.625rem 0.5rem;
 }

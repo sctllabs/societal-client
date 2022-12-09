@@ -7,5 +7,7 @@
   background-color: var(--layout-root-bg);
   display: flex;
   flex-direction: column;
+  grid-area: content;
   height: calc(100vh - #{variables.$header-height});
+  overflow: auto;
 }

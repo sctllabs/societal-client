@@ -1,5 +1,4 @@
-import { useRef, forwardRef, ComponentProps } from 'react';
-import { Transition } from 'react-transition-group';
+import { forwardRef, ComponentProps } from 'react';
 import clsx from 'clsx';
 
 import { Icon, IconNamesType } from 'components/ui-kit/Icon';
@@ -44,8 +43,6 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     },
     ref
   ) {
-    const iconRef = useRef(null);
-
     return (
       <button
         ref={ref}
@@ -81,15 +78,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         >
           {children}
         </span>
-        <Transition
-          nodeRef={iconRef}
-          mountOnEnter
-          unmountOnExit
-          in={!!endIcon}
-          timeout={500}
-        >
-          {endIcon && <Icon size={size} name={endIcon} />}
-        </Transition>
+        {endIcon && <Icon size={size} name={endIcon} />}
       </button>
     );
   }
