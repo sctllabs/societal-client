@@ -28,22 +28,3 @@
   @extend %body-1;
 }
 
-.dropdown {
-  max-width: 15rem;
-}
-
-.dropdown-card {
-  box-shadow: none;
-}
-
-.dropdown-title {
-  color: #{colors.$grayscale-55};
-  margin-bottom: 1rem;
-}
-
-.dropdown-button {
-  @extend %title-4;
-
-  justify-content: start;
-  min-height: 3.5rem;
-}

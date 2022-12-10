@@ -1,0 +1,18 @@
+@use 'styles/colors';
+@use 'styles/typography';
+
+.dropdown-card {
+  box-shadow: none;
+}
+
+.dropdown-title {
+  color: #{colors.$grayscale-55};
+  margin-bottom: 1rem;
+}
+
+.dropdown-button {
+  @extend %title-4;
+
+  justify-content: start;
+  min-height: 3.5rem;
+}

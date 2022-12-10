@@ -2,8 +2,8 @@ import Head from 'next/head';
 
 import styles from 'styles/pages/Home.module.scss';
 import Image from 'next/image';
-import { Typography } from '../components/ui-kit/Typography';
-import { Card } from '../components/ui-kit/Card';
+import { Typography } from 'components/ui-kit/Typography';
+import { Card } from 'components/ui-kit/Card';
 
 type ContentInfo = {
   title: string;
@@ -34,90 +34,6 @@ export default function Home() {
       </Head>
 
       <div className={styles.content}>
-        <div className={styles.logo}>
-          <Image
-            src={'/logo/societal-primary.svg'}
-            alt={'societal-symbol'}
-            fill
-          />
-        </div>
-
-        <Typography className={styles.title} variant={'paragraph1'}>
-          Welcome to society 3.0
-        </Typography>
-
-        <div className={styles['cards-wrapper']}>
-          {contentInfo.map((x) => (
-            <Card className={styles.card} key={x.title}>
-              <Typography variant={'value1'}>{x.title}</Typography>
-              <Typography variant={'caption1'}>{x.description}</Typography>
-            </Card>
-          ))}
-        </div>
-
-        <div className={styles.logo}>
-          <Image
-            src={'/logo/societal-primary.svg'}
-            alt={'societal-symbol'}
-            fill
-          />
-        </div>
-
-        <Typography className={styles.title} variant={'paragraph1'}>
-          Welcome to society 3.0
-        </Typography>
-
-        <div className={styles['cards-wrapper']}>
-          {contentInfo.map((x) => (
-            <Card className={styles.card} key={x.title}>
-              <Typography variant={'value1'}>{x.title}</Typography>
-              <Typography variant={'caption1'}>{x.description}</Typography>
-            </Card>
-          ))}
-        </div>
-
-        <div className={styles.logo}>
-          <Image
-            src={'/logo/societal-primary.svg'}
-            alt={'societal-symbol'}
-            fill
-          />
-        </div>
-
-        <Typography className={styles.title} variant={'paragraph1'}>
-          Welcome to society 3.0
-        </Typography>
-
-        <div className={styles['cards-wrapper']}>
-          {contentInfo.map((x) => (
-            <Card className={styles.card} key={x.title}>
-              <Typography variant={'value1'}>{x.title}</Typography>
-              <Typography variant={'caption1'}>{x.description}</Typography>
-            </Card>
-          ))}
-        </div>
-
-        <div className={styles.logo}>
-          <Image
-            src={'/logo/societal-primary.svg'}
-            alt={'societal-symbol'}
-            fill
-          />
-        </div>
-
-        <Typography className={styles.title} variant={'paragraph1'}>
-          Welcome to society 3.0
-        </Typography>
-
-        <div className={styles['cards-wrapper']}>
-          {contentInfo.map((x) => (
-            <Card className={styles.card} key={x.title}>
-              <Typography variant={'value1'}>{x.title}</Typography>
-              <Typography variant={'caption1'}>{x.description}</Typography>
-            </Card>
-          ))}
-        </div>
-
         <div className={styles.logo}>
           <Image
             src={'/logo/societal-primary.svg'}

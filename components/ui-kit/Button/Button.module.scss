@@ -109,7 +109,7 @@ $schema: (
   border-radius: var(--theme-button-border-radius);
   color: var(--theme-button-text);
   cursor: pointer;
-  display: inline-flex;
+  display: flex;
   flex: 0 0 auto;
   flex-wrap: nowrap;
   height: var(--theme-button-height);
@@ -220,11 +220,11 @@ $schema: (
 }
 
 .icon-start {
-  margin-right: 0.5rem;
+  margin-left: 0.5rem;
 }
 
 .icon-end {
-  margin-left: 0.5rem;
+  margin-right: 0.5rem;
 }
 
 .button-lg {
