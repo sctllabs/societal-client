@@ -1,7 +1,15 @@
 import clsx from 'clsx';
 
+import dynamic from 'next/dynamic';
+
+const Account = dynamic(
+  () => import('components/Account').then((mod) => mod.Account),
+  {
+    ssr: false
+  }
+);
+
 import styles from './Header.module.scss';
-import { Account } from '../../Account';
 
 export function Header() {
   return (

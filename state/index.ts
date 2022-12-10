@@ -1,9 +1,10 @@
 import create from 'zustand';
+import { immer } from 'zustand/middleware/immer';
+
 import { ApiPromise } from '@polkadot/api';
 import { DefinitionRpc, DefinitionRpcSub } from '@polkadot/types/types';
-import jsonrpc from '@polkadot/types/interfaces/jsonrpc';
-import { immer } from 'zustand/middleware/immer';
 import { Keyring } from '@polkadot/ui-keyring';
+import { KeyringPair } from '@polkadot/keyring/types';
 
 import { appConfig } from 'config';
 
@@ -25,19 +26,20 @@ type State = {
   api: any;
   apiError: string | null;
   apiState: API_STATE | null;
-  currentAccount: any;
+  currentAccount: KeyringPair | null;
 };
 
 type Actions = {
   setApiState: (apiState: API_STATE) => void;
   setApi: (api: ApiPromise) => void;
   setError: (error: any) => void;
+  setCurrentAccount: (account: KeyringPair) => void;
 };
 
 export const useStore = create(
-  immer<State & Actions>((set, get) => ({
+  immer<State & Actions>((set) => ({
     socket: connectedSocket,
-    jsonrpc: { ...jsonrpc, ...appConfig.customRPCMethods },
+    jsonrpc: {},
     keyring: null,
     keyringState: null,
     api: null,
@@ -45,7 +47,9 @@ export const useStore = create(
     apiState: null,
     currentAccount: null,
     setApiState: (apiState) => set((state) => ({ apiState })),
-    setApi: (api: any) => set((state) => ({ api })),
-    setError: (error: any) => set((state) => ({ apiError: error }))
+    setApi: (api) => set((state) => ({ api })),
+    setError: (error) => set((state) => ({ apiError: error })),
+    setCurrentAccount: (account) =>
+      set((state) => ({ currentAccount: account }))
   }))
 );

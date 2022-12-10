@@ -7,8 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "build-svg-sprite": "node scripts/generateIcons.mjs",
-    "prebuild": "npm run build-svg-sprite",
+    "generate-assets": "node scripts/generateIcons.mjs",
+    "prebuild": "npm run generate-assets",
     "stylelint": "stylelint --quiet --fix \"**/*.(scss|sass)\""
   },
   "dependencies": {
@@ -41,6 +41,7 @@
     "zustand": "^4.1.5"
   },
   "devDependencies": {
+    "@next/bundle-analyzer": "^13.0.6",
     "@types/react-transition-group": "^4.4.5",
     "camelcase": "^7.0.0",
     "sass": "^1.56.1",

@@ -1,26 +1,30 @@
-import { ApiPromise, WsProvider } from '@polkadot/api';
-import { TypeRegistry } from '@polkadot/types/create';
-import { isTestChain } from '@polkadot/util';
-import { keyring } from '@polkadot/ui-keyring';
-
 import { appConfig } from 'config';
 import { API_STATE, useStore } from 'state';
 
 const { getState, setState } = useStore;
 
-const registry = new TypeRegistry();
-
 // Connecting to the Substrate node
 export const connect = async (): Promise<void> => {
-  const { apiState, socket, jsonrpc } = getState();
+  const { apiState, socket } = getState();
   // We only want this function to be performed once
   if (apiState) {
     return;
   }
 
-  setState({ apiState: API_STATE.CONNECT_INIT });
+  const jsonrpcInterface = (await import('@polkadot/types/interfaces/jsonrpc'))
+    .default;
 
-  console.log(`Connected socket: ${socket}`);
+  const jsonrpc = {
+    ...jsonrpcInterface,
+    ...appConfig.customRPCMethods
+  };
+
+  setState({
+    apiState: API_STATE.CONNECT_INIT,
+    jsonrpc
+  });
+
+  const { ApiPromise, WsProvider } = await import('@polkadot/api');
   const provider = new WsProvider(socket);
   const _api = new ApiPromise({ provider, rpc: jsonrpc });
 
@@ -40,6 +44,9 @@ export const connect = async (): Promise<void> => {
 };
 
 const retrieveChainInfo = async (api: any) => {
+  const { TypeRegistry } = await import('@polkadot/types/create');
+  const registry = new TypeRegistry();
+
   const [systemChain, systemChainType] = await Promise.all([
     api.rpc.system.chain(),
     api.rpc.system.chainType
@@ -64,6 +71,10 @@ export const loadAccounts = async (): Promise<void> => {
   setState({ keyringState: API_STATE.LOADING });
 
   const { web3Enable, web3Accounts } = await import('@polkadot/extension-dapp');
+  const { keyring } = await import('@polkadot/ui-keyring');
+
+  const { isTestChain } = await import('@polkadot/util');
+
   try {
     await web3Enable(appConfig.appName);
     let allAccounts = await web3Accounts();

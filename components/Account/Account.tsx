@@ -18,14 +18,22 @@ type Account = {
 };
 
 export function Account() {
-  const [api, apiState, keyring, keyringState] = useStore((state) => [
+  const [
+    api,
+    apiState,
+    keyring,
+    keyringState,
+    currentAccount,
+    setCurrentAccount
+  ] = useStore((state) => [
     state.api,
     state.apiState,
     state.keyring,
-    state.keyringState
+    state.keyringState,
+    state.currentAccount,
+    state.setCurrentAccount
   ]);
 
-  const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
   const [balances, setBalances] = useState<Account[]>([]);
 
   useEffect(() => {
@@ -69,13 +77,15 @@ export function Account() {
     void loadAccounts();
   }, [apiState]);
 
-  const handleOnClick: MouseEventHandler = (event) => {
-    const selectedWalletAddress = (event.target as HTMLSpanElement).innerText;
+  useEffect(() => {}, [currentAccount]);
 
-    const foundAccount = balances.find(
-      (x) => x.address === selectedWalletAddress
-    );
-    setSelectedAccount(foundAccount ? foundAccount : null);
+  const handleOnClick: MouseEventHandler = (event) => {
+    if (!keyring) {
+      return;
+    }
+
+    const selectedWalletAddress = (event.target as HTMLSpanElement).innerText;
+    setCurrentAccount(keyring.getPair(selectedWalletAddress));
   };
 
   return (
@@ -108,7 +118,7 @@ export function Account() {
         variant={'text'}
         className={styles['account-button']}
       >
-        {selectedAccount ? selectedAccount.address : 'Choose an account'}
+        {currentAccount ? currentAccount.address : 'Choose an account'}
       </Button>
     </Dropdown>
   );
