@@ -1,7 +1,6 @@
 const path = require('path');
 const SpriteLoaderPlugin = require('svg-sprite-loader/plugin');
 
-console.log(path.join(__dirname, 'icons'));
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
