@@ -25,6 +25,7 @@ export function RadioGroup({
     default: defaultValue,
     name: 'RadioGroup'
   });
+  const nameId = useId();
 
   const handleChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -36,7 +37,7 @@ export function RadioGroup({
     [onChange, setValueState]
   );
 
-  const name = useId();
+  const name = nameProp || nameId;
 
   const providerValue = useMemo(
     () => ({

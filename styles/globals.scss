@@ -14,12 +14,17 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+a {
+  text-decoration: none;
+}
+
 #__next {
   display: grid;
-  grid-template-areas: 'sidebar header'
-                       'sidebar content';
-  grid-template-columns: #{variables.$sidebar-width} auto;
-  grid-template-rows: #{variables.$header-height} auto;
+  grid-template-areas:
+    'sidebar header'
+    'sidebar content';
+  grid-template-columns: min-content auto;
+  grid-template-rows: min-content auto;
   max-height: 100vh;
   overflow: hidden;
 }
@@ -27,4 +32,3 @@ body {
 * {
   box-sizing: border-box;
 }
-

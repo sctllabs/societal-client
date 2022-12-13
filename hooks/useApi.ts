@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { ApiPromise, WsProvider } from '@polkadot/api';
 
@@ -18,30 +18,39 @@ export const useApi = (): [ApiPromise | null, API_STATE] => {
   const jsonrpc = useAtomValue(jsonrpcAtom);
   const setApiError = useSetAtom(apiErrorAtom);
 
+  const asyncConnect = useCallback(async (): Promise<void> => {
+    setApiState(API_STATE.CONNECT_INIT);
+
+    const provider = new WsProvider(socket);
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    const _api = new ApiPromise({ provider, rpc: jsonrpc });
+
+    _api.on('connected', () => {
+      setApiState(API_STATE.CONNECTING);
+      setApi(_api);
+      _api.isReady.then(() => setApiState(API_STATE.READY));
+    });
+    _api.on('ready', () => setApiState(API_STATE.READY));
+    _api.on('error', (err) => {
+      setApiState(API_STATE.ERROR);
+      setApiError(err);
+    });
+    _api.on('disconnected', () => setApiState(API_STATE.DISCONNECTED));
+  }, [jsonrpc, setApi, setApiError, setApiState, socket]);
+
   useEffect(() => {
-    const asyncConnect = async (): Promise<void> => {
-      setApiState(API_STATE.CONNECT_INIT);
+    let apiLoaded: boolean = false;
 
-      const provider = new WsProvider(socket);
-      const _api = new ApiPromise({ provider, rpc: jsonrpc });
+    if (apiState !== API_STATE.DISCONNECTED || apiLoaded) {
+      return undefined;
+    }
 
-      // Set listeners for disconnection and reconnection event.
-      _api.on('connected', () => {
-        setApiState(API_STATE.CONNECTING);
-        setApi(_api);
-        // `ready` event is not emitted upon reconnection and is checked explicitly here.
-        _api.isReady.then((_api) => setApiState(API_STATE.READY));
-      });
-      _api.on('ready', () => setApiState(API_STATE.READY));
-      _api.on('error', (err) => {
-        setApiState(API_STATE.ERROR);
-        setApiError(err);
-      });
-      _api.on('disconnected', () => setApiState(API_STATE.DISCONNECTED));
+    asyncConnect();
+
+    return () => {
+      apiLoaded = true;
     };
-
-    void asyncConnect();
-  }, []);
+  }, [apiState, asyncConnect]);
 
   return [api, apiState];
 };

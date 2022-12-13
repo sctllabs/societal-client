@@ -42,8 +42,12 @@
   },
   "devDependencies": {
     "@next/bundle-analyzer": "^13.0.6",
+    "@svgr/webpack": "^6.5.1",
     "@types/react-transition-group": "^4.4.5",
     "camelcase": "^7.0.0",
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-config-airbnb-typescript": "^17.0.0",
+    "eslint-config-prettier": "^8.5.0",
     "sass": "^1.56.1",
     "stylelint": "^14.16.0",
     "stylelint-config-recommended-scss": "^8.0.0",

@@ -1,6 +1,5 @@
 @use 'styles/colors';
 
-
 .root {
   --checkbox-border-color: #{colors.$grayscale-0};
   --color-checkbox: #{colors.$purple-3};
@@ -29,7 +28,7 @@
   }
 
   &:checked::before {
-    background: url('/icons/tick.svg') no-repeat;
+    background: url('/icon/tick.svg') no-repeat;
     background-size: 0.875rem 0.875rem;
   }
 
@@ -63,6 +62,4 @@
   &:hover:not(:disabled) {
     --checkbox-border-color: #{colors.$purple-3};
   }
-
-
 }

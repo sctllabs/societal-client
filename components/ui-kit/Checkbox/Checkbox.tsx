@@ -4,48 +4,49 @@ import { useControlled } from 'hooks/components';
 
 import styles from './Checkbox.module.scss';
 
-export const Checkbox = forwardRef<
-  HTMLInputElement,
-  InputHTMLAttributes<HTMLInputElement>
->(function Checkbox(
-  {
-    checked: checkedProp,
-    className,
-    onChange,
-    color,
-    defaultChecked,
-    ...otherProps
-  },
-  ref
-) {
-  const [checked, setCheckedState] = useControlled({
-    controlled: checkedProp,
-    default: Boolean(defaultChecked),
-    name: 'CheckboxBase',
-    state: 'checked'
-  });
+export interface CheckboxProps extends InputHTMLAttributes<HTMLInputElement> {}
 
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.nativeEvent.defaultPrevented) {
-      return;
-    }
+export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
+  function Checkbox(
+    {
+      checked: checkedProp,
+      className,
+      onChange,
+      color,
+      defaultChecked,
+      ...otherProps
+    },
+    ref
+  ) {
+    const [checked, setCheckedState] = useControlled({
+      controlled: checkedProp,
+      default: Boolean(defaultChecked),
+      name: 'CheckboxBase',
+      state: 'checked'
+    });
 
-    setCheckedState(event.target.checked);
+    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+      if (event.nativeEvent.defaultPrevented) {
+        return;
+      }
 
-    if (onChange) {
-      onChange(event);
-    }
-  };
+      setCheckedState(event.target.checked);
 
-  return (
-    <input
-      className={clsx(styles.root, className)}
-      checked={checked}
-      onChange={handleInputChange}
-      {...otherProps}
-      type="checkbox"
-      aria-checked={checked}
-      ref={ref}
-    />
-  );
-});
+      if (onChange) {
+        onChange(event);
+      }
+    };
+
+    return (
+      <input
+        className={clsx(styles.root, className)}
+        checked={checked}
+        onChange={handleInputChange}
+        {...otherProps}
+        type="checkbox"
+        aria-checked={checked}
+        ref={ref}
+      />
+    );
+  }
+);

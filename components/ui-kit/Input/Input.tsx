@@ -1,18 +1,23 @@
 import {
-  ChangeEventHandler,
   forwardRef,
   InputHTMLAttributes,
   ReactNode,
+  useCallback,
   useId,
   useState
 } from 'react';
 import clsx from 'clsx';
 
 import styles from './Input.module.scss';
-import { Typography } from '../Typography';
 
 type InputVariant = 'standard' | 'outlined';
 type InputPadding = 'md' | 'lg';
+type InputHintPosition = 'start' | 'end';
+
+type InputClassNames = {
+  root?: string;
+  input?: string;
+};
 
 export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   error?: boolean;
@@ -22,44 +27,50 @@ export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   variant?: InputVariant;
   padding?: InputPadding;
   hint?: ReactNode;
+  hintPosition?: InputHintPosition;
+  classNames?: InputClassNames;
 }
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
   {
     variant = 'standard',
-    className,
+    classNames,
     startAdornment,
     endAdornment,
     color,
     label,
     error,
     hint,
-    onChange,
     padding = 'md',
     disabled,
+    hintPosition = 'start',
     ...otherProps
   },
   ref
 ) {
+  const [inputNode, setInputNode] = useState<HTMLInputElement>();
+  const inputRef = useCallback(
+    (node: HTMLInputElement) => {
+      if (!node) {
+        return;
+      }
+      setInputNode(node);
+
+      if (!ref) {
+        return;
+      }
+
+      if (typeof ref === 'function') {
+        ref(node);
+      } else {
+        // eslint-disable-next-line no-param-reassign
+        ref.current = node;
+      }
+    },
+    [ref]
+  );
+
   const id = useId();
-
-  const [isFocused, setIsFocused] = useState<boolean>(false);
-  const [isDirty, setIsDirty] = useState<boolean>(false);
-
-  const handleOnFocus = () => setIsFocused(true);
-  const handleOnBlur = () => setIsFocused(false);
-
-  const handleOnChange: ChangeEventHandler<HTMLInputElement> = (event) => {
-    if (onChange) {
-      onChange(event);
-    }
-
-    const dirty = !!event.target.value;
-
-    if (dirty !== isDirty) {
-      setIsDirty(!!event.target.value);
-    }
-  };
 
   return (
     <div
@@ -70,10 +81,9 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
         {
           [styles.error]: error,
           [styles.disabled]: disabled
-        }
+        },
+        classNames?.root
       )}
-      onFocus={handleOnFocus}
-      onBlur={handleOnBlur}
     >
       {startAdornment}
       <input
@@ -88,27 +98,28 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
             [styles['end-adornment']]: !!endAdornment,
             [styles.error]: error
           },
-          className
+          classNames?.input
         )}
         {...otherProps}
-        ref={ref}
-        onChange={handleOnChange}
+        ref={inputRef}
       />
       {label && (
         <label
-          data-focused={isFocused}
           className={clsx(styles.label, styles[`label-${variant}`], {
             [styles['start-adornment']]: !!startAdornment,
-            [styles.focused]: isFocused,
             [styles.error]: error,
-            [styles.dirty]: isDirty
+            [styles.dirty]: !!inputNode?.value
           })}
           htmlFor={id}
         >
           {label}
         </label>
       )}
-      {hint && <span className={clsx(styles.hint)}>{hint}</span>}
+      {hint && (
+        <span className={clsx(styles.hint, styles[`hint-${hintPosition}`])}>
+          {hint}
+        </span>
+      )}
       {endAdornment}
     </div>
   );

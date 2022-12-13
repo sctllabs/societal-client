@@ -1,7 +1,7 @@
 export enum Environment {
-  development = "development",
-  staging = "staging",
-  production = "production"
+  development = 'development',
+  staging = 'staging',
+  production = 'production'
 }
 
 export type AppConfig = {

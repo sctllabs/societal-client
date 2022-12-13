@@ -1,23 +1,41 @@
 @use 'styles/colors';
-
+@use 'styles/typography';
 
 .root {
   --radio-border-color: #{colors.$grayscale-0};
   --radio-selected: #{colors.$purple-3};
   --radio-active: #{colors.$purple-3};
   --radio-hover: #{colors.$purple-4};
+
+  align-items: center;
+  cursor: pointer;
+
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+
+  &:hover:not(:disabled):not(.clicked) {
+    --radio-border-color: #{colors.$purple-3};
+  }
+}
+
+.radio {
+  align-items: center;
   appearance: none;
   background-color: transparent;
   border: 0.0625rem solid var(--radio-border-color);
   border-radius: 50%;
   cursor: pointer;
-  display: grid;
-  height: 1.5rem;
+  display: flex;
+  flex-shrink: 0;
+  height: 1rem;
+  justify-content: center;
+  margin: 0;
   outline: none;
   place-content: center;
   transition: 300ms ease-out;
   transition-property: bacgkround-color, box-shadow;
-  width: 1.5rem;
+  width: 1rem;
 
   .clicked {
     background-color: var(--radio-active);
@@ -27,14 +45,18 @@
     border-radius: 50%;
     box-shadow: inset 1rem 1rem var(--radio-selected);
     content: '';
-    height: 0.75rem;
+    height: 0.5rem;
     transform: scale(0);
     transition: 100ms transform ease-in-out;
-    width: 0.75rem;
+    width: 0.5rem;
   }
 
   &:checked {
     border-color: var(--radio-selected);
+  }
+
+  &:checked + label {
+    @extend %title-5;
   }
 
   &:checked::before {
@@ -46,8 +68,12 @@
     cursor: not-allowed;
     opacity: 0.3;
   }
+}
 
-  &:hover:not(:disabled):not(.clicked) {
-    --radio-border-color: #{colors.$purple-3};
-  }
+.label {
+  @extend %body-2;
+  cursor: pointer;
+
+  display: inline-block;
+  width: 100%;
 }

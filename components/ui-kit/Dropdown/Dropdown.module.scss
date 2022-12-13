@@ -9,6 +9,7 @@
   box-shadow: 0 0 2rem var(--dropdown-box-shadow-color);
   display: none;
   flex-flow: column nowrap;
+  z-index: 10;
 
   &.show {
     display: flex;

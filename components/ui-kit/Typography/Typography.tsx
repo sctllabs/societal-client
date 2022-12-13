@@ -36,8 +36,8 @@ export type TypographyVariants =
   | 'value8';
 
 export interface TypographyProps extends HTMLAttributes<HTMLElement> {
-  as?: ElementType;
   variant: TypographyVariants;
+  as?: ElementType;
 }
 
 const elementsByVariants: Record<TypographyVariants, ElementType> = {
@@ -75,7 +75,7 @@ const elementsByVariants: Record<TypographyVariants, ElementType> = {
 
 export const Typography = forwardRef<HTMLElement, TypographyProps>(
   function BaseTypography(
-    { as, children, variant, className, ...restProps },
+    { as = 'p', children, variant, className, ...restProps },
     ref
   ) {
     const Tag = as || elementsByVariants[variant];

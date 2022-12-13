@@ -1,18 +1,31 @@
 @use 'styles/colors';
 @use 'styles/typography';
 
-.dropdown-card {
-  box-shadow: none;
-}
-
 .dropdown-title {
   color: #{colors.$grayscale-55};
-  margin-bottom: 1rem;
+}
+
+.button {
+  padding: 0;
+}
+
+.button-span {
+  align-items: center;
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
 }
 
 .dropdown-button {
-  @extend %title-4;
+  align-items: center;
+  display: flex;
+  justify-content: flex-start;
+  padding: 0;
+}
 
-  justify-content: start;
-  min-height: 3.5rem;
+.dropdown-button-span {
+  align-items: center;
+  display: flex;
+  gap: 0.25rem;
+  justify-content: flex-start;
 }

@@ -1,4 +1,4 @@
-@use "styles/variables";
+@use 'styles/variables';
 @use 'styles/colors';
 
 .root {
@@ -17,6 +17,11 @@
   overflow: hidden;
   width: #{variables.$sidebar-width};
   z-index: 1;
+}
+
+.logo {
+  height: 2.75rem;
+  width: 2.75rem;
 }
 
 .logo-container {
@@ -52,20 +57,18 @@
   }
 }
 
-.logo {
-  height: 44px;
-  position: relative;
-  width: 44px;
-}
-
-.center-logo {
+.button-logo {
   height: 24px;
   position: relative;
   width: 24px;
+  display: flex;
+  flex-grow: 1;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
 }
 
 .bottom-container {
-
   border-top: 0.0625rem solid var(--sidebar-container-border-color);
   padding: 0.625rem 0.5rem;
 }
