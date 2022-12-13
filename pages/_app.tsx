@@ -1,4 +1,5 @@
 import type { AppProps } from 'next/app';
+import { Provider } from 'jotai';
 import { Rajdhani, Dosis } from '@next/font/google';
 
 import { Layout } from 'components/Layout';
@@ -21,9 +22,12 @@ export default function App({ Component, pageProps }: AppProps) {
           --dosis-font: ${dosis.style.fontFamily};
         }
       `}</style>
-      <Layout>
-        <Component {...pageProps} />
-      </Layout>
+
+      <Provider>
+        <Layout>
+          <Component {...pageProps} />
+        </Layout>
+      </Provider>
     </>
   );
 }

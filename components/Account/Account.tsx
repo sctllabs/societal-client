@@ -1,4 +1,5 @@
 import { MouseEventHandler, useEffect, useState } from 'react';
+import { useAtom } from 'jotai';
 import { AccountInfo } from '@polkadot/types/interfaces';
 
 import { Dropdown } from 'components/ui-kit/Dropdown';
@@ -6,8 +7,9 @@ import { Card } from 'components/ui-kit/Card';
 import { Typography } from 'components/ui-kit/Typography';
 import { Button } from 'components/ui-kit/Button';
 
-import { API_STATE, useStore } from 'state';
-import { loadAccounts } from 'services';
+import { useKeyring, useApi } from 'hooks';
+
+import { API_STATE, currentAccountAtom } from 'store/api';
 
 import styles from './Account.module.scss';
 
@@ -18,31 +20,14 @@ type Account = {
 };
 
 export function Account() {
-  const [
-    api,
-    apiState,
-    keyring,
-    keyringState,
-    currentAccount,
-    setCurrentAccount
-  ] = useStore((state) => [
-    state.api,
-    state.apiState,
-    state.keyring,
-    state.keyringState,
-    state.currentAccount,
-    state.setCurrentAccount
-  ]);
+  const [api, apiState] = useApi();
+  const keyring = useKeyring();
+  const [currentAccount, setCurrentAccount] = useAtom(currentAccountAtom);
 
   const [balances, setBalances] = useState<Account[]>([]);
 
   useEffect(() => {
-    if (
-      keyringState !== API_STATE.READY ||
-      apiState !== API_STATE.READY ||
-      !keyring ||
-      !api
-    ) {
+    if (apiState !== API_STATE.READY || !keyring || !api) {
       return;
     }
 
@@ -67,17 +52,7 @@ export function Account() {
       .catch(console.error);
 
     return () => unsubscribeAll && unsubscribeAll();
-  }, [keyringState]);
-
-  useEffect(() => {
-    if (apiState !== API_STATE.READY) {
-      return;
-    }
-
-    void loadAccounts();
-  }, [apiState]);
-
-  useEffect(() => {}, [currentAccount]);
+  }, [keyring]);
 
   const handleOnClick: MouseEventHandler = (event) => {
     if (!keyring) {
