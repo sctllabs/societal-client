@@ -24,14 +24,14 @@
   --sidebar-logo-container-height: #{variables.$header-height};
 
   align-items: center;
+
+  border-bottom: 0.0625rem solid var(--sidebar-container-border-color);
   display: flex;
   height: var(--sidebar-logo-container-height);
   justify-content: center;
   position: absolute;
   top: 0;
   width: var(--sidebar-logo-container-width);
-
-  border-bottom: 0.0625rem solid var(--sidebar-container-border-color);
 }
 
 .center-container {
