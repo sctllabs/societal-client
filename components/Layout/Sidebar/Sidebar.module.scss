@@ -21,6 +21,7 @@
 
 .logo {
   height: 2.75rem;
+  position: relative;
   width: 2.75rem;
 }
 
@@ -58,14 +59,14 @@
 }
 
 .button-logo {
-  height: 24px;
-  position: relative;
-  width: 24px;
+  align-items: center;
   display: flex;
   flex-grow: 1;
   flex-shrink: 0;
+  height: 24px;
   justify-content: center;
-  align-items: center;
+  position: relative;
+  width: 24px;
 }
 
 .bottom-container {

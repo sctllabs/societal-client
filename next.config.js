@@ -27,7 +27,6 @@ const nextConfig = {
 
     config.module.rules.push({
       test: /\.svg$/i,
-      // type: 'asset/source',
       include: path.join(__dirname, 'public', 'logo'),
       issuer: /\.[jt]sx?$/,
 
