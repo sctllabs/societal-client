@@ -9,7 +9,8 @@
     "lint": "next lint",
     "generate-assets": "node scripts/generateIcons.mjs",
     "prebuild": "npm run generate-assets",
-    "stylelint": "stylelint --quiet --fix \"**/*.(scss|sass)\""
+    "stylelint": "stylelint --quiet --fix \"**/*.(scss|sass)\"",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@next/font": "^13.0.6",
