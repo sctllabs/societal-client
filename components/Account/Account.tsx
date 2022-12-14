@@ -4,12 +4,10 @@ import {
   useEffect,
   useState
 } from 'react';
-import { useAtom } from 'jotai';
+import { useAtom, useAtomValue } from 'jotai';
 import { AccountInfo } from '@polkadot/types/interfaces';
 
-import { useApi } from 'hooks/useApi';
-import { useKeyring } from 'hooks/useKeyring';
-import { API_STATE, currentAccountAtom } from 'store/api';
+import { currentAccountAtom, apiKeyringAtom } from 'store/api';
 
 import { Dropdown } from 'components/ui-kit/Dropdown';
 import { Card } from 'components/ui-kit/Card';
@@ -26,14 +24,13 @@ type AccountType = {
 };
 
 export function Account() {
-  const [api, apiState] = useApi();
-  const keyring = useKeyring();
+  const [api, keyring] = useAtomValue(apiKeyringAtom);
   const [currentAccount, setCurrentAccount] = useAtom(currentAccountAtom);
 
   const [balances, setBalances] = useState<AccountType[]>([]);
 
   useEffect(() => {
-    if (apiState !== API_STATE.READY || !keyring || !api) {
+    if (!keyring || !api) {
       return undefined;
     }
 
@@ -54,12 +51,12 @@ export function Account() {
       })
       .then((unsub: Function) => {
         unsubscribeAll = unsub;
-      });
-    // TODO handle error
-    // .catch(console.error);
+      })
+      // eslint-disable-next-line no-console
+      .catch(console.error);
 
     return () => unsubscribeAll && unsubscribeAll();
-  }, [api, apiState, keyring]);
+  }, [api, keyring]);
 
   const handleOnClick: MouseEventHandler = (e) => {
     if (!keyring) {

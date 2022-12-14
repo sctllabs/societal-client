@@ -3,6 +3,7 @@ import { Provider } from 'jotai';
 import { Rajdhani } from '@next/font/google';
 
 import { Layout } from 'components/Layout';
+import { Preloader } from 'components/Preloader';
 
 import 'styles/globals.scss';
 
@@ -22,6 +23,7 @@ export default function App({ Component, pageProps }: AppProps) {
 
       <Provider>
         <Layout>
+          <Preloader />
           <Component {...pageProps} />
         </Layout>
       </Provider>
