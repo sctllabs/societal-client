@@ -2,7 +2,7 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { usePopper } from 'react-popper';
 import clsx from 'clsx';
 
-import { useIsomorphicLayoutEffect } from 'hooks/components';
+import { useIsomorphicLayoutEffect } from 'hooks';
 import { handleEnterKeyPress, handleEscKeyPress } from 'utils';
 
 import styles from './Dropdown.module.scss';

@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo, useId } from 'react';
-import { useControlled } from 'hooks/components';
+import { useControlled } from 'hooks';
 
-import { RadioContextType, RadioContext } from 'context/components';
+import { RadioContextType, RadioContext } from 'context';
 
 export interface RadioGroupProps {
   children: JSX.Element[] | JSX.Element;

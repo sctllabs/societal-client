@@ -7,7 +7,8 @@ import {
 import { useAtom } from 'jotai';
 import { AccountInfo } from '@polkadot/types/interfaces';
 
-import { useKeyring, useApi } from 'hooks';
+import { useApi } from 'hooks/useApi';
+import { useKeyring } from 'hooks/useKeyring';
 import { API_STATE, currentAccountAtom } from 'store/api';
 
 import { Dropdown } from 'components/ui-kit/Dropdown';
