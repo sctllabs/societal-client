@@ -3,86 +3,86 @@
 @use 'styles/mixins';
 
 $schema: (
-  'filled-primary': (
-    theme-button-text: #{colors.$grayscale-100},
-    theme-button-text-hover: #{colors.$grayscale-100},
-    theme-button-text-active: #{colors.$grayscale-100},
-    theme-button-bg: #{colors.$purple-1},
-    theme-button-bg-hover: #{colors.$purple-3},
-    theme-button-bg-active: #{colors.$purple-4},
-    theme-button-border-color-hover: #{colors.$purple-3},
-    theme-button-border-color-active: #{colors.$purple-4},
-    theme-button-box-shadow-hover: -0.3125rem 0.3125rem 0.75rem #{colors.$shadow-button-purple}
-  ),
-  'filled-destructive': (
-    theme-button-text: #{colors.$grayscale-100},
-    theme-button-text-hover: #{colors.$grayscale-100},
-    theme-button-text-active: #{colors.$grayscale-100},
-    theme-button-bg: #{colors.$red-1},
-    theme-button-bg-hover: #{colors.$red-1},
-    theme-button-bg-active: #{colors.$red-2},
-    theme-button-border-color-hover: #{colors.$red-1},
-    theme-button-border-color-active: #{colors.$red-2},
-    theme-button-box-shadow-hover: -0.3125rem 0.3125rem 0.75rem #{colors.$shadow-button-destructive}
-  ),
-  'outlined-primary': (
-    theme-button-border-color: #{colors.$purple-3},
-    theme-button-border-color-hover: #{colors.$purple-3},
-    theme-button-border-color-active: #{colors.$purple-4},
-    theme-button-border-active: #{colors.$purple-4},
-    theme-button-text: #{colors.$grayscale-0},
-    theme-button-text-hover: #{colors.$grayscale-100},
-    theme-button-text-active: #{colors.$grayscale-100},
-    theme-button-bg-hover: #{colors.$purple-3},
-    theme-button-bg-active: #{colors.$purple-4},
-    theme-button-box-shadow-hover: -0.3125rem 0.3125rem 0.75rem #{colors.$shadow-button-purple}
-  ),
-  'outlined-destructive': (
-    theme-button-border-active: #{colors.$red-2},
-    theme-button-border-color: #{colors.$red-1},
-    theme-button-border-color-hover: #{colors.$red-1},
-    theme-button-border-color-active: #{colors.$red-2},
-    theme-button-text: #{colors.$grayscale-0},
-    theme-button-text-hover: #{colors.$grayscale-100},
-    theme-button-text-active: #{colors.$grayscale-100},
-    theme-button-bg-hover: #{colors.$red-1},
-    theme-button-bg-active: #{colors.$red-2},
-    theme-button-box-shadow-hover: -0.3125rem 0.3125rem 0.75rem #{colors.$shadow-button-destructive}
-  ),
-  'text-primary': (
-    theme-button-text: #{colors.$grayscale-0},
-    theme-button-text-hover: #{colors.$purple-3},
-    theme-button-text-active: #{colors.$purple-4}
-  ),
-  'text-destructive': (
-    theme-button-text: #{colors.$red-1},
-    theme-button-text-hover: #{colors.$red-1},
-    theme-button-text-active: #{colors.$red-2}
-  ),
-  'icon': (
-    theme-button-text: #{colors.$grayscale-0},
-    theme-button-border-color-hover: #{colors.$purple-3},
-    theme-button-border-color-active: transparent,
-    theme-button-box-shadow-active: inset 0rem 0rem 0.75rem #{colors.$shadow-button-purple}
-  ),
-  'nav': (
-    theme-button-text: #{colors.$grayscale-0},
-    theme-button-bg: #{colors.$grayscale-98},
-    theme-button-bg-hover: #{colors.$grayscale-90},
-    theme-button-bg-active: #{colors.$grayscale-80},
-    theme-button-padding: 0
-  ),
-  'link': (
-    theme-button-text: #{colors.$grayscale-0},
-    theme-button-text-hover: #{colors.$purple-3},
-    theme-button-text-active: #{colors.$purple-4},
-    theme-button-text-decoration: underline
-  ),
-  'ghost': (
-    theme-button-text: #{colors.$grayscale-0},
-    theme-button-text-hover: #{colors.$purple-3},
-    theme-button-text-active: #{colors.$purple-4}
-  )
+        'filled-primary': (
+                theme-button-text: #{colors.$grayscale-100},
+                theme-button-text-hover: #{colors.$grayscale-100},
+                theme-button-text-active: #{colors.$grayscale-100},
+                theme-button-bg: #{colors.$purple-1},
+                theme-button-bg-hover: #{colors.$purple-3},
+                theme-button-bg-active: #{colors.$purple-4},
+                theme-button-border-color-hover: #{colors.$purple-3},
+                theme-button-border-color-active: #{colors.$purple-4},
+                theme-button-box-shadow-hover: -0.3125rem 0.3125rem 0.75rem #{colors.$shadow-button-purple}
+        ),
+        'filled-destructive': (
+                theme-button-text: #{colors.$grayscale-100},
+                theme-button-text-hover: #{colors.$grayscale-100},
+                theme-button-text-active: #{colors.$grayscale-100},
+                theme-button-bg: #{colors.$red-1},
+                theme-button-bg-hover: #{colors.$red-1},
+                theme-button-bg-active: #{colors.$red-2},
+                theme-button-border-color-hover: #{colors.$red-1},
+                theme-button-border-color-active: #{colors.$red-2},
+                theme-button-box-shadow-hover: -0.3125rem 0.3125rem 0.75rem #{colors.$shadow-button-destructive}
+        ),
+        'outlined-primary': (
+                theme-button-border-color: #{colors.$purple-3},
+                theme-button-border-color-hover: #{colors.$purple-3},
+                theme-button-border-color-active: #{colors.$purple-4},
+                theme-button-border-active: #{colors.$purple-4},
+                theme-button-text: #{colors.$grayscale-0},
+                theme-button-text-hover: #{colors.$grayscale-100},
+                theme-button-text-active: #{colors.$grayscale-100},
+                theme-button-bg-hover: #{colors.$purple-3},
+                theme-button-bg-active: #{colors.$purple-4},
+                theme-button-box-shadow-hover: -0.3125rem 0.3125rem 0.75rem #{colors.$shadow-button-purple}
+        ),
+        'outlined-destructive': (
+                theme-button-border-active: #{colors.$red-2},
+                theme-button-border-color: #{colors.$red-1},
+                theme-button-border-color-hover: #{colors.$red-1},
+                theme-button-border-color-active: #{colors.$red-2},
+                theme-button-text: #{colors.$grayscale-0},
+                theme-button-text-hover: #{colors.$grayscale-100},
+                theme-button-text-active: #{colors.$grayscale-100},
+                theme-button-bg-hover: #{colors.$red-1},
+                theme-button-bg-active: #{colors.$red-2},
+                theme-button-box-shadow-hover: -0.3125rem 0.3125rem 0.75rem #{colors.$shadow-button-destructive}
+        ),
+        'text-primary': (
+                theme-button-text: #{colors.$grayscale-0},
+                theme-button-text-hover: #{colors.$purple-3},
+                theme-button-text-active: #{colors.$purple-4}
+        ),
+        'text-destructive': (
+                theme-button-text: #{colors.$red-1},
+                theme-button-text-hover: #{colors.$red-1},
+                theme-button-text-active: #{colors.$red-2}
+        ),
+        'icon': (
+                theme-button-text: #{colors.$grayscale-0},
+                theme-button-border-color-hover: #{colors.$purple-3},
+                theme-button-border-color-active: transparent,
+                theme-button-box-shadow-active: inset 0rem 0rem 0.75rem #{colors.$shadow-button-purple}
+        ),
+        'nav': (
+                theme-button-text: #{colors.$grayscale-0},
+                theme-button-bg: #{colors.$grayscale-98},
+                theme-button-bg-hover: #{colors.$grayscale-90},
+                theme-button-bg-active: #{colors.$grayscale-80},
+                theme-button-padding: 0
+        ),
+        'link': (
+                theme-button-text: #{colors.$grayscale-0},
+                theme-button-text-hover: #{colors.$purple-3},
+                theme-button-text-active: #{colors.$purple-4},
+                theme-button-text-decoration: underline
+        ),
+        'ghost': (
+                theme-button-text: #{colors.$grayscale-0},
+                theme-button-text-hover: #{colors.$purple-3},
+                theme-button-text-active: #{colors.$purple-4}
+        )
 );
 
 .root {
@@ -105,8 +105,7 @@ $schema: (
   align-items: center;
 
   background-color: var(--theme-button-bg);
-  border: var(--theme-button-border-width) solid
-    var(--theme-button-border-color);
+  border: var(--theme-button-border-width) solid var(--theme-button-border-color);
   border-color: var(--theme-button-border-color);
   border-radius: var(--theme-button-border-radius);
   color: var(--theme-button-text);
@@ -124,6 +123,7 @@ $schema: (
   user-select: none;
   white-space: nowrap;
   width: auto;
+  min-width: var(--theme-button-min-width);
 
   &:hover {
     background-color: var(--theme-button-bg-hover);
@@ -234,12 +234,15 @@ $schema: (
 
 .button-lg {
   --theme-button-height: 3.5rem;
+  --theme-button-min-width: 3.5rem;
 }
 
 .button-md {
   --theme-button-height: 2.5rem;
+  --theme-button-min-width: 2.5rem;
 }
 
 .button-sm {
   --theme-button-height: 2rem;
+  --theme-button-min-width: 2rem;
 }

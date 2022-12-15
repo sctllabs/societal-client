@@ -1,4 +1,10 @@
-import { ChangeEventHandler, MouseEventHandler, useState } from 'react';
+import {
+  ChangeEventHandler,
+  MouseEventHandler,
+  useEffect,
+  useState
+} from 'react';
+import { useAtomValue } from 'jotai';
 import Link from 'next/link';
 import { Typography } from 'components/ui-kit/Typography';
 import { Button } from 'components/ui-kit/Button';
@@ -9,7 +15,17 @@ import { Card } from 'components/ui-kit/Card';
 import { RadioGroup } from 'components/ui-kit/Radio/RadioGroup';
 import { Radio } from 'components/ui-kit/Radio/Radio';
 
+import { TxButton } from 'components/TxButton';
+import { apiAtom, currentAccountAtom } from 'store/api';
+
+import { FunctionArgumentMetadataV14 } from '@polkadot/types/interfaces';
+
+import { transformParams } from 'utils';
+
 import styles from './CreateDAO.module.scss';
+
+const argIsOptional = (arg: FunctionArgumentMetadataV14) =>
+  arg.type.toString().startsWith('Option<');
 
 enum InputName {
   DAO_NAME = 'daoName',
@@ -20,7 +36,8 @@ enum InputName {
   TOKEN_NAME = 'tokenName',
   TOKEN_SYMBOL = 'tokenSymbol',
   PROPOSAL_PERIOD = 'proposalPeriod',
-  PROPOSAL_PERIOD_TYPE = 'proposalPeriodType'
+  PROPOSAL_PERIOD_TYPE = 'proposalPeriodType',
+  TOKEN_ID = 'tokenId'
 }
 
 enum InputLabel {
@@ -31,7 +48,8 @@ enum InputLabel {
   ADDRESS = 'Add New Address',
   TOKEN_NAME = 'Token Name',
   TOKEN_SYMBOL = 'Token Symbol',
-  PROPOSAL_PERIOD = 'Proposal Period'
+  PROPOSAL_PERIOD = 'Proposal Period',
+  TOKEN_ID = 'Specify Token ID'
 }
 
 enum ProposalPeriod {
@@ -40,6 +58,8 @@ enum ProposalPeriod {
 }
 
 const PURPOSE_INPUT_MAX_LENGTH = 500;
+const SECONDS_IN_HOUR = 60 * 60;
+const SECONDS_IN_DAY = 24 * 60 * 60;
 
 type Role = 'Council';
 
@@ -53,20 +73,78 @@ type CreateDAOState = {
   tokenSymbol: string;
   proposalPeriod: string;
   proposalPeriodType: ProposalPeriod;
+  tokenId: string;
 };
 
 export function CreateDAO() {
+  const api = useAtomValue(apiAtom);
+  const currentAccount = useAtomValue(currentAccountAtom);
+
+  const [palletRPC, setPalletRPC] = useState<string | null>(null);
+  const [callable, setCallable] = useState<string | null>(null);
+  const [paramFields, setParamFields] = useState<
+    { name: string; type: string; optional: boolean }[] | null
+  >(null);
+
   const [createDAOState, setCreateDAOState] = useState<CreateDAOState>({
     daoName: '',
     purpose: '',
     quantity: '',
     role: 'Council',
     addresses: [''],
+    tokenId: '',
     tokenName: '',
     tokenSymbol: '',
     proposalPeriod: '',
     proposalPeriodType: ProposalPeriod.DAYS
   });
+
+  useEffect(() => {
+    if (!api) {
+      return;
+    }
+
+    const palletRPCs = Object.keys(api.tx)
+      .sort()
+      .filter((pr) => Object.keys(api.tx[pr]).length > 0)
+      .map((pr) => ({ key: pr, value: pr, text: pr }));
+
+    setPalletRPC(
+      palletRPCs.find((pallet) => pallet.key === 'dao')?.key || null
+    );
+  }, [api]);
+
+  useEffect(() => {
+    if (!api || !palletRPC) {
+      return;
+    }
+
+    const callables = Object.keys(api.tx[palletRPC])
+      .sort()
+      .map((c) => ({ key: c, value: c, text: c }));
+
+    setCallable(callables.find(({ key }) => key === 'createDao')?.key || null);
+  }, [api, palletRPC]);
+
+  useEffect(() => {
+    if (!api || !palletRPC || !callable) {
+      return;
+    }
+
+    const metaArgs = api.tx[palletRPC][callable].meta.args;
+
+    if (!metaArgs || !metaArgs.length) {
+      return;
+    }
+
+    setParamFields(
+      metaArgs.map((arg) => ({
+        name: arg.name.toString(),
+        type: arg.type.toString(),
+        optional: argIsOptional(arg)
+      }))
+    );
+  }, [api, callable, palletRPC]);
 
   const onInputChange: ChangeEventHandler = (e) => {
     const target = e.target as HTMLInputElement;
@@ -119,7 +197,53 @@ export function CreateDAO() {
     }));
   };
 
-  const handleCreateClick: MouseEventHandler = () => {};
+  const formatInput = () => {
+    const {
+      daoName,
+      purpose,
+      proposalPeriod,
+      proposalPeriodType,
+      tokenName,
+      tokenSymbol,
+      tokenId,
+      addresses
+    } = createDAOState;
+    if (!paramFields) {
+      return [];
+    }
+    const proposal_period =
+      parseInt(proposalPeriod, 10) *
+      (proposalPeriodType === ProposalPeriod.HOURS
+        ? SECONDS_IN_HOUR
+        : SECONDS_IN_DAY);
+
+    const data = {
+      name: daoName,
+      purpose,
+      metadata: 'metadata',
+      policy: {
+        proposal_bond: 1,
+        proposal_bond_min: 1,
+        proposal_period,
+        approve_origin: [1, 2],
+        reject_origin: [1, 2]
+      },
+      token: {
+        token_id: parseInt(tokenId, 10),
+        min_balance: '1000000',
+        metadata: {
+          name: tokenName,
+          symbol: tokenSymbol,
+          decimals: 10
+        }
+      }
+    };
+
+    return paramFields.map((x) => ({
+      type: x.type,
+      value: x.name === 'council' ? addresses.join(',') : JSON.stringify(data)
+    }));
+  };
 
   return (
     <div className={styles.container}>
@@ -215,14 +339,25 @@ export function CreateDAO() {
             Specify the number of tokens, the maximum amount is 1 billion.
           </Typography>
 
-          <Input
-            name={InputName.QUANTITY}
-            label={InputLabel.QUANTITY}
-            value={createDAOState.quantity}
-            onChange={onInputChange}
-            type="tel"
-            required
-          />
+          <div className={styles['quantity-of-tokens-inputs']}>
+            <Input
+              name={InputName.TOKEN_ID}
+              label={InputLabel.TOKEN_ID}
+              value={createDAOState.tokenId}
+              onChange={onInputChange}
+              type="tel"
+              required
+            />
+
+            <Input
+              name={InputName.QUANTITY}
+              label={InputLabel.QUANTITY}
+              value={createDAOState.quantity}
+              onChange={onInputChange}
+              type="tel"
+              required
+            />
+          </div>
         </div>
         <div className={styles['token-info']}>
           <Typography variant="h3">Select Token Info</Typography>
@@ -301,12 +436,20 @@ export function CreateDAO() {
           </div>
         </div>
         <div className={styles['create-proposal']}>
-          <Button
-            className={styles['create-button']}
-            onClick={handleCreateClick}
-          >
-            Create DAO
-          </Button>
+          {paramFields && (
+            <TxButton
+              accountId={currentAccount?.address}
+              params={transformParams(paramFields, formatInput())}
+              tx={
+                api && palletRPC && callable
+                  ? api.tx[palletRPC][callable]
+                  : null
+              }
+              className={styles['create-button']}
+            >
+              Create DAO
+            </TxButton>
+          )}
         </div>
       </div>
     </div>

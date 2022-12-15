@@ -4,6 +4,7 @@ import { Rajdhani } from '@next/font/google';
 
 import { Layout } from 'components/Layout';
 import { Preloader } from 'components/Preloader';
+import { Queue } from 'components/Queue';
 
 import 'styles/globals.scss';
 
@@ -24,6 +25,7 @@ export default function App({ Component, pageProps }: AppProps) {
       <Provider>
         <Layout>
           <Preloader />
+          <Queue />
           <Component {...pageProps} />
         </Layout>
       </Provider>
