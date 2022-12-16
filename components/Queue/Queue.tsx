@@ -8,9 +8,7 @@ import {
 
 import type { AddressProxy, QueueTx, QueueTxMessageSetStatus } from 'types';
 
-import { extractParams, signAndSend, wrapTx } from 'utils';
 import { apiAtom, currentAccountAtom, keyringAtom } from 'store/api';
-import { BN_ZERO } from '@polkadot/util';
 
 export function Queue() {
   const api = useAtomValue(apiAtom);
@@ -18,8 +16,6 @@ export function Queue() {
   const currentAccount = useAtomValue(currentAccountAtom);
   const queueTransaction = useAtomValue(queueTransactionAtom);
   const queueSetTransactionStatus = useSetAtom(queueSetTransactionStatusAtom);
-
-  const tip = BN_ZERO;
 
   const _onSend = useCallback(
     async (
@@ -31,6 +27,12 @@ export function Queue() {
         return;
       }
 
+      const { extractParams, signAndSend, wrapTx } = await import(
+        'utils/queue'
+      );
+      const { BN_ZERO } = await import('@polkadot/util');
+
+      const tip = BN_ZERO;
       const [tx, [status, pairOrAddress, options]] = await Promise.all([
         wrapTx(api, keyring, currentItem, senderInfo),
         extractParams(api, keyring, senderInfo.signAddress, {
@@ -49,7 +51,7 @@ export function Queue() {
         options
       );
     },
-    [api, keyring, tip]
+    [api, keyring]
   );
 
   useEffect(() => {
