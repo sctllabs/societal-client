@@ -12,6 +12,6 @@ export default function CreateDAOPage() {
     if (!currentAccount) {
       router.push('/');
     }
-  }, [currentAccount]);
+  }, [currentAccount, router]);
   return <CreateDAO />;
 }

@@ -115,6 +115,7 @@ $schema: (
   flex-wrap: nowrap;
   height: var(--theme-button-height);
   justify-content: center;
+  min-width: var(--theme-button-min-width);
   overflow: hidden;
   padding: var(--theme-button-padding);
   text-decoration: var(--theme-button-text-decoration);
@@ -123,7 +124,6 @@ $schema: (
   user-select: none;
   white-space: nowrap;
   width: auto;
-  min-width: var(--theme-button-min-width);
 
   &:hover {
     background-color: var(--theme-button-bg-hover);
