@@ -93,25 +93,24 @@
   }
 }
 
+
 .input-standard {
   @extend %title-4;
   --input-padding: 0.375rem 0;
 }
 
 .input-outlined {
+  @extend %body-2;
   --input-padding: 0.5rem;
 
   &.start-adornment {
-    --input-padding: 0 0 0 0.25rem;
+    --input-padding: 0 0 0 0.625rem;
   }
 
   &.end-adornment {
     --input-padding: 0 0 0 0.5rem;
   }
 
-  &.input-md {
-    @extend %body-2;
-  }
 
   &.input-lg {
     @extend %body-1;
@@ -124,7 +123,6 @@
   --input-text-disabled: #{colors.$grayscale-80};
   align-items: flex-end;
   display: inline-flex;
-  margin-bottom: 1rem;
 
   min-height: var(--input-root-min-height);
   padding: var(--input-root-padding);
@@ -145,9 +143,11 @@
 
 .root-outlined {
   --input-root-outlined-border-color: #{colors.$grayscale-90};
+  align-items: center;
 
   border: 1px solid var(--input-root-outlined-border-color);
   border-radius: 0.5rem;
+  justify-content: center;
 
   &:hover:not(.disabled) {
     --input-root-outlined-border-color: #{colors.$purple-3};
@@ -159,7 +159,7 @@
 
   &.root-md {
     --input-root-min-height: 2.5rem;
-    --input-root-padding: 0.5rem;
+    --input-root-padding: 0.5rem 0.875rem 0.5rem 0.875rem;
   }
 
   &.root-lg {
@@ -180,9 +180,10 @@
   --input-root-padding: 0.375rem 0;
   --input-root-min-height: 3.125rem;
 
+  margin-bottom: 1rem;
+
   &::before {
-    border-bottom: var(--input-wrapper-border-bottom-width) solid
-      var(--input-wrapper-border-bottom-color);
+    border-bottom: var(--input-wrapper-border-bottom-width) solid var(--input-wrapper-border-bottom-color);
     bottom: 0;
     content: ' ';
     left: 0;
@@ -190,7 +191,7 @@
     position: absolute;
     right: 0;
     transition: border-bottom-color 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,
-      border-bottom-width 50ms ease-in-out;
+    border-bottom-width 50ms ease-in-out;
   }
 
   &:hover:not(.disabled) {
@@ -199,15 +200,13 @@
     }
 
     &::before {
-      border-bottom: var(--input-wrapper-border-bottom-width-hover) solid
-        var(--input-wrapper-border-bottom-color-hover);
+      border-bottom: var(--input-wrapper-border-bottom-width-hover) solid var(--input-wrapper-border-bottom-color-hover);
     }
   }
 
   &:focus-within:not(.disabled) {
     &::before {
-      border-bottom: var(--input-wrapper-border-bottom-width-focus) solid
-        var(--input-wrapper-border-bottom-color-focus);
+      border-bottom: var(--input-wrapper-border-bottom-width-focus) solid var(--input-wrapper-border-bottom-color-focus);
     }
   }
 }

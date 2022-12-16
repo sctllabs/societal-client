@@ -1,18 +1,21 @@
-import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useAtomValue } from 'jotai';
+import { daosAtom } from 'store/dao';
 import { currentAccountAtom } from 'store/api';
+import { useEffect } from 'react';
 
-import { CreateDAO } from 'components/CreateDAO';
-
-export default function CreateDAOPage() {
-  const router = useRouter();
+export default function Dao() {
+  const daos = useAtomValue(daosAtom);
   const currentAccount = useAtomValue(currentAccountAtom);
+  const router = useRouter();
+
+  const { id } = router.query;
 
   useEffect(() => {
     if (!currentAccount) {
       router.push('/');
     }
   }, [currentAccount, router]);
-  return <CreateDAO />;
+
+  return <div></div>;
 }
