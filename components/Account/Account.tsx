@@ -1,34 +1,37 @@
-import { MouseEventHandler, useEffect, useState } from 'react';
-import { useAtom } from 'jotai';
+import {
+  KeyboardEventHandler,
+  MouseEventHandler,
+  useEffect,
+  useState
+} from 'react';
+import { useAtom, useAtomValue } from 'jotai';
 import { AccountInfo } from '@polkadot/types/interfaces';
+
+import { currentAccountAtom, apiKeyringAtom } from 'store/api';
 
 import { Dropdown } from 'components/ui-kit/Dropdown';
 import { Card } from 'components/ui-kit/Card';
 import { Typography } from 'components/ui-kit/Typography';
 import { Button } from 'components/ui-kit/Button';
-
-import { useKeyring, useApi } from 'hooks';
-
-import { API_STATE, currentAccountAtom } from 'store/api';
+import { Icon } from 'components/ui-kit/Icon';
 
 import styles from './Account.module.scss';
 
-type Account = {
+type AccountType = {
   address: string;
   balance: string;
   name: string;
 };
 
 export function Account() {
-  const [api, apiState] = useApi();
-  const keyring = useKeyring();
+  const [api, keyring] = useAtomValue(apiKeyringAtom);
   const [currentAccount, setCurrentAccount] = useAtom(currentAccountAtom);
 
-  const [balances, setBalances] = useState<Account[]>([]);
+  const [balances, setBalances] = useState<AccountType[]>([]);
 
   useEffect(() => {
-    if (apiState !== API_STATE.READY || !keyring || !api) {
-      return;
+    if (!keyring || !api) {
+      return undefined;
     }
 
     const accounts = keyring.getPairs();
@@ -36,11 +39,11 @@ export function Account() {
     let unsubscribeAll: Function | null = null;
 
     api.query.system.account
-      .multi(addresses, (balances: AccountInfo[]) => {
+      .multi(addresses, (x: AccountInfo[]) => {
         const retrievedBalances = addresses.map(
           (address: string, index: number) => ({
             address,
-            balance: balances[index].data.free.toHuman(),
+            balance: x[index].data.free.toHuman(),
             name: accounts[index].meta.name as string
           })
         );
@@ -49,17 +52,31 @@ export function Account() {
       .then((unsub: Function) => {
         unsubscribeAll = unsub;
       })
+      // eslint-disable-next-line no-console
       .catch(console.error);
 
     return () => unsubscribeAll && unsubscribeAll();
-  }, [keyring]);
+  }, [api, keyring]);
 
-  const handleOnClick: MouseEventHandler = (event) => {
+  const handleOnClick: MouseEventHandler = (e) => {
     if (!keyring) {
       return;
     }
 
-    const selectedWalletAddress = (event.target as HTMLSpanElement).innerText;
+    const selectedWalletAddress = (e.target as HTMLSpanElement).innerText;
+    setCurrentAccount(keyring.getPair(selectedWalletAddress));
+  };
+
+  const handleKeyDown: KeyboardEventHandler = (e) => {
+    if (!keyring) {
+      return;
+    }
+
+    if (e.key !== ' ' && e.key !== 'Enter') {
+      return;
+    }
+
+    const selectedWalletAddress = (e.target as HTMLSpanElement).innerText;
     setCurrentAccount(keyring.getPair(selectedWalletAddress));
   };
 
@@ -67,33 +84,42 @@ export function Account() {
     <Dropdown
       className={styles.dropdown}
       dropdownItems={
-        <Card className={styles['dropdown-card']}>
-          <Typography variant={'body2'} className={styles['dropdown-title']}>
+        <Card dropdown>
+          <Typography variant="body2" className={styles['dropdown-title']}>
             Please select address to use
           </Typography>
-          <div className={styles['balances-container']} onClick={handleOnClick}>
+          <div
+            className={styles['balances-container']}
+            onClick={handleOnClick}
+            onKeyDown={handleKeyDown}
+            role="presentation"
+          >
             {balances.map((x) => (
               <Button
                 key={x.address}
-                variant={'text'}
-                startIcon={'user-profile'}
-                className={styles['dropdown-button']}
+                variant="text"
                 fullWidth
+                className={styles['dropdown-button']}
+                size="lg"
               >
-                {x.address}
+                <span className={styles['dropdown-button-span']}>
+                  <Icon name="user-profile" size="lg" />
+                  <Typography variant="title4">{x.address}</Typography>
+                </span>
               </Button>
             ))}
           </div>
         </Card>
       }
     >
-      <Button
-        startIcon={'user-profile'}
-        endIcon={'arrow-down'}
-        variant={'text'}
-        className={styles['account-button']}
-      >
-        {currentAccount ? currentAccount.address : 'Choose an account'}
+      <Button variant="text" className={styles.button} size="sm">
+        <span className={styles['button-span']}>
+          <Icon name="user-profile" />
+          <Typography variant="body1">
+            {currentAccount ? currentAccount.address : 'Choose an account'}
+          </Typography>
+          <Icon name="arrow-down" />
+        </span>
       </Button>
     </Dropdown>
   );

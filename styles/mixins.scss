@@ -6,7 +6,7 @@
   $line-height,
   $font-family: variables.$main-font,
   $font-weight: normal,
-  $color: variables.$main-color,
+  $color: variables.$main-color
 ) {
   color: $color;
   font-family: $font-family;

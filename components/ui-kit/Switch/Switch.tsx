@@ -1,6 +1,6 @@
 import { forwardRef, ChangeEvent, InputHTMLAttributes } from 'react';
 import clsx from 'clsx';
-import { useControlled } from 'hooks/components';
+import { useControlled } from 'hooks';
 
 import styles from './Switch.module.scss';
 

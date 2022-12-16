@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo, useId } from 'react';
-import { useControlled } from 'hooks/components';
+import { useControlled } from 'hooks';
 
-import { RadioContextType, RadioContext } from 'context/components';
+import { RadioContextType, RadioContext } from 'context';
 
 export interface RadioGroupProps {
   children: JSX.Element[] | JSX.Element;
@@ -25,6 +25,7 @@ export function RadioGroup({
     default: defaultValue,
     name: 'RadioGroup'
   });
+  const nameId = useId();
 
   const handleChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -36,7 +37,7 @@ export function RadioGroup({
     [onChange, setValueState]
   );
 
-  const name = useId();
+  const name = nameProp || nameId;
 
   const providerValue = useMemo(
     () => ({

@@ -2,11 +2,10 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { usePopper } from 'react-popper';
 import clsx from 'clsx';
 
-import { useIsomorphicLayoutEffect } from 'hooks/components';
+import { useIsomorphicLayoutEffect } from 'hooks';
 import { handleEnterKeyPress, handleEscKeyPress } from 'utils';
 
 import styles from './Dropdown.module.scss';
-import { IconNamesType } from '../Icon';
 
 export interface DropdownProps {
   dropdownItems: React.ReactNode;
@@ -42,15 +41,22 @@ export function Dropdown({
     placement: 'bottom'
   });
 
+  const child = React.Children.only(children);
+
   useIsomorphicLayoutEffect(() => {
     if (show && update) {
-      void update();
+      update();
     }
   }, [show]);
 
   const toggleDropdown = useCallback(() => {
+    const { onClick } = child.props;
+
     setShow((state) => !state);
-  }, []);
+    if (onClick) {
+      onClick();
+    }
+  }, [child.props]);
 
   const hideDropdown = useCallback(() => {
     setShow(false);
@@ -65,7 +71,9 @@ export function Dropdown({
         referenceElement &&
         !referenceElement.contains(e.target as Node)
       ) {
-        hideDropdown();
+        setTimeout(() => {
+          hideDropdown();
+        }, 0);
       }
     };
 
@@ -83,22 +91,12 @@ export function Dropdown({
     };
   }, [popperElement, referenceElement, show, hideDropdown]);
 
-  const child = React.Children.only(children);
-
   return (
     <>
-      {React.cloneElement<
-        React.HTMLProps<HTMLElement> & { endIcon: IconNamesType }
-      >(child, {
+      {React.cloneElement<React.HTMLProps<HTMLElement>>(child, {
         ref: setReferenceElement,
         onClick: toggleDropdown,
-        onKeyDown: handleEnterKeyPress(toggleDropdown),
-        endIcon:
-          child.props.endIcon === 'arrow-down'
-            ? show
-              ? 'arrow-up'
-              : 'arrow-down'
-            : undefined
+        onKeyDown: handleEnterKeyPress(toggleDropdown)
       })}
       {show && (
         <div
