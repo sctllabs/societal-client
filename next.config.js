@@ -8,6 +8,9 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
+  sassOptions: {
+    includePaths: [path.join(__dirname, 'styles')],
+  },
   webpack: (config, context) => {
     config.module.rules.push({
       test: /\.svg$/i,
