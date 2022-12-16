@@ -1,6 +1,7 @@
 import {
   ChangeEventHandler,
   MouseEventHandler,
+  useCallback,
   useEffect,
   useState
 } from 'react';
@@ -80,8 +81,6 @@ export function CreateDAO() {
   const api = useAtomValue(apiAtom);
   const currentAccount = useAtomValue(currentAccountAtom);
 
-  const [palletRPC, setPalletRPC] = useState<string | null>(null);
-  const [callable, setCallable] = useState<string | null>(null);
   const [paramFields, setParamFields] = useState<
     { name: string; type: string; optional: boolean }[] | null
   >(null);
@@ -104,34 +103,7 @@ export function CreateDAO() {
       return;
     }
 
-    const palletRPCs = Object.keys(api.tx)
-      .sort()
-      .filter((pr) => Object.keys(api.tx[pr]).length > 0)
-      .map((pr) => ({ key: pr, value: pr, text: pr }));
-
-    setPalletRPC(
-      palletRPCs.find((pallet) => pallet.key === 'dao')?.key || null
-    );
-  }, [api]);
-
-  useEffect(() => {
-    if (!api || !palletRPC) {
-      return;
-    }
-
-    const callables = Object.keys(api.tx[palletRPC])
-      .sort()
-      .map((c) => ({ key: c, value: c, text: c }));
-
-    setCallable(callables.find(({ key }) => key === 'createDao')?.key || null);
-  }, [api, palletRPC]);
-
-  useEffect(() => {
-    if (!api || !palletRPC || !callable) {
-      return;
-    }
-
-    const metaArgs = api.tx[palletRPC][callable].meta.args;
+    const metaArgs = api.tx.dao.createDao.meta.args;
 
     if (!metaArgs || !metaArgs.length) {
       return;
@@ -144,7 +116,7 @@ export function CreateDAO() {
         optional: argIsOptional(arg)
       }))
     );
-  }, [api, callable, palletRPC]);
+  }, [api]);
 
   const onInputChange: ChangeEventHandler = (e) => {
     const target = e.target as HTMLInputElement;
@@ -168,7 +140,8 @@ export function CreateDAO() {
       ...prevState,
       [targetName]:
         targetName === InputName.QUANTITY ||
-        targetName === InputName.PROPOSAL_PERIOD
+        targetName === InputName.PROPOSAL_PERIOD ||
+        targetName === InputName.TOKEN_ID
           ? targetValue.replace(/[^0-9]/g, '')
           : targetValue
     }));
@@ -197,7 +170,7 @@ export function CreateDAO() {
     }));
   };
 
-  const formatInput = () => {
+  const formatInput = useCallback(() => {
     const {
       daoName,
       purpose,
@@ -206,7 +179,8 @@ export function CreateDAO() {
       tokenName,
       tokenSymbol,
       tokenId,
-      addresses
+      addresses,
+      quantity
     } = createDAOState;
     if (!paramFields) {
       return [];
@@ -216,6 +190,8 @@ export function CreateDAO() {
       (proposalPeriodType === ProposalPeriod.HOURS
         ? SECONDS_IN_HOUR
         : SECONDS_IN_DAY);
+
+    const min_balance = quantity;
 
     const data = {
       name: daoName,
@@ -230,7 +206,7 @@ export function CreateDAO() {
       },
       token: {
         token_id: parseInt(tokenId, 10),
-        min_balance: '1000000',
+        min_balance,
         metadata: {
           name: tokenName,
           symbol: tokenSymbol,
@@ -241,9 +217,32 @@ export function CreateDAO() {
 
     return paramFields.map((x) => ({
       type: x.type,
-      value: x.name === 'council' ? addresses.join(',') : JSON.stringify(data)
+      value:
+        x.name === 'council'
+          ? addresses
+              .filter((address) => address.length > 0)
+              .map((address) => address.trim())
+              .join(',')
+          : JSON.stringify(data)
     }));
-  };
+  }, [createDAOState, paramFields]);
+
+  const isDisabled =
+    !createDAOState.daoName ||
+    !createDAOState.purpose ||
+    !createDAOState.tokenName ||
+    !createDAOState.tokenId ||
+    !createDAOState.role ||
+    !createDAOState.tokenSymbol ||
+    !createDAOState.proposalPeriod ||
+    !createDAOState.proposalPeriodType;
+
+  const handleTransform = useCallback(() => {
+    if (!paramFields) {
+      return null;
+    }
+    return transformParams(paramFields, formatInput());
+  }, [formatInput, paramFields]);
 
   return (
     <div className={styles.container}>
@@ -438,13 +437,10 @@ export function CreateDAO() {
         <div className={styles['create-proposal']}>
           {paramFields && (
             <TxButton
+              isDisabled={isDisabled}
               accountId={currentAccount?.address}
-              params={transformParams(paramFields, formatInput())}
-              tx={
-                api && palletRPC && callable
-                  ? api.tx[palletRPC][callable]
-                  : null
-              }
+              params={handleTransform}
+              tx={api?.tx.dao.createDao}
               className={styles['create-button']}
             >
               Create DAO

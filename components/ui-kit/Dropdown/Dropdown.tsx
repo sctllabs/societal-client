@@ -1,5 +1,5 @@
-import React, { useState, useCallback, useEffect } from 'react';
-import { usePopper } from 'react-popper';
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
+import { Modifier, usePopper } from 'react-popper';
 import clsx from 'clsx';
 
 import { useIsomorphicLayoutEffect } from 'hooks';
@@ -11,33 +11,59 @@ export interface DropdownProps {
   dropdownItems: React.ReactNode;
   children: React.ReactElement;
   className?: string;
+  fullWidth?: boolean;
 }
 
 export function Dropdown({
   children,
   className,
-  dropdownItems
+  dropdownItems,
+  fullWidth = false
 }: DropdownProps) {
   const [referenceElement, setReferenceElement] = useState<HTMLElement | null>(
     null
   );
   const [popperElement, setPopperElement] = useState<HTMLElement | null>(null);
   const [show, setShow] = useState(false);
-  const {
-    styles: popperStyles,
-    attributes,
-    update
-  } = usePopper(referenceElement, popperElement, {
-    modifiers: [
+
+  const modifiers = useMemo(() => {
+    const _modifiers: Modifier<string, Record<string, unknown>>[] = [
       {
         name: 'offset',
-        options: { offset: [0, 10] }
+        options: { offset: [0, 7] }
       },
       {
         name: 'preventOverflow',
         options: { altAxis: true, padding: 20 }
       }
-    ],
+    ];
+
+    if (fullWidth) {
+      _modifiers.push({
+        name: 'sameWidth',
+        enabled: true,
+        phase: 'beforeWrite',
+        requires: ['computeStyles'],
+        fn({ state }) {
+          // eslint-disable-next-line no-param-reassign
+          state.styles.popper.minWidth = `${state.rects.reference.width}px`;
+        },
+        effect({ state }) {
+          // @ts-ignore
+          // eslint-disable-next-line no-param-reassign
+          state.elements.popper.style.minWidth = `${state.elements.reference.offsetWidth}px`;
+        }
+      });
+    }
+    return _modifiers;
+  }, [fullWidth]);
+
+  const {
+    styles: popperStyles,
+    attributes,
+    update
+  } = usePopper(referenceElement, popperElement, {
+    modifiers,
     placement: 'bottom'
   });
 

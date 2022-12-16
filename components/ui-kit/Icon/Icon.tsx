@@ -10,7 +10,7 @@ export type IconNamesType = keyof typeof icons;
 export interface IconProps extends HTMLAttributes<SVGElement> {
   className?: string;
   name: IconNamesType;
-  size?: 'sm' | 'md' | 'lg' | 'xl';
+  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
   onClick?: MouseEventHandler<SVGElement> | undefined;
 }
 

@@ -1,13 +1,14 @@
 import { paramConversion } from 'utils/paramConversion';
 
-export const isNumType = (type: string) =>
-  paramConversion.num.some((el) => type.indexOf(el) >= 0);
+export function isNumType(type: string) {
+  return paramConversion.num.some((el) => type.indexOf(el) >= 0);
+}
 
-export const transformParams = (
+export function transformParams(
   paramFields: any[],
   inputParams: any[],
   opts = { emptyAsNull: true }
-) => {
+) {
   // if `opts.emptyAsNull` is true, empty param value will be added to res as `null`.
   //   Otherwise, it will not be added
   const paramVal = inputParams.map((inputParam) => {
@@ -59,4 +60,4 @@ export const transformParams = (
     }
     return [...memo, converted];
   }, []);
-};
+}

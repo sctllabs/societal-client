@@ -53,7 +53,7 @@ export function Preloader() {
       setKeyring(uikeyring);
     } catch (e) {
       // eslint-disable-next-line no-console
-      console.log(e);
+      console.error(e);
     }
   }, [api, keyring, setKeyring]);
 

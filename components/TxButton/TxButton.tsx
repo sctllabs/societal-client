@@ -12,13 +12,13 @@ import { SubmittableResult } from '@polkadot/api';
 import { assert, isFunction } from '@polkadot/util';
 import type { SubmittableExtrinsic } from '@polkadot/api/types';
 
-import { Button } from 'components/ui-kit/Button';
+import { Button, ButtonProps } from 'components/ui-kit/Button';
 import { TxCallback, TxFailedCallback } from 'types';
 import { AccountId } from '@polkadot/types/interfaces';
 import { useSetAtom } from 'jotai';
 import { queueExtrinsicAtom } from 'store/queue';
 
-export interface TxButtonProps {
+export interface TxButtonProps extends ButtonProps {
   accountId?: AccountId | string | null;
   className?: string;
   extrinsic?:
@@ -119,9 +119,7 @@ export function TxButton({
         'Expected generated extrinsic passed to TxButton'
       );
 
-      if (withSpinner) {
-        setIsSending(true);
-      }
+      setIsSending(true);
 
       extrinsics.forEach((extrinsic): void => {
         queueExtrinsic({
@@ -152,8 +150,7 @@ export function TxButton({
       propsExtrinsic,
       queueExtrinsic,
       setIsSending,
-      tx,
-      withSpinner
+      tx
     ]
   );
 

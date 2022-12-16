@@ -74,11 +74,11 @@ export function Queue() {
 
     queueTransaction
       .filter((x) => x.status === 'queued')
-      .forEach((queue) => {
+      .forEach((queue) =>
         _onSend(queueSetTransactionStatus, queue, senderInfo).catch(
           errorHandler
-        );
-      });
+        )
+      );
   }, [_onSend, currentAccount, queueSetTransactionStatus, queueTransaction]);
   return null;
 }

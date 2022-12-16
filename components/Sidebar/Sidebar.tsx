@@ -1,14 +1,17 @@
 import { useEffect } from 'react';
-import Link from 'next/link';
 import Image from 'next/image';
+import { useRouter } from 'next/router';
 
 import { useAtom, useAtomValue } from 'jotai';
 import { apiAtom, currentAccountAtom } from 'store/api';
 import { daosAtom } from 'store/dao';
-import { DaoInfo } from 'types';
+import { queueTransactionAtom } from 'store/queue';
 
-import { Button } from 'components/ui-kit/Button';
 import { Icon } from 'components/ui-kit/Icon';
+import { Link } from 'components/Link';
+
+import type { DaoCodec, DaoInfo } from 'types';
+import type { Option } from '@polkadot/types';
 
 import styles from './Sidebar.module.scss';
 
@@ -27,9 +30,13 @@ function randomIntFromInterval(min: number, max: number) {
 }
 
 export function Sidebar() {
+  const router = useRouter();
   const api = useAtomValue(apiAtom);
   const currentAccount = useAtomValue(currentAccountAtom);
+  const queueTransaction = useAtomValue(queueTransactionAtom);
   const [daos, setDaos] = useAtom(daosAtom);
+
+  const daoId = router.query.id as string;
 
   useEffect(() => {
     if (!api) {
@@ -37,19 +44,24 @@ export function Sidebar() {
     }
 
     api.query.dao.daos
-      .entries()
+      .entries<Option<DaoCodec>>()
       .then((x) => {
         setDaos(
           x.map(([id, dao]) => ({
             id: (id.toHuman() as string[])[0],
-            dao: dao.toHuman() as DaoInfo,
-            icon: daoIconURLs[randomIntFromInterval(0, daoIconURLs.length - 1)]
+            dao: {
+              ...(dao.value.toHuman() as DaoInfo),
+              tokenId: dao.value.tokenId.toString()
+            },
+            icon: `/logo/${
+              daoIconURLs[randomIntFromInterval(0, daoIconURLs.length - 1)]
+            }`
           }))
         );
       })
       // eslint-disable-next-line no-console
       .catch(console.error);
-  }, [api, setDaos]);
+  }, [api, setDaos, queueTransaction.length]);
 
   if (!currentAccount) {
     return null;
@@ -57,30 +69,33 @@ export function Sidebar() {
 
   return (
     <aside className={styles.root}>
-      <Link href="/" className={styles['logo-container']}>
-        <div className={styles.logo}>
-          <Image src="/logo/societal-symbol.svg" alt="societal-symbol" fill />
-        </div>
-      </Link>
+      <span className={styles['logo-container']}>
+        <Link href="/">
+          <span className={styles.logo}>
+            <Image src="/logo/societal-symbol.svg" alt="societal-symbol" fill />
+          </span>
+        </Link>
+      </span>
 
       <div className={styles['center-container']}>
         {daos &&
           daos.map((x) => (
-            <Link href={`daos/${x.id}`} key={x.id}>
-              <Button variant="nav" icon size="lg">
-                <span className={styles['button-logo']}>
-                  <Image src={`/logo/${x.icon}`} alt="societal-symbol" fill />
-                </span>
-              </Button>
+            <Link
+              href={`/daos/${x.id}`}
+              active={daoId === x.id}
+              variant="nav"
+              key={x.id}
+            >
+              <span className={styles['button-logo']}>
+                <Image src={x.icon} alt={x.dao.config.name} fill />
+              </span>
             </Link>
           ))}
       </div>
 
       <div className={styles['bottom-container']}>
-        <Link href="/create-dao">
-          <Button variant="outlined" icon size="lg">
-            <Icon name="add" />
-          </Button>
+        <Link href="/create-dao" variant="outlined">
+          <Icon name="add" />
         </Link>
       </div>
     </aside>

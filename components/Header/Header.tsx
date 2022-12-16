@@ -1,5 +1,6 @@
 import { Account } from 'components/Account';
 import { Search } from 'components/Search';
+import { Subheader } from 'components/Subheader';
 
 import styles from './Header.module.scss';
 
@@ -14,6 +15,7 @@ export function Header() {
           <Account />
         </div>
       </div>
+      <Subheader />
     </header>
   );
 }
