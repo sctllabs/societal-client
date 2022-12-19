@@ -1,5 +1,5 @@
-import type { Struct, u32, u8, Bytes, Vec } from '@polkadot/types';
-import type { AccountId } from '@polkadot/types/interfaces';
+import type { Struct, u32, Bytes } from '@polkadot/types';
+import type { TreasuryProposal, Votes } from '@polkadot/types/interfaces';
 
 export interface DaoCodec extends Struct {
   readonly accountId: Bytes;
@@ -14,12 +14,10 @@ export interface ProposalCodec extends Struct {
   readonly args: ProposalArgs;
 }
 
-export interface VoteCodec extends Struct {
-  readonly ayes: Vec<AccountId>;
-  readonly nays: Vec<AccountId>;
-  readonly threshold: u8;
-  readonly index: u8;
-  readonly end: u8;
+export interface VoteCodec extends Votes {}
+
+export interface TransferCodec extends TreasuryProposal {
+  daoId: string;
 }
 
 export type VoteMeta = {
@@ -54,6 +52,7 @@ export type DaoToken = {
   name: string;
   symbol: string;
   decimals: number;
+  quantity: string;
 };
 
 export type MemberMeta = {
@@ -61,10 +60,17 @@ export type MemberMeta = {
   name: string;
 };
 
-export type ProposalArgs = {
+export type ProposalTransfer = {
+  dao_id: string;
+  proposal_id: string;
+};
+
+export type ProposalMember = {
   dao_id: string;
   who: string;
 };
+
+export type ProposalArgs = ProposalTransfer | ProposalMember;
 
 export type ProposalMeta = {
   hash: string;
@@ -73,4 +79,13 @@ export type ProposalMeta = {
   args: ProposalArgs;
 };
 
-export type ProposalType = 'addMember' | 'removeMember';
+export type TransferMeta = {
+  hash: string;
+  daoId: string;
+  proposer: string;
+  value: number;
+  beneficiary: string;
+  bond: number;
+};
+
+export type ProposalType = 'addMember' | 'removeMember' | 'approveProposal';

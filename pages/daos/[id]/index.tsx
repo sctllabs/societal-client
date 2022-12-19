@@ -19,30 +19,25 @@ export default function Dao() {
   const currentAccount = useAtomValue(currentAccountAtom);
   const router = useRouter();
 
-  useEffect(() => {
-    if (typeof router.query.id !== 'string') {
-      router.push('/404');
-    }
-  }, [router]);
+  const currentDao = daos?.find((x) => x.id === router.query.id);
+  const daoId = router.query.id as string;
 
   useEffect(() => {
+    if (router.query.id && typeof router.query.id !== 'string') {
+      router.push('/404');
+      return;
+    }
     if (!currentAccount) {
       router.push('/');
+      return;
     }
-  }, [currentAccount, router]);
-
-  const currentDao = daos?.find((x) => x.id === router.query.id);
-
-  useEffect(() => {
     if (!daos) {
       return;
     }
     if (!currentDao) {
       router.push('/404');
     }
-  }, [currentDao, daos, router]);
-
-  const id = router.query.id as string;
+  }, [currentAccount, currentDao, daos, router]);
 
   return (
     <>
@@ -52,15 +47,15 @@ export default function Dao() {
 
       <div className={styles.container}>
         <div className={styles['left-container']}>
-          <Balance daoId={id} />
-          <Token daoId={id} />
-          <About daoId={id} />
+          <Balance daoId={daoId} />
+          <Token daoId={daoId} />
+          <About daoId={daoId} />
         </div>
         <div className={styles['center-container']}>
-          <Proposals daoId={id} />
+          <Proposals daoId={daoId} />
         </div>
         <div className={styles['right-container']}>
-          <Members daoId={id} />
+          <Members daoId={daoId} />
         </div>
       </div>
     </>

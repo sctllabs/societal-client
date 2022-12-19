@@ -1,20 +1,23 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAtomValue } from 'jotai';
 import { apiAtom } from 'store/api';
+import { isNull } from 'utils';
 
-import { Card } from 'components/ui-kit/Card';
-import { Typography } from 'components/ui-kit/Typography';
-import { Icon, IconNamesType } from 'components/ui-kit/Icon';
-import { TxButton } from 'components/TxButton';
-
-import type { Option } from '@polkadot/types';
 import type {
   ProposalCodec,
   ProposalMeta,
-  ProposalType,
+  ProposalTransfer,
+  TransferCodec,
+  TransferMeta,
   VoteCodec,
   VoteMeta
 } from 'types';
+import type { Option, Vec } from '@polkadot/types';
+import type { H256 } from '@polkadot/types/interfaces';
+
+import { Card } from 'components/ui-kit/Card';
+import { Typography } from 'components/ui-kit/Typography';
+import { ProposalCard } from 'components/ProposalCard';
 
 import styles from './Proposals.module.scss';
 
@@ -22,33 +25,20 @@ export interface ProposalsProps {
   daoId: string;
 }
 
-type ProposalSettings = {
-  title: string;
-  icon: IconNamesType;
-};
-
-export enum ProposalEnum {
-  TRANSFER = 'Transfer',
-  ADD_MEMBER = 'Add Member',
-  REMOVE_MEMBER = 'Remove Member'
-}
-
 export function Proposals({ daoId }: ProposalsProps) {
   const api = useAtomValue(apiAtom);
   const [proposalsHashes, setProposalsHashes] = useState<string[] | null>(null);
   const [proposals, setProposals] = useState<ProposalMeta[] | null>(null);
   const [votes, setVotes] = useState<VoteMeta[] | null>(null);
+  const [transfers, setTransfers] = useState<TransferMeta[] | null>(null);
 
   useEffect(() => {
-    if (!api) {
-      return undefined;
-    }
-
     let unsubscribe: any | null = null;
 
-    api.query.daoCouncil
-      .proposals(daoId)
-      .then((x) => setProposalsHashes(x.toHuman() as string[]))
+    api?.query.daoCouncil
+      .proposals(daoId, (_proposals: Vec<H256>) =>
+        setProposalsHashes(_proposals.map((_proposal) => _proposal.toString()))
+      )
       .then((unsub) => {
         unsubscribe = unsub;
       })
@@ -63,20 +53,26 @@ export function Proposals({ daoId }: ProposalsProps) {
   }, [api, daoId]);
 
   useEffect(() => {
-    if (!api || !proposalsHashes) {
+    if (!proposalsHashes) {
       return undefined;
     }
     let unsubscribe: any | null = null;
 
     const _input = proposalsHashes.map((x) => [daoId, x]);
 
-    api.query.daoCouncil.proposalOf
+    api?.query.daoCouncil.proposalOf
       .multi<Option<ProposalCodec>>(_input, (_proposalsMeta) =>
         setProposals(
-          _proposalsMeta.map((x, index) => ({
-            ...(x.value.toHuman() as Omit<ProposalMeta, 'hash'>),
-            hash: proposalsHashes[index]
-          }))
+          _proposalsMeta
+            .map((x, index) =>
+              x.value.isEmpty
+                ? null
+                : {
+                    ...(x.value.toHuman() as Omit<ProposalMeta, 'hash'>),
+                    hash: proposalsHashes[index]
+                  }
+            )
+            .filter(isNull)
         )
       )
       .then((unsub) => {
@@ -93,24 +89,30 @@ export function Proposals({ daoId }: ProposalsProps) {
   }, [api, daoId, proposalsHashes]);
 
   useEffect(() => {
-    if (!api || !proposalsHashes) {
+    if (!proposalsHashes) {
       return undefined;
     }
     let unsubscribe: any | null = null;
 
     const _input = proposalsHashes.map((x) => [daoId, x]);
 
-    api.query.daoCouncil.voting
+    api?.query.daoCouncil.voting
       .multi<Option<VoteCodec>>(_input, (_votes) =>
         setVotes(
-          _votes.map((x, index) => ({
-            ayes: x.value.ayes.map((aye) => aye.toString()),
-            nays: x.value.nays.map((nay) => nay.toString()),
-            threshold: x.value.threshold.toNumber(),
-            index: x.value.index.toNumber(),
-            end: x.value.end.toNumber(),
-            hash: proposalsHashes[index]
-          }))
+          _votes
+            .map((x, index) =>
+              x.value.isEmpty
+                ? null
+                : {
+                    ayes: x.value.ayes.map((aye) => aye.toString()),
+                    nays: x.value.nays.map((nay) => nay.toString()),
+                    threshold: x.value.threshold.toNumber(),
+                    index: x.value.index.toNumber(),
+                    end: x.value.end.toNumber() * 1000 * 3,
+                    hash: proposalsHashes[index]
+                  }
+            )
+            .filter(isNull)
         )
       )
       .then((unsub) => {
@@ -126,85 +128,47 @@ export function Proposals({ daoId }: ProposalsProps) {
     };
   }, [api, daoId, proposalsHashes]);
 
-  const getProposalSettings = useCallback(
-    (proposalMethod: ProposalType): ProposalSettings => {
-      switch (proposalMethod) {
-        case 'addMember': {
-          return {
-            title: ProposalEnum.ADD_MEMBER,
-            icon: 'user-add'
-          };
-        }
-        case 'removeMember': {
-          return {
-            title: ProposalEnum.REMOVE_MEMBER,
-            icon: 'user-delete'
-          };
-        }
-        default: {
-          return {
-            title: ProposalEnum.TRANSFER,
-            icon: 'transfer'
-          };
-        }
+  useEffect(() => {
+    if (!proposals) {
+      return undefined;
+    }
+    let unsubscribe: any | null = null;
+
+    const _input = proposals
+      .filter((x) => x.method === 'approveProposal')
+      .map((x) => [x.args.dao_id, (x.args as ProposalTransfer).proposal_id]);
+
+    api?.query.daoTreasury.proposals
+      .multi<Option<TransferCodec>>(_input, (_transfers) =>
+        setTransfers(
+          _transfers
+            .map((x, index) =>
+              x.value.isEmpty
+                ? null
+                : {
+                    hash: proposals[index].hash,
+                    daoId: x.value.daoId.toString(),
+                    proposer: x.value.proposer.toString(),
+                    value: x.value.value.toNumber(),
+                    beneficiary: x.value.beneficiary.toString(),
+                    bond: x.value.bond.toNumber()
+                  }
+            )
+            .filter(isNull)
+        )
+      )
+      .then((unsub) => {
+        unsubscribe = unsub;
+      })
+      // eslint-disable-next-line no-console
+      .catch(console.error);
+
+    return () => {
+      if (unsubscribe) {
+        unsubscribe();
       }
-    },
-    []
-  );
-
-  const renderProposal = useCallback(
-    (proposal: ProposalMeta) => {
-      const { title, icon } = getProposalSettings(proposal.method);
-
-      return (
-        <Card key={proposal.hash} className={styles['proposal-card']}>
-          <div className={styles['proposal-title']}>
-            <Icon name={icon} className={styles['proposal-icon']} />
-            <Typography variant="title4">{title}</Typography>
-          </div>
-          <div className={styles['proposal-description']}>
-            <Typography variant="body2">Proposal Description</Typography>
-          </div>
-          <div className={styles['proposal-bottom-container']}>
-            {proposal.method !== 'addMember' ? (
-              <span>Amount</span>
-            ) : (
-              <span className={styles['proposal-member-info']}>
-                <Typography variant="caption3">Member</Typography>
-                <span className={styles['proposal-member-address']}>
-                  <Icon name="user-profile" size="xs" />
-                  <Typography variant="title7">{proposal.args.who}</Typography>
-                </span>
-              </span>
-            )}
-            <span className={styles['proposal-vote-buttons']}>
-              <span className={styles['proposal-vote-button-container']}>
-                <TxButton variant="ghost" className={styles['button-vote']}>
-                  <Icon name="vote-no" />
-                </TxButton>
-                <Typography variant="caption2">
-                  {votes?.find((vote) => vote.hash === proposal.hash)?.nays
-                    .length || 0}
-                </Typography>
-              </span>
-
-              <div className={styles['vertical-break']} />
-              <span className={styles['proposal-vote-button-container']}>
-                <TxButton variant="ghost" className={styles['button-vote']}>
-                  <Icon name="vote-yes" />
-                </TxButton>
-                <Typography variant="caption2">
-                  {votes?.find((vote) => vote.hash === proposal.hash)?.ayes
-                    .length || 0}
-                </Typography>
-              </span>
-            </span>
-          </div>
-        </Card>
-      );
-    },
-    [getProposalSettings, votes]
-  );
+    };
+  }, [api, proposals]);
 
   return (
     <>
@@ -212,7 +176,14 @@ export function Proposals({ daoId }: ProposalsProps) {
         <Typography variant="title4">Proposals</Typography>
       </Card>
       {proposals ? (
-        proposals.map((proposal) => renderProposal(proposal))
+        proposals.map((proposal) => (
+          <ProposalCard
+            key={proposal.hash}
+            proposal={proposal}
+            vote={votes?.find((x) => x.hash === proposal.hash)}
+            transfer={transfers?.find((x) => x.hash === proposal.hash)}
+          />
+        ))
       ) : (
         <Card className={styles['proposals-empty-card']}>
           <Typography variant="caption2" className={styles.caption}>

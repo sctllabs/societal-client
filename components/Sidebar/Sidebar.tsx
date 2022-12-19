@@ -4,14 +4,13 @@ import { useRouter } from 'next/router';
 
 import { useAtom, useAtomValue } from 'jotai';
 import { apiAtom, currentAccountAtom } from 'store/api';
-import { daosAtom } from 'store/dao';
-import { queueTransactionAtom } from 'store/queue';
+import { daoCreatedAtom, daosAtom } from 'store/dao';
+
+import type { DaoCodec, DaoInfo } from 'types';
+import type { Option, StorageKey } from '@polkadot/types';
 
 import { Icon } from 'components/ui-kit/Icon';
 import { Link } from 'components/Link';
-
-import type { DaoCodec, DaoInfo } from 'types';
-import type { Option } from '@polkadot/types';
 
 import styles from './Sidebar.module.scss';
 
@@ -33,35 +32,43 @@ export function Sidebar() {
   const router = useRouter();
   const api = useAtomValue(apiAtom);
   const currentAccount = useAtomValue(currentAccountAtom);
-  const queueTransaction = useAtomValue(queueTransactionAtom);
+  const daoCreated = useAtomValue(daoCreatedAtom);
   const [daos, setDaos] = useAtom(daosAtom);
 
   const daoId = router.query.id as string;
 
   useEffect(() => {
-    if (!api) {
-      return;
-    }
+    let unsubscribe: any | null = null;
 
-    api.query.dao.daos
-      .entries<Option<DaoCodec>>()
-      .then((x) => {
+    api?.query.dao.daos
+      .entries((_daos: [StorageKey, Option<DaoCodec>][]) =>
         setDaos(
-          x.map(([id, dao]) => ({
-            id: (id.toHuman() as string[])[0],
-            dao: {
-              ...(dao.value.toHuman() as DaoInfo),
-              tokenId: dao.value.tokenId.toString()
-            },
-            icon: `/logo/${
-              daoIconURLs[randomIntFromInterval(0, daoIconURLs.length - 1)]
-            }`
-          }))
-        );
+          _daos
+            .filter((x) => !x[1].value.isEmpty)
+            .map(([id, dao]) => ({
+              id: (id.toHuman() as string[])[0],
+              dao: {
+                ...(dao.value.toHuman() as DaoInfo),
+                tokenId: dao.value.tokenId.toString()
+              },
+              icon: `/logo/${
+                daoIconURLs[randomIntFromInterval(0, daoIconURLs.length - 1)]
+              }`
+            }))
+        )
+      )
+      .then((unsub) => {
+        unsubscribe = unsub;
       })
       // eslint-disable-next-line no-console
       .catch(console.error);
-  }, [api, setDaos, queueTransaction.length]);
+
+    return () => {
+      if (unsubscribe) {
+        unsubscribe();
+      }
+    };
+  }, [api, setDaos, daoCreated]);
 
   if (!currentAccount) {
     return null;
@@ -77,21 +84,22 @@ export function Sidebar() {
         </Link>
       </span>
 
-      <div className={styles['center-container']}>
+      <ul className={styles['center-container']}>
         {daos &&
           daos.map((x) => (
-            <Link
-              href={`/daos/${x.id}`}
-              active={daoId === x.id}
-              variant="nav"
-              key={x.id}
-            >
-              <span className={styles['button-logo']}>
-                <Image src={x.icon} alt={x.dao.config.name} fill />
-              </span>
-            </Link>
+            <li key={x.id}>
+              <Link
+                href={`/daos/${x.id}`}
+                active={daoId === x.id}
+                variant="nav"
+              >
+                <span className={styles['button-logo']}>
+                  <Image src={x.icon} alt={x.dao.config.name} fill />
+                </span>
+              </Link>
+            </li>
           ))}
-      </div>
+      </ul>
 
       <div className={styles['bottom-container']}>
         <Link href="/create-dao" variant="outlined">

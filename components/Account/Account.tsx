@@ -44,7 +44,7 @@ export function Account() {
           (address: string, index: number) => ({
             address,
             balance: x[index].data.free.toHuman(),
-            name: accounts[index].meta.name as string
+            name: accounts[index].meta.name?.toString() || ''
           })
         );
         setBalances(retrievedBalances);
@@ -129,7 +129,7 @@ export function Account() {
           <Icon name="user-profile" />
           <Typography variant="body1" className={styles['selected-account']}>
             {currentAccount
-              ? (currentAccount.meta.name as string)
+              ? currentAccount.meta.name?.toString()
               : 'Choose an account'}
           </Typography>
           <Icon name="arrow-down" />

@@ -39,7 +39,7 @@
 .members-inputs {
   align-items: flex-start;
   display: flex;
-  gap: 3.375rem;
+  gap: 4rem;
 }
 
 .members-addresses {
@@ -65,18 +65,18 @@
 }
 
 .quantity-of-tokens-inputs {
-  display: flex;
-  gap: 3.375rem;
+  width: calc(50% - 2rem);
+}
+
+.proposal-period-input {
+  width: calc(50% - 2rem);
 }
 
 .token-info-inputs {
   display: flex;
-  gap: 3.375rem;
+  gap: 4rem;
 }
 
-.proposal-period-input {
-  width: 50%;
-}
 
 .proposal-period-dropdown {
   align-items: center;

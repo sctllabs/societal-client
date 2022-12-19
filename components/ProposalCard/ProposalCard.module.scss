@@ -1,0 +1,100 @@
+@use "styles/colors";
+
+.proposal-card {
+  padding-bottom: 0;
+}
+
+.vertical-break {
+  background: #{colors.$purple-5};
+  width: 0.0625rem;
+}
+
+.button-vote {
+  padding: 0;
+  width: 2.5rem;
+}
+
+.proposal-transfer-container {
+  display: flex;
+  gap: 2.5rem;
+}
+
+.proposal-transfer-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.proposal-icon {
+  --icon-size: 3rem;
+}
+
+.proposal-title-container {
+  align-items: center;
+  display: flex;
+}
+
+.proposal-title-items {
+  align-items: center;
+  display: flex;
+  flex-grow: 1;
+  justify-content: space-between;
+  padding-left: 1.5rem;
+}
+
+.proposal-title-item {
+  display: flex;
+  flex-direction: column;
+  min-width: 3rem;
+}
+
+.proposal-title-item-countdown {
+  align-items: flex-end;
+  display: flex;
+  flex-direction: column;
+  min-width: 3rem;
+}
+
+.proposal-description {
+  margin-top: 1.5rem;
+}
+
+.proposal-member-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}
+
+.proposal-member-address {
+  align-items: center;
+  display: flex;
+  gap: 0.625rem;
+}
+
+.proposal-vote-buttons {
+  align-items: stretch;
+  border-color: #{colors.$purple-5};
+  border-radius: 1.5rem 0 0 0;
+  border-style: solid;
+  border-width: 0.0625rem 0 0 0.0625rem;
+  display: flex;
+  gap: 1.25rem;
+  justify-content: space-between;
+  margin-right: -1.5rem;
+  padding: 0.875rem 2rem;
+}
+
+.proposal-vote-button-container {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.proposal-bottom-container {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+

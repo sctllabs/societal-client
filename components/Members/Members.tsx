@@ -2,13 +2,15 @@ import { MouseEventHandler, useEffect, useState } from 'react';
 import { useAtomValue } from 'jotai';
 import { apiAtom, keyringAtom } from 'store/api';
 
+import type { MemberMeta } from 'types';
+import type { Vec } from '@polkadot/types';
+import type { AccountId } from '@polkadot/types/interfaces';
+
 import { Card } from 'components/ui-kit/Card';
 import { Typography } from 'components/ui-kit/Typography';
 import { Button } from 'components/ui-kit/Button';
 import { Icon } from 'components/ui-kit/Icon';
 import { Chip } from 'components/ui-kit/Chip';
-
-import type { MemberMeta } from 'types';
 
 import styles from './Members.module.scss';
 
@@ -17,21 +19,27 @@ export interface MembersProps {
 }
 
 export function Members({ daoId }: MembersProps) {
-  const [addresses, setAddresses] = useState<string[]>([]);
   const [members, setMembers] = useState<MemberMeta[]>([]);
   const api = useAtomValue(apiAtom);
   const keyring = useAtomValue(keyringAtom);
 
   useEffect(() => {
-    if (!api) {
-      return undefined;
-    }
-
     let unsubscribe: any | null = null;
 
-    api.query.daoCouncil
-      .members(daoId)
-      .then((x) => setAddresses(x.toHuman() as string[]))
+    const accounts = keyring?.getPairs();
+
+    api?.query.daoCouncil
+      .members(daoId, (_members: Vec<AccountId>) =>
+        setMembers(
+          _members.map((_member) => ({
+            address: _member.toString(),
+            name:
+              accounts
+                ?.find((account) => account.address === _member.toString())
+                ?.meta?.name?.toString() || ''
+          }))
+        )
+      )
       .then((unsub) => {
         unsubscribe = unsub;
       })
@@ -43,7 +51,7 @@ export function Members({ daoId }: MembersProps) {
         unsubscribe();
       }
     };
-  }, [api, daoId]);
+  }, [api, daoId, keyring]);
 
   const handleOnClick: MouseEventHandler<HTMLButtonElement> = (e) => {
     const address = (e.target as HTMLButtonElement).getAttribute(
@@ -55,21 +63,6 @@ export function Members({ daoId }: MembersProps) {
 
     navigator.clipboard.writeText(address);
   };
-
-  useEffect(() => {
-    if (!keyring) {
-      return;
-    }
-    const accounts = keyring.getPairs();
-    setMembers(
-      addresses.map((x) => ({
-        address: x,
-        name:
-          (accounts.find((account) => account.address === x)?.meta
-            ?.name as string) || ''
-      }))
-    );
-  }, [addresses, keyring]);
 
   return (
     <Card className={styles.card}>

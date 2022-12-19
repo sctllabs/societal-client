@@ -1,14 +1,12 @@
-/* eslint-disable no-console */
 import { useCallback, useEffect } from 'react';
 import { useAtomValue, useSetAtom } from 'jotai';
 import {
   queueSetTransactionStatusAtom,
   queueTransactionAtom
 } from 'store/queue';
+import { apiAtom, currentAccountAtom, keyringAtom } from 'store/api';
 
 import type { AddressProxy, QueueTx, QueueTxMessageSetStatus } from 'types';
-
-import { apiAtom, currentAccountAtom, keyringAtom } from 'store/api';
 
 export function Queue() {
   const api = useAtomValue(apiAtom);
@@ -60,6 +58,7 @@ export function Queue() {
     }
 
     const errorHandler = (error: Error): void => {
+      // eslint-disable-next-line no-console
       console.error(error);
     };
 

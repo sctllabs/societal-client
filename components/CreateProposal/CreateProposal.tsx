@@ -12,6 +12,12 @@ import { useRouter } from 'next/router';
 import { apiAtom, currentAccountAtom, keyringAtom } from 'store/api';
 import { useAtomValue } from 'jotai';
 
+import { LENGTH_BOUND } from 'constants/transaction';
+
+import type { MemberMeta } from 'types';
+import type { u32, Vec } from '@polkadot/types';
+import type { AccountId } from '@polkadot/types/interfaces';
+
 import { Card } from 'components/ui-kit/Card';
 import { Icon } from 'components/ui-kit/Icon';
 import { RadioGroup } from 'components/ui-kit/Radio/RadioGroup';
@@ -21,8 +27,6 @@ import { Radio } from 'components/ui-kit/Radio/Radio';
 import { Typography } from 'components/ui-kit/Typography';
 import { Input } from 'components/ui-kit/Input';
 import { TxButton } from 'components/TxButton';
-
-import type { MemberMeta } from 'types';
 
 import styles from './CreateProposal.module.scss';
 
@@ -37,9 +41,7 @@ enum InputName {
   DESCRIPTION = 'description',
   AMOUNT = 'amount',
   TARGET = 'target',
-  MEMBER = 'member',
-  PROPOSAL_ID = 'proposalId',
-  PROPOSAL_THRESHOLD = 'proposalThreshold'
+  MEMBER = 'member'
 }
 
 enum InputLabel {
@@ -47,9 +49,7 @@ enum InputLabel {
   DESCRIPTION = 'Description',
   AMOUNT = 'Amount',
   TARGET = 'Target',
-  MEMBER = 'Choose a member',
-  PROPOSAL_ID = 'Proposal ID',
-  PROPOSAL_THRESHOLD = 'Proposal Threshold'
+  MEMBER = 'Choose a member'
 }
 
 type State = {
@@ -58,18 +58,13 @@ type State = {
   amount: string;
   target: string;
   member: string;
-  proposalThreshold: string;
-  proposalId: string;
 };
 
 export enum ProposalEnum {
   PROPOSE_TRANSFER = 'Propose Transfer',
   PROPOSE_ADD_MEMBER = 'Propose Add Member',
-  PROPOSE_REMOVE_MEMBER = 'Propose Remove Member',
-  APPROVE_PROPOSAL = 'Approve Proposal'
+  PROPOSE_REMOVE_MEMBER = 'Propose Remove Member'
 }
-
-const LENGTH_BOUND = 100000;
 
 export function CreateProposal({ daoId }: CreateProposalProps) {
   const currentAccount = useAtomValue(currentAccountAtom);
@@ -78,34 +73,29 @@ export function CreateProposal({ daoId }: CreateProposalProps) {
   const api = useAtomValue(apiAtom);
   const keyring = useAtomValue(keyringAtom);
 
+  const [nextProposalId, setNextProposalId] = useState<number | null>(null);
+
   const [state, setState] = useState<State>({
     proposalType: '',
     description: '',
     amount: '',
     target: '',
-    member: '',
-    proposalId: '',
-    proposalThreshold: ''
+    member: ''
   });
 
   useEffect(() => {
-    if (!api || !keyring) {
-      return undefined;
-    }
-
     let unsubscribe: any | null = null;
-    const accounts = keyring.getPairs();
+    const accounts = keyring?.getPairs();
 
-    api.query.daoCouncil
-      .members(daoId)
-      .then((x) => {
-        const addresses = x.toHuman() as string[];
+    api?.query.daoCouncil
+      .members(daoId, (_members: Vec<AccountId>) => {
         setMembers(
-          addresses.map((address) => ({
-            address,
+          _members.map((_member) => ({
+            address: _member.toString(),
             name:
-              (accounts.find((account) => account.address === address)?.meta
-                ?.name as string) || ''
+              accounts
+                ?.find((account) => account.address === _member.toString())
+                ?.meta?.name?.toString() || ''
           }))
         );
       })
@@ -122,6 +112,24 @@ export function CreateProposal({ daoId }: CreateProposalProps) {
     };
   }, [api, daoId, keyring]);
 
+  useEffect(() => {
+    let unsubscribe: any | null = null;
+
+    api?.query.daoCouncil
+      .proposalCount<u32>(daoId, (x: u32) => setNextProposalId(x.toNumber()))
+      .then((unsub) => {
+        unsubscribe = unsub;
+      })
+      // eslint-disable-next-line no-console
+      .catch(console.error);
+
+    return () => {
+      if (unsubscribe) {
+        unsubscribe();
+      }
+    };
+  });
+
   const onInputChange: ChangeEventHandler = (e) => {
     const target = e.target as HTMLInputElement;
     const targetName = target.name;
@@ -130,9 +138,7 @@ export function CreateProposal({ daoId }: CreateProposalProps) {
     setState((prevState) => ({
       ...prevState,
       [targetName]:
-        targetName === InputName.AMOUNT ||
-        targetName === InputName.PROPOSAL_ID ||
-        targetName === InputName.PROPOSAL_THRESHOLD
+        targetName === InputName.AMOUNT
           ? targetValue.replace(/[^0-9]/g, '')
           : targetValue
     }));
@@ -198,62 +204,31 @@ export function CreateProposal({ daoId }: CreateProposalProps) {
   };
 
   const handleTransform = useCallback(() => {
-    if (!api) {
-      return [];
-    }
-
     switch (state.proposalType) {
-      case ProposalEnum.PROPOSE_TRANSFER: {
-        return [daoId, parseInt(state.amount, 10), state.target];
-      }
       case ProposalEnum.PROPOSE_ADD_MEMBER: {
-        const _tx = api.tx.daoCouncilMemberships.addMember(daoId, state.member);
-        return [daoId, members.length - 1, _tx, LENGTH_BOUND];
-      }
-      case ProposalEnum.PROPOSE_REMOVE_MEMBER: {
-        const _tx = api.tx.daoCouncilMemberships.removeMember(
+        const _tx = api?.tx.daoCouncilMemberships.addMember(
           daoId,
           state.member
         );
-        return [daoId, members.length - 1, _tx, LENGTH_BOUND];
+        return [daoId, members.length, _tx, LENGTH_BOUND];
       }
-      case ProposalEnum.APPROVE_PROPOSAL: {
-        const _tx = api.tx.daoTreasury.approveProposal(daoId, state.proposalId);
-        return [
+      case ProposalEnum.PROPOSE_REMOVE_MEMBER: {
+        const _tx = api?.tx.daoCouncilMemberships.removeMember(
           daoId,
-          parseInt(state.proposalThreshold, 10),
-          _tx,
-          LENGTH_BOUND
-        ];
+          state.member
+        );
+        return [daoId, members.length, _tx, LENGTH_BOUND];
       }
+
       default: {
         // eslint-disable-next-line no-console
         console.error('No such method exists');
         return [];
       }
     }
-  }, [
-    api,
-    daoId,
-    members.length,
-    state.amount,
-    state.member,
-    state.proposalId,
-    state.proposalThreshold,
-    state.proposalType,
-    state.target
-  ]);
+  }, [api, daoId, members.length, state.member, state.proposalType]);
 
-  const palletRPC =
-    state.proposalType === ProposalEnum.PROPOSE_TRANSFER
-      ? 'daoTreasury'
-      : 'daoCouncil';
-  const callable =
-    state.proposalType === ProposalEnum.PROPOSE_TRANSFER
-      ? 'proposeSpend'
-      : 'propose';
-
-  const isDisabled =
+  const disabled =
     !state.proposalType ||
     !state.description ||
     (state.proposalType === ProposalEnum.PROPOSE_TRANSFER &&
@@ -261,6 +236,35 @@ export function CreateProposal({ daoId }: CreateProposalProps) {
     ((state.proposalType === ProposalEnum.PROPOSE_ADD_MEMBER ||
       state.proposalType === ProposalEnum.PROPOSE_REMOVE_MEMBER) &&
       !state.member);
+
+  const extrinsic = useMemo(() => {
+    if (
+      !api ||
+      state.proposalType !== ProposalEnum.PROPOSE_TRANSFER ||
+      !state.amount ||
+      !state.target
+    ) {
+      return null;
+    }
+
+    const _tx = api?.tx.daoTreasury.approveProposal(daoId, nextProposalId);
+
+    const _proposeTransfer = [daoId, parseInt(state.amount, 10), state.target];
+    const _approveProposal = [daoId, members.length, _tx, LENGTH_BOUND];
+
+    return api.tx.utility.batch([
+      api.tx.daoTreasury.proposeSpend(..._proposeTransfer),
+      api.tx.daoCouncil.propose(..._approveProposal)
+    ]);
+  }, [
+    api,
+    daoId,
+    members.length,
+    nextProposalId,
+    state.amount,
+    state.proposalType,
+    state.target
+  ]);
 
   return (
     <div className={styles.container}>
@@ -393,26 +397,6 @@ export function CreateProposal({ daoId }: CreateProposalProps) {
                   </Dropdown>
                 </div>
               )}
-              {state.proposalType === ProposalEnum.APPROVE_PROPOSAL && (
-                <div className={styles['proposal-input-transfer']}>
-                  <Input
-                    name={InputName.PROPOSAL_ID}
-                    label={InputLabel.PROPOSAL_ID}
-                    value={state.proposalId}
-                    onChange={onInputChange}
-                    type="tel"
-                    required
-                  />
-                  <Input
-                    name={InputName.PROPOSAL_THRESHOLD}
-                    label={InputLabel.PROPOSAL_THRESHOLD}
-                    value={state.proposalThreshold}
-                    onChange={onInputChange}
-                    type="tel"
-                    required
-                  />
-                </div>
-              )}
             </div>
           )}
           <div className={styles['buttons-container']}>
@@ -424,10 +408,11 @@ export function CreateProposal({ daoId }: CreateProposalProps) {
               Cancel
             </Button>
             <TxButton
+              extrinsic={extrinsic}
               accountId={currentAccount?.address}
               params={handleTransform}
-              isDisabled={isDisabled}
-              tx={api?.tx[palletRPC][callable]}
+              disabled={disabled}
+              tx={api?.tx.daoCouncil.propose}
             >
               Propose
             </TxButton>

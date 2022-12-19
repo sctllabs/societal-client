@@ -62,7 +62,7 @@ export interface QueueTx extends AccountInfo {
   error?: Error;
   extrinsic?: SubmittableExtrinsic;
   id: number;
-  isUnsigned?: boolean;
+  unsigned?: boolean;
   payload?: SignerPayloadJSON;
   result?: any;
   removeItem: () => void;

@@ -15,7 +15,7 @@ export default function Home() {
   const router = useRouter();
 
   useEffect(() => {
-    if (!daos || !currentAccount) {
+    if (!daos?.length || !currentAccount) {
       return;
     }
 

@@ -4,10 +4,10 @@ import { useAtomValue } from 'jotai';
 import { daosAtom } from 'store/dao';
 import { apiAtom } from 'store/api';
 
+import type { AccountInfo } from '@polkadot/types/interfaces';
+
 import { Card } from 'components/ui-kit/Card';
 import { Typography } from 'components/ui-kit/Typography';
-
-import type { AccountInfo } from '@polkadot/types/interfaces';
 
 import styles from './Balance.module.scss';
 
@@ -23,18 +23,15 @@ export function Balance({ daoId }: BalanceProps) {
   const daos = useAtomValue(daosAtom);
 
   useEffect(() => {
-    if (!api || !daos) {
-      return undefined;
-    }
     let unsubscribe: any | null = null;
 
-    const currentDao = daos.find((x) => x.id === daoId);
+    const currentDao = daos?.find((x) => x.id === daoId);
 
     if (!currentDao) {
       return undefined;
     }
 
-    api.query.system
+    api?.query.system
       .account(currentDao.dao.accountId, ({ data: { free } }: AccountInfo) =>
         setBalance(free.toString())
       )
