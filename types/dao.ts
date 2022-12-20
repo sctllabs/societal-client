@@ -45,7 +45,6 @@ export type DaoInfo = {
 export type DAO = {
   id: string;
   dao: DaoInfo;
-  icon: string;
 };
 
 export type DaoToken = {

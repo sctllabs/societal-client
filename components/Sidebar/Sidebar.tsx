@@ -13,20 +13,7 @@ import { Icon } from 'components/ui-kit/Icon';
 import { Link } from 'components/Link';
 
 import styles from './Sidebar.module.scss';
-
-const daoIconURLs = [
-  'doola-symbol.svg',
-  'karma-symbol.svg',
-  'lobby-symbol.svg',
-  'societal-symbol.svg',
-  'talisman.svg',
-  'uniswap.svg'
-];
-
-function randomIntFromInterval(min: number, max: number) {
-  // min and max included
-  return Math.floor(Math.random() * (max - min + 1) + min);
-}
+import { Avatar } from '../ui-kit/Avatar';
 
 export function Sidebar() {
   const router = useRouter();
@@ -50,10 +37,7 @@ export function Sidebar() {
               dao: {
                 ...(dao.value.toHuman() as DaoInfo),
                 tokenId: dao.value.tokenId.toString()
-              },
-              icon: `/logo/${
-                daoIconURLs[randomIntFromInterval(0, daoIconURLs.length - 1)]
-              }`
+              }
             }))
         )
       )
@@ -94,7 +78,7 @@ export function Sidebar() {
                 variant="nav"
               >
                 <span className={styles['button-logo']}>
-                  <Image src={x.icon} alt={x.dao.config.name} fill />
+                  <Avatar value={x.dao.config.name} />
                 </span>
               </Link>
             </li>

@@ -1,5 +1,4 @@
 import { useRouter } from 'next/router';
-import Image from 'next/image';
 
 import { useAtomValue } from 'jotai';
 import { daosAtom } from 'store/dao';
@@ -9,6 +8,7 @@ import { Icon } from 'components/ui-kit/Icon';
 import { Link } from 'components/Link';
 
 import styles from './Subheader.module.scss';
+import { Avatar } from '../ui-kit/Avatar';
 
 export function Subheader() {
   const router = useRouter();
@@ -25,7 +25,7 @@ export function Subheader() {
     <div className={styles.root}>
       <div className={styles['left-container']}>
         <span className={styles.logo}>
-          <Image src={currentDAO.icon} alt={currentDAO.dao.config.name} fill />
+          <Avatar value={currentDAO.dao.config.name} />
         </span>
         <Typography variant="title2">{currentDAO.dao.config.name}</Typography>
       </div>
