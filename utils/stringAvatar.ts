@@ -34,9 +34,12 @@ export function stringAvatar(name: string) {
   const backgroundColor = stringToColor(name);
   const color = pickTextColorBasedOnBgColor(backgroundColor);
 
+  const splitName = name.split(' ');
+  const children = `${splitName[0]?.[0] || ''}${splitName[1]?.[0] || ''}`;
+
   return {
     color,
     backgroundColor,
-    children: `${name.split(' ')[0][0]}${name.split(' ')[1][0]}`
+    children
   };
 }
