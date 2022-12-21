@@ -3,6 +3,14 @@ with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/
 
 ## Getting Started
 
+### Setup
+
+Install dependencies:
+
+```bash
+yarn install
+```
+
 ### Configure app .env
 
 Copy `.env.local.sample` to `.env.local`
