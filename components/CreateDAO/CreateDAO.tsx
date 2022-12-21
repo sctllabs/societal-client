@@ -59,8 +59,8 @@ enum ProposalPeriod {
 }
 
 const PURPOSE_INPUT_MAX_LENGTH = 500;
-const SECONDS_IN_HOUR = 60 * 60;
-const SECONDS_IN_DAY = 24 * 60 * 60;
+const MILLIS_IN_HOUR = 60 * 60 * 1000;
+const MILLIS_IN_DAY = 24 * 60 * 60 * 1000;
 
 type Role = 'Council';
 
@@ -197,8 +197,8 @@ export function CreateDAO() {
     const proposal_period =
       parseInt(proposalPeriod, 10) *
       (proposalPeriodType === ProposalPeriod.HOURS
-        ? SECONDS_IN_HOUR
-        : SECONDS_IN_DAY);
+        ? MILLIS_IN_HOUR
+        : MILLIS_IN_DAY);
 
     const min_balance = quantity;
     const token_id = nextDaoId;
