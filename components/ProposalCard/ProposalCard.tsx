@@ -20,9 +20,6 @@ import { Countdown } from 'components/Countdown';
 
 import styles from './ProposalCard.module.scss';
 
-const PLACEHOLDER =
-  'Lorem ipsum dolor sit amet consectetur. Justo arcu faucibus ut morbi. Vestibulum sit purus odio rhoncus euismod quis et vestibulum. Malesuada lacus sit habitant risus sed.';
-
 export enum ProposalEnum {
   TRANSFER = 'Transfer',
   ADD_MEMBER = 'Add Member',
@@ -32,7 +29,6 @@ export enum ProposalEnum {
 type ProposalSettings = {
   title: string;
   icon: IconNamesType;
-  text: string;
 };
 
 export interface ProposalCardProps {
@@ -48,29 +44,25 @@ const getProposalSettings = (
     case 'addMember': {
       return {
         title: ProposalEnum.ADD_MEMBER,
-        icon: 'user-add',
-        text: PLACEHOLDER
+        icon: 'user-add'
       };
     }
     case 'removeMember': {
       return {
         title: ProposalEnum.REMOVE_MEMBER,
-        icon: 'user-delete',
-        text: PLACEHOLDER
+        icon: 'user-delete'
       };
     }
     case 'approveProposal': {
       return {
         title: ProposalEnum.TRANSFER,
-        icon: 'transfer',
-        text: PLACEHOLDER
+        icon: 'transfer'
       };
     }
     default: {
       return {
         title: ProposalEnum.TRANSFER,
-        icon: 'transfer',
-        text: PLACEHOLDER
+        icon: 'transfer'
       };
     }
   }
@@ -80,7 +72,7 @@ export function ProposalCard({ proposal, vote, transfer }: ProposalCardProps) {
   const api = useAtomValue(apiAtom);
   const currentAccount = useAtomValue(currentAccountAtom);
   const accounts = useAtomValue(accountsAtom);
-  const { title, icon, text } = getProposalSettings(proposal.method);
+  const { title, icon } = getProposalSettings(proposal.method);
 
   return (
     <Card className={styles['proposal-card']}>
@@ -109,9 +101,6 @@ export function ProposalCard({ proposal, vote, transfer }: ProposalCardProps) {
         </span>
       </div>
 
-      <div className={styles['proposal-description']}>
-        <Typography variant="body2">{text}</Typography>
-      </div>
       <div className={styles['proposal-bottom-container']}>
         {proposal.method === 'approveProposal' ? (
           <span className={styles['proposal-transfer-container']}>

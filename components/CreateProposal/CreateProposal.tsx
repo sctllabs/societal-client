@@ -32,15 +32,12 @@ import { MembersDropdown } from 'components/MembersDropdown';
 
 import styles from './CreateProposal.module.scss';
 
-const DESCRIPTION_INPUT_MAX_LENGTH = 500;
-
 export interface CreateProposalProps {
   daoId: string;
 }
 
 enum InputName {
   PROPOSAL_TYPE = 'proposalType',
-  DESCRIPTION = 'description',
   AMOUNT = 'amount',
   TARGET = 'target',
   MEMBER = 'member'
@@ -48,7 +45,6 @@ enum InputName {
 
 enum InputLabel {
   PROPOSAL_TYPE = 'Choose Proposal Type',
-  DESCRIPTION = 'Description',
   AMOUNT = 'Amount',
   TARGET = 'Target',
   MEMBER = 'Choose a member'
@@ -56,7 +52,6 @@ enum InputLabel {
 
 type State = {
   proposalType: string;
-  description: string;
   amount: string;
   target: string;
 };
@@ -69,7 +64,6 @@ export enum ProposalEnum {
 
 const INITIAL_STATE: State = {
   proposalType: '',
-  description: '',
   amount: '',
   target: ''
 };
@@ -232,7 +226,6 @@ export function CreateProposal({ daoId }: CreateProposalProps) {
 
   const disabled =
     !state.proposalType ||
-    !state.description ||
     (state.proposalType === ProposalEnum.PROPOSE_TRANSFER &&
       (!state.amount || !state.target)) ||
     ((state.proposalType === ProposalEnum.PROPOSE_ADD_MEMBER ||
@@ -341,20 +334,6 @@ export function CreateProposal({ daoId }: CreateProposalProps) {
           </div>
           {state.proposalType && (
             <div className={styles['proposal-input-container']}>
-              <Input
-                name={InputName.DESCRIPTION}
-                label={InputLabel.DESCRIPTION}
-                value={state.description}
-                onChange={onInputChange}
-                maxLength={DESCRIPTION_INPUT_MAX_LENGTH}
-                hint={
-                  <Typography variant="caption3">
-                    {state.description.length}/500
-                  </Typography>
-                }
-                hintPosition="end"
-                required
-              />
               {state.proposalType === ProposalEnum.PROPOSE_TRANSFER && (
                 <div className={styles['proposal-input-transfer']}>
                   <Input
