@@ -3,8 +3,8 @@ import Head from 'next/head';
 import { useRouter } from 'next/router';
 
 import { useAtomValue } from 'jotai';
-import { currentAccountAtom } from 'store/api';
 import { daosAtom } from 'store/dao';
+import { currentAccountAtom } from 'store/account';
 
 import { CreateProposal } from 'components/CreateProposal';
 

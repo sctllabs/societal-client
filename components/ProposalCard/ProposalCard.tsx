@@ -1,5 +1,6 @@
 import { useAtomValue } from 'jotai';
-import { apiAtom, currentAccountAtom } from 'store/api';
+import { apiAtom } from 'store/api';
+import { currentAccountAtom } from 'store/account';
 
 import { LENGTH_BOUND, PROPOSAL_WEIGHT_BOUND } from 'constants/transaction';
 

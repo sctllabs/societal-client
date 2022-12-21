@@ -1,4 +1,14 @@
-import React, { useState, useCallback, useEffect, useMemo } from 'react';
+import {
+  useState,
+  useCallback,
+  useEffect,
+  useMemo,
+  ReactElement,
+  ReactNode,
+  Children,
+  cloneElement,
+  HTMLProps
+} from 'react';
 import { Modifier, usePopper } from 'react-popper';
 import clsx from 'clsx';
 
@@ -8,8 +18,8 @@ import { handleEnterKeyPress, handleEscKeyPress } from 'utils';
 import styles from './Dropdown.module.scss';
 
 export interface DropdownProps {
-  dropdownItems: React.ReactNode;
-  children: React.ReactElement;
+  dropdownItems: ReactNode;
+  children: ReactElement;
   className?: string;
   fullWidth?: boolean;
 }
@@ -67,7 +77,7 @@ export function Dropdown({
     placement: 'bottom'
   });
 
-  const child = React.Children.only(children);
+  const child = Children.only(children);
 
   useIsomorphicLayoutEffect(() => {
     if (show && update) {
@@ -119,7 +129,7 @@ export function Dropdown({
 
   return (
     <>
-      {React.cloneElement<React.HTMLProps<HTMLElement>>(child, {
+      {cloneElement<HTMLProps<HTMLElement>>(child, {
         ref: setReferenceElement,
         onClick: toggleDropdown,
         onKeyDown: handleEnterKeyPress(toggleDropdown)

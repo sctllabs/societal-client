@@ -3,23 +3,24 @@ import Image from 'next/image';
 import { useRouter } from 'next/router';
 
 import { useAtom, useAtomValue } from 'jotai';
-import { apiAtom, currentAccountAtom } from 'store/api';
-import { daoCreatedAtom, daosAtom } from 'store/dao';
+import { apiAtom } from 'store/api';
+import { createdDaoIdAtom, daosAtom } from 'store/dao';
+import { currentAccountAtom } from 'store/account';
 
 import type { DaoCodec, DaoInfo } from 'types';
 import type { Option, StorageKey } from '@polkadot/types';
 
 import { Icon } from 'components/ui-kit/Icon';
 import { Link } from 'components/Link';
+import { Avatar } from 'components/ui-kit/Avatar';
 
 import styles from './Sidebar.module.scss';
-import { Avatar } from '../ui-kit/Avatar';
 
 export function Sidebar() {
   const router = useRouter();
   const api = useAtomValue(apiAtom);
   const currentAccount = useAtomValue(currentAccountAtom);
-  const daoCreated = useAtomValue(daoCreatedAtom);
+  const createdDaoId = useAtomValue(createdDaoIdAtom);
   const [daos, setDaos] = useAtom(daosAtom);
 
   const daoId = router.query.id as string;
@@ -52,7 +53,7 @@ export function Sidebar() {
         unsubscribe();
       }
     };
-  }, [api, setDaos, daoCreated]);
+  }, [api, setDaos, createdDaoId]);
 
   if (!currentAccount) {
     return null;
@@ -69,20 +70,15 @@ export function Sidebar() {
       </span>
 
       <ul className={styles['center-container']}>
-        {daos &&
-          daos.map((x) => (
-            <li key={x.id}>
-              <Link
-                href={`/daos/${x.id}`}
-                active={daoId === x.id}
-                variant="nav"
-              >
-                <span className={styles['button-logo']}>
-                  <Avatar value={x.dao.config.name} />
-                </span>
-              </Link>
-            </li>
-          ))}
+        {daos?.map((x) => (
+          <li key={x.id}>
+            <Link href={`/daos/${x.id}`} active={daoId === x.id} variant="nav">
+              <span className={styles['button-logo']}>
+                <Avatar value={x.dao.config.name} />
+              </span>
+            </Link>
+          </li>
+        ))}
       </ul>
 
       <div className={styles['bottom-container']}>

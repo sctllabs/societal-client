@@ -6,9 +6,9 @@ import { daosAtom } from 'store/dao';
 import { Typography } from 'components/ui-kit/Typography';
 import { Icon } from 'components/ui-kit/Icon';
 import { Link } from 'components/Link';
+import { Avatar } from 'components/ui-kit/Avatar';
 
 import styles from './Subheader.module.scss';
-import { Avatar } from '../ui-kit/Avatar';
 
 export function Subheader() {
   const router = useRouter();

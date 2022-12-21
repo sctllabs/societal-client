@@ -9,14 +9,15 @@ import {
 } from 'react';
 import { useRouter } from 'next/router';
 
-import { apiAtom, currentAccountAtom, keyringAtom } from 'store/api';
 import { useAtomValue } from 'jotai';
+import { apiAtom } from 'store/api';
+import { accountsAtom, currentAccountAtom } from 'store/account';
 
 import { LENGTH_BOUND } from 'constants/transaction';
 
-import type { MemberMeta } from 'types';
 import type { u32, Vec } from '@polkadot/types';
 import type { AccountId } from '@polkadot/types/interfaces';
+import type { KeyringPair } from '@polkadot/keyring/types';
 
 import { Card } from 'components/ui-kit/Card';
 import { Icon } from 'components/ui-kit/Icon';
@@ -27,6 +28,7 @@ import { Radio } from 'components/ui-kit/Radio/Radio';
 import { Typography } from 'components/ui-kit/Typography';
 import { Input } from 'components/ui-kit/Input';
 import { TxButton } from 'components/TxButton';
+import { MembersDropdown } from 'components/MembersDropdown';
 
 import styles from './CreateProposal.module.scss';
 
@@ -57,7 +59,6 @@ type State = {
   description: string;
   amount: string;
   target: string;
-  member: string;
 };
 
 export enum ProposalEnum {
@@ -66,36 +67,34 @@ export enum ProposalEnum {
   PROPOSE_REMOVE_MEMBER = 'Propose Remove Member'
 }
 
+const INITIAL_STATE: State = {
+  proposalType: '',
+  description: '',
+  amount: '',
+  target: ''
+};
+
 export function CreateProposal({ daoId }: CreateProposalProps) {
-  const currentAccount = useAtomValue(currentAccountAtom);
   const router = useRouter();
-  const [members, setMembers] = useState<MemberMeta[]>([]);
+  const [members, setMembers] = useState<KeyringPair[]>([]);
   const api = useAtomValue(apiAtom);
-  const keyring = useAtomValue(keyringAtom);
+  const currentAccount = useAtomValue(currentAccountAtom);
+  const accounts = useAtomValue(accountsAtom);
 
   const [nextProposalId, setNextProposalId] = useState<number | null>(null);
 
-  const [state, setState] = useState<State>({
-    proposalType: '',
-    description: '',
-    amount: '',
-    target: '',
-    member: ''
-  });
+  const [state, setState] = useState<State>(INITIAL_STATE);
 
   useEffect(() => {
     let unsubscribe: any | null = null;
-    const accounts = keyring?.getPairs();
 
     api?.query.daoCouncil
       .members(daoId, (_members: Vec<AccountId>) => {
         setMembers(
           _members.map((_member) => ({
-            address: _member.toString(),
-            name:
-              accounts
-                ?.find((account) => account.address === _member.toString())
-                ?.meta?.name?.toString() || ''
+            ...accounts?.find(
+              (_account) => _account.address === _member.toString()
+            )!
           }))
         );
       })
@@ -110,7 +109,7 @@ export function CreateProposal({ daoId }: CreateProposalProps) {
         unsubscribe();
       }
     };
-  }, [api, daoId, keyring]);
+  }, [accounts, api, daoId]);
 
   useEffect(() => {
     let unsubscribe: any | null = null;
@@ -134,6 +133,11 @@ export function CreateProposal({ daoId }: CreateProposalProps) {
     const target = e.target as HTMLInputElement;
     const targetName = target.name;
     const targetValue = target.value;
+
+    if (targetName === InputName.PROPOSAL_TYPE) {
+      setState({ ...INITIAL_STATE, [targetName]: targetValue });
+      return;
+    }
 
     setState((prevState) => ({
       ...prevState,
@@ -165,57 +169,49 @@ export function CreateProposal({ daoId }: CreateProposalProps) {
     }
   }, [state.proposalType]);
 
-  const handleOnClick: MouseEventHandler<HTMLUListElement> = (e) => {
-    if (!keyring) {
-      return;
-    }
-
-    const selectedWalletAddress = (e.target as HTMLElement).getAttribute(
-      'data-address'
-    );
+  const handleMemberChoose = (target: HTMLUListElement) => {
+    const selectedWalletAddress = target.getAttribute('data-address');
     if (!selectedWalletAddress) {
       return;
     }
     setState((prevState) => ({
       ...prevState,
-      member: keyring.getPair(selectedWalletAddress).address
+      target: selectedWalletAddress
     }));
   };
 
-  const handleOnKeyDown: KeyboardEventHandler<HTMLUListElement> = (e) => {
-    if (!keyring) {
-      return;
-    }
+  const handleOnClick: MouseEventHandler<HTMLUListElement> = useCallback(
+    (e) => handleMemberChoose(e.target as HTMLUListElement),
+    []
+  );
 
-    if (e.key !== ' ' && e.key !== 'Enter') {
-      return;
-    }
+  const handleOnKeyDown: KeyboardEventHandler<HTMLUListElement> = useCallback(
+    (e) => {
+      if (e.key !== ' ' && e.key !== 'Enter') {
+        return;
+      }
 
-    const selectedWalletAddress = (e.target as HTMLElement).getAttribute(
-      'data-address'
-    );
-    if (!selectedWalletAddress) {
-      return;
-    }
-    setState((prevState) => ({
-      ...prevState,
-      member: keyring.getPair(selectedWalletAddress).address
-    }));
-  };
+      handleMemberChoose(e.target as HTMLUListElement);
+    },
+    []
+  );
 
   const handleTransform = useCallback(() => {
+    if (!members) {
+      return [];
+    }
     switch (state.proposalType) {
       case ProposalEnum.PROPOSE_ADD_MEMBER: {
         const _tx = api?.tx.daoCouncilMemberships.addMember(
           daoId,
-          state.member
+          state.target
         );
         return [daoId, members.length, _tx, LENGTH_BOUND];
       }
       case ProposalEnum.PROPOSE_REMOVE_MEMBER: {
         const _tx = api?.tx.daoCouncilMemberships.removeMember(
           daoId,
-          state.member
+          state.target
         );
         return [daoId, members.length, _tx, LENGTH_BOUND];
       }
@@ -226,7 +222,13 @@ export function CreateProposal({ daoId }: CreateProposalProps) {
         return [];
       }
     }
-  }, [api, daoId, members.length, state.member, state.proposalType]);
+  }, [
+    api?.tx.daoCouncilMemberships,
+    daoId,
+    members,
+    state.proposalType,
+    state.target
+  ]);
 
   const disabled =
     !state.proposalType ||
@@ -235,7 +237,7 @@ export function CreateProposal({ daoId }: CreateProposalProps) {
       (!state.amount || !state.target)) ||
     ((state.proposalType === ProposalEnum.PROPOSE_ADD_MEMBER ||
       state.proposalType === ProposalEnum.PROPOSE_REMOVE_MEMBER) &&
-      !state.member);
+      !state.target);
 
   const extrinsic = useMemo(() => {
     if (
@@ -265,6 +267,10 @@ export function CreateProposal({ daoId }: CreateProposalProps) {
     state.proposalType,
     state.target
   ]);
+
+  const onSuccess = () => {
+    router.push(`/daos/${daoId}`);
+  };
 
   return (
     <div className={styles.container}>
@@ -339,62 +345,59 @@ export function CreateProposal({ daoId }: CreateProposalProps) {
                     required
                   />
 
-                  <Input
-                    name={InputName.TARGET}
-                    label={InputLabel.TARGET}
-                    value={state.target}
-                    onChange={onInputChange}
-                    required
-                  />
+                  <MembersDropdown
+                    accounts={members}
+                    handleOnClick={handleOnClick}
+                    handleOnKeyDown={handleOnKeyDown}
+                  >
+                    <Input
+                      readOnly
+                      name={InputName.TARGET}
+                      label={InputLabel.TARGET}
+                      value={
+                        (accounts?.find(
+                          (_account) => _account.address === state.target
+                        )?.meta.name as string) ?? ''
+                      }
+                      required
+                    />
+                  </MembersDropdown>
                 </div>
               )}
               {(state.proposalType === ProposalEnum.PROPOSE_ADD_MEMBER ||
                 state.proposalType === ProposalEnum.PROPOSE_REMOVE_MEMBER) && (
                 <div className={styles['proposal-input-member']}>
-                  <Dropdown
-                    fullWidth
-                    dropdownItems={
-                      <Card dropdown className={styles['member-dropdown-card']}>
-                        <ul
-                          className={styles['member-dropdown-ul']}
-                          onClick={handleOnClick}
-                          onKeyDown={handleOnKeyDown}
-                          role="presentation"
-                        >
-                          {members.map((x) => (
-                            <li key={x.address}>
-                              <Button
-                                variant="text"
-                                fullWidth
-                                className={styles['member-dropdown-button']}
-                                size="sm"
-                                data-address={x.address}
-                              >
-                                <span
-                                  className={
-                                    styles['member-dropdown-button-span']
-                                  }
-                                >
-                                  <Icon name="user-profile" size="sm" />
-                                  <Typography variant="title4">
-                                    {x.name}
-                                  </Typography>
-                                </span>
-                              </Button>
-                            </li>
-                          ))}
-                        </ul>
-                      </Card>
+                  <MembersDropdown
+                    accounts={
+                      state.proposalType === ProposalEnum.PROPOSE_ADD_MEMBER
+                        ? accounts?.filter(
+                            (_account) =>
+                              !members?.find(
+                                (_member) =>
+                                  _member.address === _account.address
+                              )
+                          )
+                        : accounts?.filter((_account) =>
+                            members?.find(
+                              (_member) => _member.address === _account.address
+                            )
+                          )
                     }
+                    handleOnClick={handleOnClick}
+                    handleOnKeyDown={handleOnKeyDown}
                   >
                     <Input
+                      readOnly
                       name={InputName.MEMBER}
                       label={InputLabel.MEMBER}
-                      value={state.member}
-                      onChange={onInputChange}
+                      value={
+                        (accounts?.find(
+                          (_account) => _account.address === state.target
+                        )?.meta.name as string) ?? ''
+                      }
                       required
                     />
-                  </Dropdown>
+                  </MembersDropdown>
                 </div>
               )}
             </div>
@@ -413,6 +416,7 @@ export function CreateProposal({ daoId }: CreateProposalProps) {
               params={handleTransform}
               disabled={disabled}
               tx={api?.tx.daoCouncil.propose}
+              onSuccess={onSuccess}
             >
               Propose
             </TxButton>

@@ -4,7 +4,7 @@ import Head from 'next/head';
 
 import { useAtomValue } from 'jotai';
 import { daosAtom } from 'store/dao';
-import { currentAccountAtom } from 'store/api';
+import { currentAccountAtom } from 'store/account';
 
 import { Balance } from 'components/Balance';
 import { Token } from 'components/Token';
@@ -13,10 +13,12 @@ import { Proposals } from 'components/Proposals';
 import { Members } from 'components/Members';
 
 import styles from 'styles/pages/DAOs.module.scss';
+import { statesLoadingAtom } from 'store/loader';
 
 export default function Dao() {
   const daos = useAtomValue(daosAtom);
   const currentAccount = useAtomValue(currentAccountAtom);
+  const loading = useAtomValue(statesLoadingAtom);
   const router = useRouter();
 
   const currentDao = daos?.find((x) => x.id === router.query.id);
@@ -25,6 +27,9 @@ export default function Dao() {
   useEffect(() => {
     if (router.query.id && typeof router.query.id !== 'string') {
       router.push('/404');
+      return;
+    }
+    if (loading) {
       return;
     }
     if (!currentAccount) {
@@ -37,7 +42,7 @@ export default function Dao() {
     if (!currentDao) {
       router.push('/404');
     }
-  }, [currentAccount, currentDao, daos, router]);
+  }, [currentAccount, currentDao, daos, loading, router]);
 
   return (
     <>

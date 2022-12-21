@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useAtomValue } from 'jotai';
-import { currentAccountAtom } from 'store/api';
+import { currentAccountAtom } from 'store/account';
 
 import { CreateDAO } from 'components/CreateDAO';
 
@@ -14,5 +14,6 @@ export default function CreateDAOPage() {
       router.push('/');
     }
   }, [currentAccount, router]);
+
   return <CreateDAO />;
 }

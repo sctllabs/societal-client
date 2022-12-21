@@ -1,6 +1,7 @@
 import { MouseEventHandler, useEffect, useState } from 'react';
 import { useAtomValue } from 'jotai';
-import { apiAtom, keyringAtom } from 'store/api';
+import { apiAtom } from 'store/api';
+import { accountsAtom } from 'store/account';
 
 import type { MemberMeta } from 'types';
 import type { Vec } from '@polkadot/types';
@@ -21,12 +22,10 @@ export interface MembersProps {
 export function Members({ daoId }: MembersProps) {
   const [members, setMembers] = useState<MemberMeta[]>([]);
   const api = useAtomValue(apiAtom);
-  const keyring = useAtomValue(keyringAtom);
+  const accounts = useAtomValue(accountsAtom);
 
   useEffect(() => {
     let unsubscribe: any | null = null;
-
-    const accounts = keyring?.getPairs();
 
     api?.query.daoCouncil
       .members(daoId, (_members: Vec<AccountId>) =>
@@ -51,7 +50,7 @@ export function Members({ daoId }: MembersProps) {
         unsubscribe();
       }
     };
-  }, [api, daoId, keyring]);
+  }, [accounts, api, daoId]);
 
   const handleOnClick: MouseEventHandler<HTMLButtonElement> = (e) => {
     const address = (e.target as HTMLButtonElement).getAttribute(

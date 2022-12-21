@@ -4,7 +4,8 @@ import {
   queueSetTransactionStatusAtom,
   queueTransactionAtom
 } from 'store/queue';
-import { apiAtom, currentAccountAtom, keyringAtom } from 'store/api';
+import { apiAtom, keyringAtom } from 'store/api';
+import { currentAccountAtom } from 'store/account';
 
 import type { AddressProxy, QueueTx, QueueTxMessageSetStatus } from 'types';
 

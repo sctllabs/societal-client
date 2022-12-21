@@ -2,6 +2,7 @@ import { ReactNode } from 'react';
 
 import { Header } from 'components/Header';
 import { Sidebar } from 'components/Sidebar';
+import { MainLoader } from 'components/MainLoader';
 
 import styles from './Layout.module.scss';
 
@@ -14,6 +15,7 @@ export function Layout({ children }: LayoutProps) {
     <>
       <Header />
       <Sidebar />
+      <MainLoader />
       <main className={styles.root}>{children}</main>
     </>
   );

@@ -1,13 +1,12 @@
-import {
-  KeyboardEventHandler,
-  MouseEventHandler,
-  useEffect,
-  useState
-} from 'react';
-import { useAtom, useAtomValue } from 'jotai';
-import { AccountInfo } from '@polkadot/types/interfaces';
+import { KeyboardEventHandler, MouseEventHandler } from 'react';
+import { useAtomValue, useSetAtom } from 'jotai';
 
-import { currentAccountAtom, apiKeyringAtom } from 'store/api';
+import { keyringAtom } from 'store/api';
+import {
+  accountsAtom,
+  currentAccountAtom,
+  setCurrentAccountAtom
+} from 'store/account';
 
 import { Dropdown } from 'components/ui-kit/Dropdown';
 import { Card } from 'components/ui-kit/Card';
@@ -17,46 +16,11 @@ import { Icon } from 'components/ui-kit/Icon';
 
 import styles from './Account.module.scss';
 
-type AccountType = {
-  address: string;
-  balance: string;
-  name: string;
-};
-
 export function Account() {
-  const [api, keyring] = useAtomValue(apiKeyringAtom);
-  const [currentAccount, setCurrentAccount] = useAtom(currentAccountAtom);
-
-  const [balances, setBalances] = useState<AccountType[]>([]);
-
-  useEffect(() => {
-    if (!keyring || !api) {
-      return undefined;
-    }
-
-    const accounts = keyring.getPairs();
-    const addresses = accounts.map((account) => account.address);
-    let unsubscribeAll: Function | null = null;
-
-    api.query.system.account
-      .multi(addresses, (x: AccountInfo[]) => {
-        const retrievedBalances = addresses.map(
-          (address: string, index: number) => ({
-            address,
-            balance: x[index].data.free.toHuman(),
-            name: accounts[index].meta.name?.toString() || ''
-          })
-        );
-        setBalances(retrievedBalances);
-      })
-      .then((unsub: Function) => {
-        unsubscribeAll = unsub;
-      })
-      // eslint-disable-next-line no-console
-      .catch(console.error);
-
-    return () => unsubscribeAll && unsubscribeAll();
-  }, [api, keyring]);
+  const keyring = useAtomValue(keyringAtom);
+  const currentAccount = useAtomValue(currentAccountAtom);
+  const accounts = useAtomValue(accountsAtom);
+  const setCurrentAccount = useSetAtom(setCurrentAccountAtom);
 
   const handleOnClick: MouseEventHandler<HTMLUListElement> = (e) => {
     if (!keyring) {
@@ -104,7 +68,7 @@ export function Account() {
             onKeyDown={handleKeyDown}
             role="presentation"
           >
-            {balances.map((x) => (
+            {accounts?.map((x) => (
               <li key={x.address}>
                 <Button
                   variant="text"
@@ -115,7 +79,9 @@ export function Account() {
                 >
                   <span className={styles['dropdown-button-span']}>
                     <Icon name="user-profile" size="lg" />
-                    <Typography variant="title4">{x.name}</Typography>
+                    <Typography variant="title4">
+                      {x.meta.name as string}
+                    </Typography>
                   </span>
                 </Button>
               </li>
