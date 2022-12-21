@@ -2,10 +2,10 @@
 
 html,
 body {
-  padding: 0;
-  margin: 0;
   font-family: variables.$main-font;
   font-size: variables.$base-font-size;
+  margin: 0;
+  padding: 0;
 }
 
 body {
@@ -14,12 +14,28 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-*,
-*::before,
-*::after {
-  box-sizing: inherit;
-  color: inherit;
-  font-family: inherit;
-  font-size: inherit;
+a {
+  text-decoration: none;
 }
 
+ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+#__next {
+  display: grid;
+  grid-template-areas:
+    'sidebar header'
+    'sidebar content';
+  grid-template-columns: min-content 1fr;
+  grid-template-rows: min-content 1fr;
+  height: 100vh;
+  overflow: hidden;
+  width: 100vw;
+}
+
+* {
+  box-sizing: border-box;
+}

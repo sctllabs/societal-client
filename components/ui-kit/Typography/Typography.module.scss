@@ -37,7 +37,7 @@
   @extend %title-4;
 }
 
-.title4 {
+.title5 {
   @extend %title-5;
 }
 
@@ -109,7 +109,7 @@
   @extend %value-4;
 }
 
-.value4 {
+.value5 {
   @extend %value-5;
 }
 
@@ -123,4 +123,12 @@
 
 .value8 {
   @extend %value-8;
+}
+
+.button1 {
+  @extend %button-1;
+}
+
+.button2 {
+  @extend %button-2;
 }

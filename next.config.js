@@ -1,10 +1,16 @@
 const path = require('path');
 const SpriteLoaderPlugin = require('svg-sprite-loader/plugin');
+const withBundleAnalyzer = require('@next/bundle-analyzer')({
+  enabled: process.env.ANALYZE === 'true'
+});
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
+  sassOptions: {
+    includePaths: [path.join(__dirname, 'styles')],
+  },
   webpack: (config, context) => {
     config.module.rules.push({
       test: /\.svg$/i,
@@ -24,12 +30,15 @@ const nextConfig = {
 
     config.module.rules.push({
       test: /\.svg$/i,
-      include: path.join(__dirname, 'public', 'images'),
+      include: path.join(__dirname, 'public', 'logo'),
+      issuer: /\.[jt]sx?$/,
+
       use: [
         {
           loader: '@svgr/webpack',
           // https://react-svgr.com/docs/options/
           options: {
+            dimensions: false,
             prettier: false,
             svgo: true,
             titleProp: true,
@@ -46,9 +55,6 @@ const nextConfig = {
               ]
             }
           }
-        },
-        {
-          loader: 'url-loader'
         }
       ]
     });
@@ -59,4 +65,4 @@ const nextConfig = {
   }
 };
 
-module.exports = nextConfig;
+module.exports = withBundleAnalyzer(nextConfig);

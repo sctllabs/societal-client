@@ -10,7 +10,7 @@ export type IconNamesType = keyof typeof icons;
 export interface IconProps extends HTMLAttributes<SVGElement> {
   className?: string;
   name: IconNamesType;
-  size?: 'sm' | 'md' | 'lg' | 'xl';
+  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
   onClick?: MouseEventHandler<SVGElement> | undefined;
 }
 
@@ -24,13 +24,15 @@ export function Icon({
   const { viewBox, url } = icons[name] as never;
 
   return (
-    <svg
-      viewBox={viewBox}
-      className={clsx(styles.root, styles[size], className)}
-      onClick={onClick}
-      {...other}
-    >
-      <use xlinkHref={`/${String(url)}`} />
-    </svg>
+    <span className={clsx(styles.root, styles[size])}>
+      <svg
+        viewBox={viewBox}
+        className={clsx(styles.icon, className)}
+        onClick={onClick}
+        {...other}
+      >
+        <use xlinkHref={`/${String(url)}`} />
+      </svg>
+    </span>
   );
 }

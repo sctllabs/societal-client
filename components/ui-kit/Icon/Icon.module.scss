@@ -1,4 +1,10 @@
 .root {
+  --icon-size: 1.25rem;
+  display: inline-block;
+  pointer-events: none;
+}
+
+.icon {
   display: inline-block;
   font-size: 0;
   height: var(--icon-size);
@@ -8,16 +14,20 @@
   width: var(--icon-size);
 }
 
-.sm {
+.xs {
   --icon-size: 1rem;
 }
 
-.md {
+.sm {
   --icon-size: 1.25rem;
 }
 
-.lg {
+.md {
   --icon-size: 1.5rem;
+}
+
+.lg {
+  --icon-size: 2rem;
 }
 
 .xl {

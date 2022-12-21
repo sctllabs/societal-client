@@ -23,7 +23,9 @@
   "include": [
     "next-env.d.ts",
     "**/*.ts",
-    "**/*.tsx"
+    "**/*.tsx",
+    "svg.d.ts",
+    "sass.d.ts",
   ],
   "exclude": [
     "node_modules"

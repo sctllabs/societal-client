@@ -1,5 +1,13 @@
 @use 'fonts';
+@use 'colors';
 
 // Fonts
-$base-font-size: 16;
+$base-font-size: 16px;
 $main-font: fonts.$rajdhani-font;
+
+// Sizes
+$header-height: 4rem;
+$sidebar-width: 4rem;
+
+// Colors
+$main-color: colors.$grayscale-0;

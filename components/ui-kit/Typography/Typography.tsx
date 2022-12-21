@@ -33,11 +33,13 @@ export type TypographyVariants =
   | 'value5'
   | 'value6'
   | 'value7'
-  | 'value8';
+  | 'value8'
+  | 'button1'
+  | 'button2';
 
 export interface TypographyProps extends HTMLAttributes<HTMLElement> {
-  as?: ElementType;
   variant: TypographyVariants;
+  as?: ElementType;
 }
 
 const elementsByVariants: Record<TypographyVariants, ElementType> = {
@@ -70,12 +72,14 @@ const elementsByVariants: Record<TypographyVariants, ElementType> = {
   value5: 'p',
   value6: 'p',
   value7: 'p',
-  value8: 'p'
+  value8: 'p',
+  button1: 'p',
+  button2: 'p'
 };
 
 export const Typography = forwardRef<HTMLElement, TypographyProps>(
   function BaseTypography(
-    { as, children, variant, className, ...restProps },
+    { as = 'p', children, variant, className, ...restProps },
     ref
   ) {
     const Tag = as || elementsByVariants[variant];

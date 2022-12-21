@@ -1,0 +1,36 @@
+@use 'styles/colors';
+@use 'styles/typography';
+
+.dropdown-title {
+  color: #{colors.$grayscale-55};
+}
+
+.button {
+  padding: 0;
+}
+
+.selected-account {
+  min-width: 3rem;
+}
+
+.button-span {
+  align-items: center;
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.dropdown-button {
+  align-items: center;
+  display: flex;
+  justify-content: flex-start;
+  padding: 0;
+}
+
+.dropdown-button-span {
+  align-items: center;
+  display: flex;
+  gap: 0.25rem;
+  justify-content: flex-start;
+  pointer-events: none;
+}

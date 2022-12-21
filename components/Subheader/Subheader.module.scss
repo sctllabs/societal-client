@@ -1,0 +1,32 @@
+@use 'styles/variables';
+
+.root {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  min-height: variables.$header-height;
+  padding-left: 2.5rem;
+  padding-right: 1.25rem;
+}
+
+.logo {
+  display: block;
+  height: 2.5rem;
+  position: relative;
+  width: 2.5rem;
+}
+
+.left-container {
+  align-items: center;
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+}
+
+.button-content {
+  align-items: center;
+  display: flex;
+  gap: 0.625rem;
+  justify-content: center;
+  margin: 0.5rem 0.75rem;
+}
