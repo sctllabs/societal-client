@@ -13,7 +13,11 @@ yarn install
 
 ### Configure app .env
 
-Copy `.env.local.sample` to `.env.local`
+Copy `.env.example` to `.env.local`
+
+```bash
+cp .env.example .env.local
+```
 
 ### Development
 
