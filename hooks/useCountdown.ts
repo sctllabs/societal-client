@@ -17,7 +17,10 @@ function formatCountdown(countDown: number) {
   const result =
     days > 0 ? [days, hours, minutes, seconds] : [hours, minutes, seconds];
 
-  return result.map((x) => leadingZero(x)).join(':');
+  return result
+    .filter((x) => x >= 0)
+    .map((x) => leadingZero(x))
+    .join(':');
 }
 
 export function useCountdown(value: number) {

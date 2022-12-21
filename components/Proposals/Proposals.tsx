@@ -134,9 +134,11 @@ export function Proposals({ daoId }: ProposalsProps) {
     }
     let unsubscribe: any | null = null;
 
-    const _input = proposals
-      .filter((x) => x.method === 'approveProposal')
-      .map((x) => [x.args.dao_id, (x.args as ProposalTransfer).proposal_id]);
+    const _proposals = proposals.filter((x) => x.method === 'approveProposal');
+    const _input = _proposals.map((_proposal) => [
+      _proposal.args.dao_id,
+      (_proposal.args as ProposalTransfer).proposal_id
+    ]);
 
     api?.query.daoTreasury.proposals
       .multi<Option<TransferCodec>>(_input, (_transfers) =>
@@ -146,7 +148,11 @@ export function Proposals({ daoId }: ProposalsProps) {
               x.value.isEmpty
                 ? null
                 : {
-                    hash: proposals[index].hash,
+                    hash: _proposals.find(
+                      (_proposal) =>
+                        (_proposal.args as ProposalTransfer).proposal_id ===
+                        _input[index][1]
+                    )!.hash,
                     daoId: x.value.daoId.toString(),
                     proposer: x.value.proposer.toString(),
                     value: x.value.value.toNumber(),
@@ -168,7 +174,7 @@ export function Proposals({ daoId }: ProposalsProps) {
         unsubscribe();
       }
     };
-  }, [api, proposals]);
+  }, [api, daoId, proposals]);
 
   return (
     <>

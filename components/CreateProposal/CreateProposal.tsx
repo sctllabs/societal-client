@@ -114,7 +114,7 @@ export function CreateProposal({ daoId }: CreateProposalProps) {
   useEffect(() => {
     let unsubscribe: any | null = null;
 
-    api?.query.daoCouncil
+    api?.query.daoTreasury
       .proposalCount<u32>(daoId, (x: u32) => setNextProposalId(x.toNumber()))
       .then((unsub) => {
         unsubscribe = unsub;
@@ -272,6 +272,27 @@ export function CreateProposal({ daoId }: CreateProposalProps) {
     router.push(`/daos/${daoId}`);
   };
 
+  let _accounts: KeyringPair[] | undefined;
+
+  switch (state.proposalType) {
+    case ProposalEnum.PROPOSE_ADD_MEMBER: {
+      _accounts = accounts?.filter(
+        (_account) =>
+          !members?.find((_member) => _member.address === _account.address)
+      );
+      break;
+    }
+    case ProposalEnum.PROPOSE_REMOVE_MEMBER: {
+      _accounts = accounts?.filter((_account) =>
+        members?.find((_member) => _member.address === _account.address)
+      );
+      break;
+    }
+    default: {
+      _accounts = accounts;
+    }
+  }
+
   return (
     <div className={styles.container}>
       <div className={styles.content}>
@@ -346,7 +367,7 @@ export function CreateProposal({ daoId }: CreateProposalProps) {
                   />
 
                   <MembersDropdown
-                    accounts={members}
+                    accounts={_accounts}
                     handleOnClick={handleOnClick}
                     handleOnKeyDown={handleOnKeyDown}
                   >
@@ -368,21 +389,7 @@ export function CreateProposal({ daoId }: CreateProposalProps) {
                 state.proposalType === ProposalEnum.PROPOSE_REMOVE_MEMBER) && (
                 <div className={styles['proposal-input-member']}>
                   <MembersDropdown
-                    accounts={
-                      state.proposalType === ProposalEnum.PROPOSE_ADD_MEMBER
-                        ? accounts?.filter(
-                            (_account) =>
-                              !members?.find(
-                                (_member) =>
-                                  _member.address === _account.address
-                              )
-                          )
-                        : accounts?.filter((_account) =>
-                            members?.find(
-                              (_member) => _member.address === _account.address
-                            )
-                          )
-                    }
+                    accounts={_accounts}
                     handleOnClick={handleOnClick}
                     handleOnKeyDown={handleOnKeyDown}
                   >

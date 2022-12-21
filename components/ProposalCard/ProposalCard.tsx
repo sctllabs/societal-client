@@ -1,6 +1,6 @@
 import { useAtomValue } from 'jotai';
 import { apiAtom } from 'store/api';
-import { currentAccountAtom } from 'store/account';
+import { accountsAtom, currentAccountAtom } from 'store/account';
 
 import { LENGTH_BOUND, PROPOSAL_WEIGHT_BOUND } from 'constants/transaction';
 
@@ -79,6 +79,7 @@ const getProposalSettings = (
 export function ProposalCard({ proposal, vote, transfer }: ProposalCardProps) {
   const api = useAtomValue(apiAtom);
   const currentAccount = useAtomValue(currentAccountAtom);
+  const accounts = useAtomValue(accountsAtom);
   const { title, icon, text } = getProposalSettings(proposal.method);
 
   return (
@@ -90,7 +91,12 @@ export function ProposalCard({ proposal, vote, transfer }: ProposalCardProps) {
             <Typography variant="title4">{title}</Typography>
             {transfer && (
               <Typography variant="caption2">
-                by ${transfer.proposer}
+                by
+                {
+                  accounts?.find(
+                    (_account) => _account.address === transfer.proposer
+                  )?.meta.name as string
+                }
               </Typography>
             )}
           </span>
@@ -116,7 +122,11 @@ export function ProposalCard({ proposal, vote, transfer }: ProposalCardProps) {
             <span className={styles['proposal-transfer-info']}>
               <Typography variant="caption3">Target</Typography>
               <Typography variant="title5">
-                {transfer?.beneficiary || ''}
+                {
+                  accounts?.find(
+                    (_account) => _account.address === transfer?.beneficiary
+                  )?.meta.name as string
+                }
               </Typography>
             </span>
           </span>
@@ -126,7 +136,12 @@ export function ProposalCard({ proposal, vote, transfer }: ProposalCardProps) {
             <span className={styles['proposal-member-address']}>
               <Icon name="user-profile" size="xs" />
               <Typography variant="title5">
-                {(proposal.args as ProposalMember).who}
+                {
+                  accounts?.find(
+                    (_account) =>
+                      _account.address === (proposal.args as ProposalMember).who
+                  )?.meta.name as string
+                }
               </Typography>
             </span>
           </span>
