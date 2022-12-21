@@ -1,4 +1,5 @@
 import { atom } from 'jotai';
-import { DaoType } from 'types';
+import type { DAO } from 'types';
 
-export const daosAtom = atom<DaoType[] | null>(null);
+export const daosAtom = atom<DAO[] | null>(null);
+export const createdDaoIdAtom = atom<number | null>(null);

@@ -7,6 +7,7 @@ import { Preloader } from 'components/Preloader';
 import { Queue } from 'components/Queue';
 
 import 'styles/globals.scss';
+import { useRouter } from 'next/router';
 
 const rajdhani = Rajdhani({
   subsets: ['latin'],
@@ -14,6 +15,8 @@ const rajdhani = Rajdhani({
 });
 
 export default function App({ Component, pageProps }: AppProps) {
+  const router = useRouter();
+
   return (
     <>
       <style jsx global>{`
@@ -26,7 +29,7 @@ export default function App({ Component, pageProps }: AppProps) {
         <Layout>
           <Preloader />
           <Queue />
-          <Component {...pageProps} />
+          <Component {...pageProps} key={router.asPath} />
         </Layout>
       </Provider>
     </>

@@ -61,16 +61,9 @@ $schema: (
         ),
         'icon': (
                 theme-button-text: #{colors.$grayscale-0},
-                theme-button-border-color-hover: #{colors.$purple-3},
-                theme-button-border-color-active: transparent,
-                theme-button-box-shadow-active: inset 0rem 0rem 0.75rem #{colors.$shadow-button-purple}
-        ),
-        'nav': (
-                theme-button-text: #{colors.$grayscale-0},
-                theme-button-bg: #{colors.$grayscale-98},
-                theme-button-bg-hover: #{colors.$grayscale-90},
-                theme-button-bg-active: #{colors.$grayscale-80},
-                theme-button-padding: 0
+                theme-button-text-hover: #{colors.$purple-3},
+                theme-button-text-active: #{colors.$purple-4},
+                theme-button-padding: 0,
         ),
         'link': (
                 theme-button-text: #{colors.$grayscale-0},
@@ -177,15 +170,6 @@ $schema: (
   @include mixins.color-variants($schema, 'ghost');
 }
 
-.nav {
-  --theme-button-width: 2.75rem;
-  --theme-button-height: 2.75rem;
-  --theme-button-padding: 0.625rem;
-
-  width: var(--theme-button-width);
-
-  @include mixins.color-variants($schema, 'nav');
-}
 
 .text {
   @include mixins.color-variants($schema, 'text-primary');
@@ -208,8 +192,8 @@ $schema: (
 }
 
 .button-icon-lg {
-  --theme-button-icon-width: 2.5rem;
-  --theme-button-icon-height: 2.5rem;
+  --theme-button-icon-width: 2.75rem;
+  --theme-button-icon-height: 2.75rem;
   --theme-button-padding: 0;
   height: var(--theme-button-icon-height);
 
@@ -245,4 +229,9 @@ $schema: (
 .button-sm {
   --theme-button-height: 2rem;
   --theme-button-min-width: 2rem;
+}
+
+.button-xs {
+  --theme-button-height: 1.5rem;
+  --theme-button-min-width: 1.5rem;
 }

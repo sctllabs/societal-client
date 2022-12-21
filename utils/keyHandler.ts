@@ -1,6 +1,9 @@
 import React from 'react';
 
-import { KEYBOARD_EVENT_KEY_ENTER, KEYBOARD_EVENT_KEY_ESC } from '../constants';
+import {
+  KEYBOARD_EVENT_KEY_ENTER,
+  KEYBOARD_EVENT_KEY_ESC
+} from 'constants/keys';
 
 export function handleSpecificKeyPress(key: string, callback?: () => void) {
   return (e?: KeyboardEvent | React.KeyboardEvent) => {

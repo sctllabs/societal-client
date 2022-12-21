@@ -1,33 +1,18 @@
 import { atom } from 'jotai';
 import {
-  QueueStatus,
   QueueTx,
   QueueTxExtrinsic,
   QueueTxRpc,
-  QueueActionSetTransaction,
-  QueueTxStatus
+  QueueActionSetTransaction
 } from 'types';
 import { jsonrpcAtom } from 'store/api';
+import { STATUS_COMPLETE } from 'constants/transaction';
 import type { SubmittableResult } from '@polkadot/api';
 
 export const queueIdAtom = atom<number>(0);
-export const queueStatusAtom = atom<QueueStatus[]>([]);
 export const queueTransactionAtom = atom<QueueTx[]>([]);
-const REMOVE_TIMEOUT = 7500;
 
-export const STATUS_COMPLETE: QueueTxStatus[] = [
-  // status from subscription
-  'finalitytimeout',
-  'finalized',
-  'inblock',
-  'usurped',
-  'dropped',
-  'invalid',
-  // normal completion
-  'cancelled',
-  'error',
-  'sent'
-];
+const REMOVE_TIMEOUT = 1000;
 
 export const queueExtrinsicAtom = atom(
   null,

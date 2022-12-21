@@ -14,7 +14,7 @@ type ButtonVariants =
   | 'icon'
   | 'nav';
 type ButtonColors = 'primary' | 'destructive';
-type ButtonSize = 'sm' | 'md' | 'lg';
+type ButtonSize = 'xs' | 'sm' | 'md' | 'lg';
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariants;

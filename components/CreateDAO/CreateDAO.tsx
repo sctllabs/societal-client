@@ -1,11 +1,22 @@
 import {
+  useCallback,
+  useEffect,
+  useState,
   ChangeEventHandler,
   MouseEventHandler,
-  useEffect,
-  useState
+  KeyboardEventHandler,
+  useRef
 } from 'react';
-import { useAtomValue } from 'jotai';
+import { useRouter } from 'next/router';
 import Link from 'next/link';
+import { useAtom, useAtomValue } from 'jotai';
+import { apiAtom } from 'store/api';
+import { createdDaoIdAtom, daosAtom } from 'store/dao';
+import { accountsAtom, currentAccountAtom } from 'store/account';
+
+import { TxCallback } from 'types';
+import type { u32 } from '@polkadot/types';
+
 import { Typography } from 'components/ui-kit/Typography';
 import { Button } from 'components/ui-kit/Button';
 import { Input } from 'components/ui-kit/Input';
@@ -14,18 +25,10 @@ import { Dropdown } from 'components/ui-kit/Dropdown';
 import { Card } from 'components/ui-kit/Card';
 import { RadioGroup } from 'components/ui-kit/Radio/RadioGroup';
 import { Radio } from 'components/ui-kit/Radio/Radio';
-
 import { TxButton } from 'components/TxButton';
-import { apiAtom, currentAccountAtom } from 'store/api';
-
-import { FunctionArgumentMetadataV14 } from '@polkadot/types/interfaces';
-
-import { transformParams } from 'utils';
+import { MembersDropdown } from 'components/MembersDropdown';
 
 import styles from './CreateDAO.module.scss';
-
-const argIsOptional = (arg: FunctionArgumentMetadataV14) =>
-  arg.type.toString().startsWith('Option<');
 
 enum InputName {
   DAO_NAME = 'daoName',
@@ -36,8 +39,7 @@ enum InputName {
   TOKEN_NAME = 'tokenName',
   TOKEN_SYMBOL = 'tokenSymbol',
   PROPOSAL_PERIOD = 'proposalPeriod',
-  PROPOSAL_PERIOD_TYPE = 'proposalPeriodType',
-  TOKEN_ID = 'tokenId'
+  PROPOSAL_PERIOD_TYPE = 'proposalPeriodType'
 }
 
 enum InputLabel {
@@ -45,11 +47,10 @@ enum InputLabel {
   PURPOSE = '* Purpose',
   QUANTITY = 'Quantity of Tokens',
   ROLE = 'Role of Members',
-  ADDRESS = 'Add New Address',
+  ADDRESS = 'New Member',
   TOKEN_NAME = 'Token Name',
   TOKEN_SYMBOL = 'Token Symbol',
-  PROPOSAL_PERIOD = 'Proposal Period',
-  TOKEN_ID = 'Specify Token ID'
+  PROPOSAL_PERIOD = 'Proposal Period'
 }
 
 enum ProposalPeriod {
@@ -58,12 +59,12 @@ enum ProposalPeriod {
 }
 
 const PURPOSE_INPUT_MAX_LENGTH = 500;
-const SECONDS_IN_HOUR = 60 * 60;
-const SECONDS_IN_DAY = 24 * 60 * 60;
+const MILLIS_IN_HOUR = 60 * 60 * 1000;
+const MILLIS_IN_DAY = 24 * 60 * 60 * 1000;
 
 type Role = 'Council';
 
-type CreateDAOState = {
+type State = {
   daoName: string;
   purpose: string;
   quantity: string;
@@ -73,26 +74,24 @@ type CreateDAOState = {
   tokenSymbol: string;
   proposalPeriod: string;
   proposalPeriodType: ProposalPeriod;
-  tokenId: string;
 };
 
 export function CreateDAO() {
+  const router = useRouter();
+  const [nextDaoId, setNextDaoId] = useState<number | null>(null);
   const api = useAtomValue(apiAtom);
   const currentAccount = useAtomValue(currentAccountAtom);
+  const daos = useAtomValue(daosAtom);
+  const accounts = useAtomValue(accountsAtom);
+  const [createdDaoId, setDaoCreatedId] = useAtom(createdDaoIdAtom);
+  const daoCreatedRef = useRef<boolean>(false);
 
-  const [palletRPC, setPalletRPC] = useState<string | null>(null);
-  const [callable, setCallable] = useState<string | null>(null);
-  const [paramFields, setParamFields] = useState<
-    { name: string; type: string; optional: boolean }[] | null
-  >(null);
-
-  const [createDAOState, setCreateDAOState] = useState<CreateDAOState>({
+  const [state, setState] = useState<State>({
     daoName: '',
     purpose: '',
     quantity: '',
     role: 'Council',
     addresses: [''],
-    tokenId: '',
     tokenName: '',
     tokenSymbol: '',
     proposalPeriod: '',
@@ -100,71 +99,42 @@ export function CreateDAO() {
   });
 
   useEffect(() => {
-    if (!api) {
+    if (!daoCreatedRef.current || createdDaoId === null) {
       return;
     }
 
-    const palletRPCs = Object.keys(api.tx)
-      .sort()
-      .filter((pr) => Object.keys(api.tx[pr]).length > 0)
-      .map((pr) => ({ key: pr, value: pr, text: pr }));
+    const currentDao = daos?.find((x) => parseInt(x.id, 10) === createdDaoId);
+    if (!currentDao) {
+      return;
+    }
 
-    setPalletRPC(
-      palletRPCs.find((pallet) => pallet.key === 'dao')?.key || null
-    );
+    router.push(`/daos/${currentDao.id}`);
+  }, [createdDaoId, daos, router, setDaoCreatedId]);
+
+  useEffect(() => {
+    let unsubscribe: any | null = null;
+
+    api?.query.dao
+      .nextDaoId<u32>((x: u32) => setNextDaoId(x.toNumber()))
+      .then((unsub) => {
+        unsubscribe = unsub;
+      })
+      // eslint-disable-next-line no-console
+      .catch(console.error);
+
+    return () => {
+      if (unsubscribe) {
+        unsubscribe();
+      }
+    };
   }, [api]);
-
-  useEffect(() => {
-    if (!api || !palletRPC) {
-      return;
-    }
-
-    const callables = Object.keys(api.tx[palletRPC])
-      .sort()
-      .map((c) => ({ key: c, value: c, text: c }));
-
-    setCallable(callables.find(({ key }) => key === 'createDao')?.key || null);
-  }, [api, palletRPC]);
-
-  useEffect(() => {
-    if (!api || !palletRPC || !callable) {
-      return;
-    }
-
-    const metaArgs = api.tx[palletRPC][callable].meta.args;
-
-    if (!metaArgs || !metaArgs.length) {
-      return;
-    }
-
-    setParamFields(
-      metaArgs.map((arg) => ({
-        name: arg.name.toString(),
-        type: arg.type.toString(),
-        optional: argIsOptional(arg)
-      }))
-    );
-  }, [api, callable, palletRPC]);
 
   const onInputChange: ChangeEventHandler = (e) => {
     const target = e.target as HTMLInputElement;
     const targetName = target.name;
     const targetValue = target.value;
-    const dataAddressIndex = target.getAttribute('data-address-index');
 
-    if (dataAddressIndex && targetName === InputName.ADDRESSES) {
-      const addressIndex = parseInt(dataAddressIndex, 10);
-      setCreateDAOState((prevState) => ({
-        ...prevState,
-        addresses: prevState.addresses.map((x, index) =>
-          addressIndex === index ? targetValue : x
-        )
-      }));
-
-      return;
-    }
-
-    setCreateDAOState((prevState) => ({
+    setState((prevState) => ({
       ...prevState,
       [targetName]:
         targetName === InputName.QUANTITY ||
@@ -175,7 +145,7 @@ export function CreateDAO() {
   };
 
   const handleAddAddressClick: MouseEventHandler = () => {
-    setCreateDAOState((prevState) => ({
+    setState((prevState) => ({
       ...prevState,
       addresses: [...prevState.addresses, '']
     }));
@@ -189,15 +159,30 @@ export function CreateDAO() {
     }
 
     const addressIndex = parseInt(dataAddressIndex, 10);
-    setCreateDAOState((prevState) => ({
+    setState((prevState) => ({
       ...prevState,
-      addresses: prevState.addresses.filter(
-        (_, index) => index !== addressIndex
-      )
+      addresses:
+        prevState.addresses.length === 1
+          ? ['']
+          : prevState.addresses.filter((_, index) => index !== addressIndex)
     }));
   };
 
-  const formatInput = () => {
+  const disabled =
+    nextDaoId === null ||
+    !state.daoName ||
+    !state.purpose ||
+    !state.tokenName ||
+    !state.role ||
+    !state.tokenSymbol ||
+    !state.proposalPeriod ||
+    !state.proposalPeriodType;
+
+  const handleTransform = () => {
+    if (nextDaoId === null) {
+      return [];
+    }
+
     const {
       daoName,
       purpose,
@@ -205,21 +190,22 @@ export function CreateDAO() {
       proposalPeriodType,
       tokenName,
       tokenSymbol,
-      tokenId,
-      addresses
-    } = createDAOState;
-    if (!paramFields) {
-      return [];
-    }
+      addresses,
+      quantity
+    } = state;
+
     const proposal_period =
       parseInt(proposalPeriod, 10) *
       (proposalPeriodType === ProposalPeriod.HOURS
-        ? SECONDS_IN_HOUR
-        : SECONDS_IN_DAY);
+        ? MILLIS_IN_HOUR
+        : MILLIS_IN_DAY);
+
+    const min_balance = quantity;
+    const token_id = nextDaoId;
 
     const data = {
-      name: daoName,
-      purpose,
+      name: daoName.trim(),
+      purpose: purpose.trim(),
       metadata: 'metadata',
       policy: {
         proposal_bond: 1,
@@ -229,21 +215,64 @@ export function CreateDAO() {
         reject_origin: [1, 2]
       },
       token: {
-        token_id: parseInt(tokenId, 10),
-        min_balance: '1000000',
+        token_id,
+        min_balance,
         metadata: {
-          name: tokenName,
-          symbol: tokenSymbol,
+          name: tokenName.trim(),
+          symbol: tokenSymbol.trim(),
           decimals: 10
         }
       }
     };
 
-    return paramFields.map((x) => ({
-      type: x.type,
-      value: x.name === 'council' ? addresses.join(',') : JSON.stringify(data)
+    return [
+      addresses.filter((x) => x.length > 0).map((x) => x.trim()),
+      JSON.stringify(data).trim()
+    ];
+  };
+
+  const onSuccess: TxCallback = (result) => {
+    const _daoCreatedEvent = result.events.find(
+      (x) => x.event.method.toString() === 'DaoRegistered'
+    );
+    if (!_daoCreatedEvent) {
+      return;
+    }
+
+    const _daoCreatedId = (_daoCreatedEvent.event.data[0] as u32).toNumber();
+    daoCreatedRef.current = true;
+    setDaoCreatedId(_daoCreatedId);
+  };
+
+  const handleMemberChoose = (target: HTMLUListElement) => {
+    const selectedWalletAddress = target.getAttribute('data-address');
+    const selectedIndex = target.getAttribute('data-index');
+    if (!selectedWalletAddress || selectedIndex === null) {
+      return;
+    }
+    const addressIndex = parseInt(selectedIndex, 10);
+    setState((prevState) => ({
+      ...prevState,
+      addresses: prevState.addresses.map((_address, index) =>
+        index === addressIndex ? selectedWalletAddress : _address
+      )
     }));
   };
+
+  const handleOnClick: MouseEventHandler<HTMLUListElement> = useCallback(
+    (e) => handleMemberChoose(e.target as HTMLUListElement),
+    []
+  );
+
+  const handleOnKeyDown: KeyboardEventHandler<HTMLUListElement> = useCallback(
+    (e) => {
+      if (e.key !== ' ' && e.key !== 'Enter') {
+        return;
+      }
+      handleMemberChoose(e.target as HTMLUListElement);
+    },
+    []
+  );
 
   return (
     <div className={styles.container}>
@@ -262,7 +291,7 @@ export function CreateDAO() {
           <Input
             name={InputName.DAO_NAME}
             label={InputLabel.DAO_NAME}
-            value={createDAOState.daoName}
+            value={state.daoName}
             onChange={onInputChange}
             required
           />
@@ -270,11 +299,11 @@ export function CreateDAO() {
             name={InputName.PURPOSE}
             label={InputLabel.PURPOSE}
             onChange={onInputChange}
-            value={createDAOState.purpose}
+            value={state.purpose}
             maxLength={PURPOSE_INPUT_MAX_LENGTH}
             hint={
               <Typography variant="caption3">
-                {createDAOState.purpose.length}/500
+                {state.purpose.length}/500
               </Typography>
             }
             hintPosition="end"
@@ -288,46 +317,74 @@ export function CreateDAO() {
           </Typography>
           <div className={styles['members-inputs']}>
             <Input
+              readOnly
               name={InputName.ROLE}
               label={InputLabel.ROLE}
-              value={createDAOState.role}
+              value={state.role}
               classNames={{
                 root: styles['members-inputs-role-root'],
                 input: styles['members-inputs-role-input']
               }}
-              required
               disabled
+              required
             />
+
             <div className={styles['members-addresses']}>
-              {createDAOState.addresses.map((x, index) => {
-                const lastItem = index === createDAOState.addresses.length - 1;
+              {state.addresses.map((x, index) => {
+                const lastItem =
+                  index === state.addresses.length - 1 &&
+                  accounts?.length !== state.addresses.length;
                 const key = `address-${index}`;
 
                 return (
-                  <Input
+                  <MembersDropdown
+                    accounts={accounts?.filter(
+                      (_account) => !state.addresses.includes(_account.address)
+                    )}
                     key={key}
-                    data-address-index={index}
-                    name={InputName.ADDRESSES}
-                    label={InputLabel.ADDRESS}
-                    value={createDAOState.addresses[index]}
-                    onChange={onInputChange}
-                    required
-                    endAdornment={
-                      <Button
-                        data-address-index={index}
-                        variant="ghost"
-                        className={styles['members-add-button']}
-                        onClick={
-                          lastItem
-                            ? handleAddAddressClick
-                            : handleRemoveAddressClick
-                        }
-                        size="sm"
-                      >
-                        <Icon name={lastItem ? 'add' : 'close'} size="sm" />
-                      </Button>
-                    }
-                  />
+                    handleOnClick={handleOnClick}
+                    handleOnKeyDown={handleOnKeyDown}
+                    index={index}
+                  >
+                    <Input
+                      readOnly
+                      name={InputName.ADDRESSES}
+                      label={InputLabel.ADDRESS}
+                      value={
+                        (accounts?.find(
+                          (_account) =>
+                            _account.address === state.addresses[index]
+                        )?.meta.name as string) || ''
+                      }
+                      required
+                      endAdornment={
+                        <span className={styles['members-button-group']}>
+                          {(state.addresses[index] || !lastItem) && (
+                            <Button
+                              data-address-index={index}
+                              variant="ghost"
+                              className={styles['members-add-button']}
+                              onClick={handleRemoveAddressClick}
+                              size="sm"
+                            >
+                              <Icon name="close" size="sm" />
+                            </Button>
+                          )}
+                          {lastItem && (
+                            <Button
+                              data-address-index={index}
+                              variant="ghost"
+                              className={styles['members-add-button']}
+                              onClick={handleAddAddressClick}
+                              size="sm"
+                            >
+                              <Icon name="add" size="sm" />
+                            </Button>
+                          )}
+                        </span>
+                      }
+                    />
+                  </MembersDropdown>
                 );
               })}
             </div>
@@ -341,18 +398,9 @@ export function CreateDAO() {
 
           <div className={styles['quantity-of-tokens-inputs']}>
             <Input
-              name={InputName.TOKEN_ID}
-              label={InputLabel.TOKEN_ID}
-              value={createDAOState.tokenId}
-              onChange={onInputChange}
-              type="tel"
-              required
-            />
-
-            <Input
               name={InputName.QUANTITY}
               label={InputLabel.QUANTITY}
-              value={createDAOState.quantity}
+              value={state.quantity}
               onChange={onInputChange}
               type="tel"
               required
@@ -369,14 +417,14 @@ export function CreateDAO() {
             <Input
               name={InputName.TOKEN_NAME}
               label={InputLabel.TOKEN_NAME}
-              value={createDAOState.tokenName}
+              value={state.tokenName}
               onChange={onInputChange}
               required
             />
             <Input
               name={InputName.TOKEN_SYMBOL}
               label={InputLabel.TOKEN_SYMBOL}
-              value={createDAOState.tokenSymbol}
+              value={state.tokenSymbol}
               onChange={onInputChange}
               required
             />
@@ -392,7 +440,7 @@ export function CreateDAO() {
             <Input
               name={InputName.PROPOSAL_PERIOD}
               label={InputLabel.PROPOSAL_PERIOD}
-              value={createDAOState.proposalPeriod}
+              value={state.proposalPeriod}
               onChange={onInputChange}
               type="tel"
               required
@@ -401,7 +449,7 @@ export function CreateDAO() {
                   dropdownItems={
                     <Card dropdown className={styles['dropdown-card']}>
                       <RadioGroup
-                        value={createDAOState.proposalPeriodType}
+                        value={state.proposalPeriodType}
                         className={styles['dropdown-radio-group']}
                         onChange={onInputChange}
                         name={InputName.PROPOSAL_PERIOD_TYPE}
@@ -425,7 +473,7 @@ export function CreateDAO() {
                   >
                     <div className={styles['proposal-period-dropdown']}>
                       <Typography variant="body2">
-                        {createDAOState.proposalPeriodType}
+                        {state.proposalPeriodType}
                       </Typography>
                       <Icon name="arrow-down" size="sm" />
                     </div>
@@ -436,20 +484,16 @@ export function CreateDAO() {
           </div>
         </div>
         <div className={styles['create-proposal']}>
-          {paramFields && (
-            <TxButton
-              accountId={currentAccount?.address}
-              params={transformParams(paramFields, formatInput())}
-              tx={
-                api && palletRPC && callable
-                  ? api.tx[palletRPC][callable]
-                  : null
-              }
-              className={styles['create-button']}
-            >
-              Create DAO
-            </TxButton>
-          )}
+          <TxButton
+            onSuccess={onSuccess}
+            disabled={disabled}
+            accountId={currentAccount?.address}
+            params={handleTransform}
+            tx={api?.tx.dao.createDao}
+            className={styles['create-button']}
+          >
+            Create DAO
+          </TxButton>
         </div>
       </div>
     </div>

@@ -2,7 +2,6 @@ import { atom } from 'jotai';
 import { appConfig } from 'config';
 
 import type { Keyring } from '@polkadot/ui-keyring';
-import type { KeyringPair } from '@polkadot/keyring/types';
 import type { DefinitionRpc, DefinitionRpcSub } from '@polkadot/types/types';
 import type { ApiPromise } from '@polkadot/api';
 
@@ -14,8 +13,3 @@ export const apiAtom = atom<ApiPromise | null>(null);
 export const keyringAtom = atom<Keyring | null>(null);
 export const apiConnectedAtom = atom<boolean>(false);
 export const apiErrorAtom = atom<string | null>(null);
-export const currentAccountAtom = atom<KeyringPair | null>(null);
-
-export const apiKeyringAtom = atom<[ApiPromise | null, Keyring | null]>(
-  (get) => [get(apiAtom), get(keyringAtom)]
-);

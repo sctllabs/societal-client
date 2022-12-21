@@ -1,14 +1,13 @@
-/* eslint-disable no-console */
 import { useCallback, useEffect } from 'react';
 import { useAtomValue, useSetAtom } from 'jotai';
 import {
   queueSetTransactionStatusAtom,
   queueTransactionAtom
 } from 'store/queue';
+import { apiAtom, keyringAtom } from 'store/api';
+import { currentAccountAtom } from 'store/account';
 
 import type { AddressProxy, QueueTx, QueueTxMessageSetStatus } from 'types';
-
-import { apiAtom, currentAccountAtom, keyringAtom } from 'store/api';
 
 export function Queue() {
   const api = useAtomValue(apiAtom);
@@ -60,6 +59,7 @@ export function Queue() {
     }
 
     const errorHandler = (error: Error): void => {
+      // eslint-disable-next-line no-console
       console.error(error);
     };
 
@@ -74,11 +74,11 @@ export function Queue() {
 
     queueTransaction
       .filter((x) => x.status === 'queued')
-      .forEach((queue) => {
+      .forEach((queue) =>
         _onSend(queueSetTransactionStatus, queue, senderInfo).catch(
           errorHandler
-        );
-      });
+        )
+      );
   }, [_onSend, currentAccount, queueSetTransactionStatus, queueTransaction]);
   return null;
 }

@@ -1,0 +1,17 @@
+@use "styles/colors";
+
+.proposals-title-card {
+  padding: 0.875rem 1.5rem;
+}
+
+.proposals-empty-card {
+  align-items: center;
+  display: flex;
+  flex-grow: 1;
+  justify-content: center;
+}
+
+.caption {
+  color: #{colors.$grayscale-55};
+}
+

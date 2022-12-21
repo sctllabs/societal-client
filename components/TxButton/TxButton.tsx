@@ -8,27 +8,25 @@ import {
   MouseEventHandler
 } from 'react';
 
-import { SubmittableResult } from '@polkadot/api';
-import { assert, isFunction } from '@polkadot/util';
-import type { SubmittableExtrinsic } from '@polkadot/api/types';
-
-import { Button } from 'components/ui-kit/Button';
-import { TxCallback, TxFailedCallback } from 'types';
-import { AccountId } from '@polkadot/types/interfaces';
 import { useSetAtom } from 'jotai';
 import { queueExtrinsicAtom } from 'store/queue';
+import { assert, isFunction } from '@polkadot/util';
 
-export interface TxButtonProps {
+import type { SubmittableResult } from '@polkadot/api';
+import type { SubmittableExtrinsic } from '@polkadot/api/types';
+import type { TxCallback, TxFailedCallback } from 'types';
+import type { AccountId } from '@polkadot/types/interfaces';
+
+import { Button, ButtonProps } from 'components/ui-kit/Button';
+
+export interface TxButtonProps extends ButtonProps {
   accountId?: AccountId | string | null;
   className?: string;
   extrinsic?:
     | SubmittableExtrinsic<'promise'>
     | SubmittableExtrinsic<'promise'>[]
     | null;
-  // isBasic?: boolean;
-  // isBusy?: boolean;
-  isDisabled?: boolean;
-  isUnsigned?: boolean;
+  unsigned?: boolean;
   onClick?: MouseEventHandler;
   onFailed?: TxFailedCallback;
   onSendRef?: MutableRefObject<
@@ -39,7 +37,6 @@ export interface TxButtonProps {
   onUpdate?: TxCallback;
   params?: unknown[] | (() => unknown[]) | null;
   tx?: ((...args: any[]) => SubmittableExtrinsic<'promise'>) | null;
-  withSpinner?: boolean;
   children: ReactNode;
 }
 
@@ -56,9 +53,8 @@ export function TxButton({
   onUpdate,
   params,
   tx,
-  withSpinner,
-  isDisabled = false,
-  isUnsigned = false,
+  unsigned = false,
+  disabled = false,
   children,
   ...otherProps
 }: TxButtonProps) {
@@ -119,15 +115,13 @@ export function TxButton({
         'Expected generated extrinsic passed to TxButton'
       );
 
-      if (withSpinner) {
-        setIsSending(true);
-      }
+      setIsSending(true);
 
       extrinsics.forEach((extrinsic): void => {
         queueExtrinsic({
           accountId: accountId && accountId.toString(),
           extrinsic,
-          isUnsigned,
+          unsigned,
           txFailedCb: _onFailed,
           txStartCb: _onStart,
           txSuccessCb: _onSuccess,
@@ -145,15 +139,14 @@ export function TxButton({
       _onStart,
       _onSuccess,
       accountId,
-      isUnsigned,
+      unsigned,
       onClick,
       onUpdate,
       params,
       propsExtrinsic,
       queueExtrinsic,
       setIsSending,
-      tx,
-      withSpinner
+      tx
     ]
   );
 
@@ -168,8 +161,8 @@ export function TxButton({
       // isBusy={isBusy}
       disabled={
         isSending ||
-        isDisabled ||
-        (!isUnsigned && !accountId) ||
+        disabled ||
+        (!unsigned && !accountId) ||
         // eslint-disable-next-line no-nested-ternary
         (tx
           ? false
