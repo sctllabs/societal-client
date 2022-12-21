@@ -1,8 +1,15 @@
+import { useMemo } from 'react';
 import { useAtomValue } from 'jotai';
 import { apiAtom } from 'store/api';
 import { accountsAtom, currentAccountAtom } from 'store/account';
 
-import { LENGTH_BOUND, PROPOSAL_WEIGHT_BOUND } from 'constants/transaction';
+import {
+  LENGTH_BOUND,
+  PROPOSAL_WEIGHT_BOUND,
+  PROPOSAL_WEIGHT_BOUND_OLD,
+  PROPOSAL_WEIGHT_KEY,
+  PROPOSAL_WEIGHT_TYPE
+} from 'constants/transaction';
 
 import type {
   ProposalMember,
@@ -73,6 +80,21 @@ export function ProposalCard({ proposal, vote, transfer }: ProposalCardProps) {
   const currentAccount = useAtomValue(currentAccountAtom);
   const accounts = useAtomValue(accountsAtom);
   const { title, icon } = getProposalSettings(proposal.method);
+
+  const proposalWeightBound = useMemo(() => {
+    const proposalWeightBoundArg = api?.tx.daoCouncil.close.meta.args.find(
+      (_arg) => _arg.name.toString() === PROPOSAL_WEIGHT_KEY
+    );
+
+    if (!proposalWeightBoundArg) {
+      return PROPOSAL_WEIGHT_BOUND_OLD;
+    }
+
+    if (proposalWeightBoundArg.type.toString() === PROPOSAL_WEIGHT_TYPE) {
+      return PROPOSAL_WEIGHT_BOUND;
+    }
+    return PROPOSAL_WEIGHT_BOUND_OLD;
+  }, [api?.tx.daoCouncil.close.meta.args]);
 
   return (
     <Card className={styles['proposal-card']}>
@@ -178,7 +200,7 @@ export function ProposalCard({ proposal, vote, transfer }: ProposalCardProps) {
                       proposal.args.dao_id,
                       proposal.hash,
                       vote.index,
-                      PROPOSAL_WEIGHT_BOUND,
+                      proposalWeightBound,
                       LENGTH_BOUND
                     ]}
                     variant="ghost"
