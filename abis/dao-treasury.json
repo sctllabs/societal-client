@@ -1,0 +1,82 @@
+[
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint32",
+        "name": "dao_id",
+        "type": "uint32"
+      },
+      {
+        "indexed": true,
+        "internalType": "uint32",
+        "name": "proposalIndex",
+        "type": "uint32"
+      }
+    ],
+    "name": "Proposed",
+    "type": "event"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint32",
+        "name": "dao_id",
+        "type": "uint32"
+      }
+    ],
+    "name": "approvals",
+    "outputs": [
+      {
+        "internalType": "uint32[]",
+        "name": "approvals",
+        "type": "uint32[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint32",
+        "name": "dao_id",
+        "type": "uint32"
+      }
+    ],
+    "name": "proposalCount",
+    "outputs": [
+      {
+        "internalType": "uint32",
+        "name": "proposalCount",
+        "type": "uint32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint32",
+        "name": "dao_id",
+        "type": "uint32"
+      },
+      {
+        "internalType": "uint128",
+        "name": "value",
+        "type": "uint128"
+      },
+      {
+        "internalType": "address",
+        "name": "beneficiary",
+        "type": "address"
+      }
+    ],
+    "name": "proposeSpend",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+]

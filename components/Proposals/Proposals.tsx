@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useAtomValue } from 'jotai';
 import { apiAtom } from 'store/api';
-import { isNull } from 'utils';
+import { isNull } from 'utils/filters';
 
 import type {
   ProposalCodec,

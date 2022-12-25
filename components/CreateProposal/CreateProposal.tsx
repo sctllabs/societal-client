@@ -8,16 +8,29 @@ import {
   useState
 } from 'react';
 import { useRouter } from 'next/router';
+import { useDaoCollectiveContract } from 'hooks/useDaoCollectiveContract';
+import { useDaoTreasuryContract } from 'hooks/useDaoTreasuryContract';
 
 import { useAtomValue } from 'jotai';
 import { apiAtom } from 'store/api';
-import { accountsAtom, currentAccountAtom } from 'store/account';
+import {
+  accountsAtom,
+  metamaskAccountAtom,
+  substrateAccountAtom
+} from 'store/account';
 
 import { LENGTH_BOUND } from 'constants/transaction';
+import { u8aToHex } from '@polkadot/util';
+import {
+  addressToEvm,
+  evmToAddress,
+  isEthereumAddress
+} from '@polkadot/util-crypto';
 
-import type { u32, Vec } from '@polkadot/types';
+import type { u32, Vec, Option } from '@polkadot/types';
 import type { AccountId } from '@polkadot/types/interfaces';
 import type { KeyringPair } from '@polkadot/keyring/types';
+import type { TransferCodec } from 'types';
 
 import { Card } from 'components/ui-kit/Card';
 import { Icon } from 'components/ui-kit/Icon';
@@ -27,8 +40,8 @@ import { Dropdown } from 'components/ui-kit/Dropdown';
 import { Radio } from 'components/ui-kit/Radio/Radio';
 import { Typography } from 'components/ui-kit/Typography';
 import { Input } from 'components/ui-kit/Input';
-import { TxButton } from 'components/TxButton';
 import { MembersDropdown } from 'components/MembersDropdown';
+import { TxButton } from 'components/TxButton';
 
 import styles from './CreateProposal.module.scss';
 
@@ -70,12 +83,22 @@ const INITIAL_STATE: State = {
 
 export function CreateProposal({ daoId }: CreateProposalProps) {
   const router = useRouter();
+
   const [members, setMembers] = useState<KeyringPair[]>([]);
   const api = useAtomValue(apiAtom);
-  const currentAccount = useAtomValue(currentAccountAtom);
+  const metamaskAccount = useAtomValue(metamaskAccountAtom);
+  const substrateAccount = useAtomValue(substrateAccountAtom);
   const accounts = useAtomValue(accountsAtom);
 
-  const [nextProposalId, setNextProposalId] = useState<number | null>(null);
+  const daoTreasuryContract = useDaoTreasuryContract();
+  const daoCollectiveContract = useDaoCollectiveContract();
+
+  const [nextTreasuryProposalId, setNextTreasuryProposalId] = useState<
+    number | null
+  >(null);
+  const [proposedTreasuryId, setProposedTreasuryId] = useState<number | null>(
+    null
+  );
 
   const [state, setState] = useState<State>(INITIAL_STATE);
 
@@ -108,8 +131,64 @@ export function CreateProposal({ daoId }: CreateProposalProps) {
   useEffect(() => {
     let unsubscribe: any | null = null;
 
+    if (!proposedTreasuryId) {
+      return undefined;
+    }
+
     api?.query.daoTreasury
-      .proposalCount<u32>(daoId, (x: u32) => setNextProposalId(x.toNumber()))
+      .proposals<Option<TransferCodec>>(
+        daoId,
+        proposedTreasuryId,
+        async (_transferProposal: Option<TransferCodec>) => {
+          if (_transferProposal.isNone) {
+            return;
+          }
+
+          if (!metamaskAccount) {
+            return;
+          }
+
+          const _tx = api?.tx.daoTreasury.approveProposal(
+            daoId,
+            proposedTreasuryId
+          );
+          const proposalCallData = _tx?.method.toHex();
+          await daoCollectiveContract
+            ?.connect(metamaskAccount)
+            .propose(daoId, members.length, proposalCallData);
+
+          await router.push(`/daos/${daoId}`);
+        }
+      )
+      .then((unsub) => {
+        unsubscribe = unsub;
+      })
+      // eslint-disable-next-line no-console
+      .catch(console.error);
+
+    return () => {
+      if (unsubscribe) {
+        unsubscribe();
+      }
+    };
+  }, [
+    api?.query.daoTreasury,
+    api?.tx.daoTreasury,
+    daoCollectiveContract,
+    daoId,
+    members.length,
+    metamaskAccount,
+    proposedTreasuryId,
+    router
+  ]);
+
+  useEffect(() => {
+    let unsubscribe: any | null = null;
+
+    api?.query.daoTreasury
+      .proposalCount<u32>(daoId, (x: u32) =>
+        setNextTreasuryProposalId(x.toNumber())
+      )
       .then((unsub) => {
         unsubscribe = unsub;
       })
@@ -242,26 +321,30 @@ export function CreateProposal({ daoId }: CreateProposalProps) {
       return null;
     }
 
-    const _tx = api?.tx.daoTreasury.approveProposal(daoId, nextProposalId);
+    const _tx = api?.tx.daoTreasury.approveProposal(
+      daoId,
+      nextTreasuryProposalId
+    );
 
-    const _proposeTransfer = [daoId, parseInt(state.amount, 10), state.target];
+    const _proposeSpend = [daoId, parseInt(state.amount, 10), state.target];
     const _approveProposal = [daoId, members.length, _tx, LENGTH_BOUND];
 
     return api.tx.utility.batch([
-      api.tx.daoTreasury.proposeSpend(..._proposeTransfer),
+      api.tx.daoTreasury.proposeSpend(..._proposeSpend),
       api.tx.daoCouncil.propose(..._approveProposal)
     ]);
   }, [
     api,
     daoId,
     members.length,
-    nextProposalId,
+    nextTreasuryProposalId,
     state.amount,
     state.proposalType,
     state.target
   ]);
 
   const onSuccess = () => {
+    setProposedTreasuryId(nextTreasuryProposalId);
     router.push(`/daos/${daoId}`);
   };
 
@@ -285,6 +368,60 @@ export function CreateProposal({ daoId }: CreateProposalProps) {
       _accounts = accounts;
     }
   }
+
+  const handleProposeClick = async () => {
+    if (!metamaskAccount) {
+      return;
+    }
+
+    switch (state.proposalType) {
+      case ProposalEnum.PROPOSE_TRANSFER: {
+        await daoTreasuryContract
+          ?.connect(metamaskAccount)
+          .proposeSpend(
+            parseInt(daoId, 10),
+            parseInt(state.amount, 10),
+            isEthereumAddress(state.target)
+              ? state.target
+              : u8aToHex(addressToEvm(state.target))
+          );
+        setProposedTreasuryId(nextTreasuryProposalId);
+        break;
+      }
+      case ProposalEnum.PROPOSE_ADD_MEMBER: {
+        const _tx = api?.tx.daoCouncilMemberships.addMember(
+          daoId,
+          isEthereumAddress(state.target)
+            ? evmToAddress(state.target)
+            : state.target
+        );
+        const proposalCallData = _tx?.method.toHex();
+        await daoCollectiveContract
+          ?.connect(metamaskAccount)
+          .propose(daoId, members.length, proposalCallData);
+        await router.push(`/daos/${daoId}`);
+        break;
+      }
+      case ProposalEnum.PROPOSE_REMOVE_MEMBER: {
+        const _tx = api?.tx.daoCouncilMemberships.removeMember(
+          daoId,
+          isEthereumAddress(state.target)
+            ? evmToAddress(state.target)
+            : state.target
+        );
+        const proposalCallData = _tx?.method.toHex();
+        await daoCollectiveContract
+          ?.connect(metamaskAccount)
+          .propose(daoId, members.length, proposalCallData);
+        await router.push(`/daos/${daoId}`);
+        break;
+      }
+      default: {
+        // eslint-disable-next-line no-console
+        console.error('No such case');
+      }
+    }
+  };
 
   return (
     <div className={styles.container}>
@@ -351,13 +488,13 @@ export function CreateProposal({ daoId }: CreateProposalProps) {
                     handleOnKeyDown={handleOnKeyDown}
                   >
                     <Input
-                      readOnly
+                      onChange={onInputChange}
                       name={InputName.TARGET}
                       label={InputLabel.TARGET}
                       value={
                         (accounts?.find(
                           (_account) => _account.address === state.target
-                        )?.meta.name as string) ?? ''
+                        )?.meta.name as string) ?? state.target
                       }
                       required
                     />
@@ -373,13 +510,13 @@ export function CreateProposal({ daoId }: CreateProposalProps) {
                     handleOnKeyDown={handleOnKeyDown}
                   >
                     <Input
-                      readOnly
-                      name={InputName.MEMBER}
+                      onChange={onInputChange}
+                      name={InputName.TARGET}
                       label={InputLabel.MEMBER}
                       value={
                         (accounts?.find(
                           (_account) => _account.address === state.target
-                        )?.meta.name as string) ?? ''
+                        )?.meta.name as string) ?? state.target
                       }
                       required
                     />
@@ -396,16 +533,23 @@ export function CreateProposal({ daoId }: CreateProposalProps) {
             >
               Cancel
             </Button>
-            <TxButton
-              extrinsic={extrinsic}
-              accountId={currentAccount?.address}
-              params={handleTransform}
-              disabled={disabled}
-              tx={api?.tx.daoCouncil.propose}
-              onSuccess={onSuccess}
-            >
-              Propose
-            </TxButton>
+
+            {metamaskAccount ? (
+              <Button onClick={handleProposeClick} disabled={disabled}>
+                Propose
+              </Button>
+            ) : (
+              <TxButton
+                extrinsic={extrinsic}
+                accountId={substrateAccount?.address}
+                params={handleTransform}
+                disabled={disabled}
+                tx={api?.tx.daoCouncil.propose}
+                onSuccess={onSuccess}
+              >
+                Propose
+              </TxButton>
+            )}
           </div>
         </Card>
       </div>

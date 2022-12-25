@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 
-import { RadioContext, RadioContextType } from 'context';
+import { RadioContext, RadioContextType } from 'context/radioContext';
 
 export function useRadioContext(): RadioContextType {
   const context = useContext(RadioContext);

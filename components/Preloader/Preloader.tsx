@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef } from 'react';
-import { appConfig } from 'config';
+import { ethers } from 'ethers';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import {
   apiAtom,
@@ -10,10 +10,13 @@ import {
   socketAtom
 } from 'store/api';
 import {
-  currentAccountAddressAtom,
-  setCurrentAccountAtom
+  setCurrentMetamaskAccountAtom,
+  persistMetamaskAccountAtom,
+  substrateAccountAddressAtom,
+  setCurrentSubstrateAccountAtom
 } from 'store/account';
-import { retrieveChainInfo } from 'utils';
+import { appConfig } from 'config';
+import { retrieveChainInfo } from 'utils/retrieveChainInfo';
 import type { ApiPromise } from '@polkadot/api';
 import type { Keyring } from '@polkadot/ui-keyring';
 
@@ -22,17 +25,39 @@ export function Preloader() {
 
   const [api, setApi] = useAtom(apiAtom);
   const [keyring, setKeyring] = useAtom(keyringAtom);
-  const currentAccountAddress = useAtomValue(currentAccountAddressAtom);
+  const persistMetamaskAccount = useAtomValue(persistMetamaskAccountAtom);
+  const persistSubstrateAccount = useAtomValue(substrateAccountAddressAtom);
   const socket = useAtomValue(socketAtom);
   const setApiError = useSetAtom(apiErrorAtom);
   const setJsonRPC = useSetAtom(jsonrpcAtom);
   const setApiConnected = useSetAtom(apiConnectedAtom);
-  const setCurrentAccount = useSetAtom(setCurrentAccountAtom);
+  const setCurrentMetamaskAccount = useSetAtom(setCurrentMetamaskAccountAtom);
+  const setCurrentSubstrateAccount = useSetAtom(setCurrentSubstrateAccountAtom);
 
   const loadCurrentAccount = useCallback(
-    (_keyring: Keyring, _currentAccountAddress: string) =>
-      setCurrentAccount(_keyring.getPair(_currentAccountAddress)),
-    [setCurrentAccount]
+    async (
+      _keyring: Keyring,
+      _metamaskAccountAddress: string | null,
+      _substrateAccountAddress: string | null
+    ) => {
+      if (_metamaskAccountAddress) {
+        // @ts-ignore
+        const { ethereum } = window;
+        if (!ethereum.isMetaMask) {
+          return;
+        }
+        const provider = new ethers.providers.Web3Provider(ethereum);
+        await provider.send('eth_requestAccounts', []);
+        const signer = await provider.getSigner(_metamaskAccountAddress);
+
+        await setCurrentMetamaskAccount(signer);
+      }
+      if (_substrateAccountAddress) {
+        setCurrentSubstrateAccount(_keyring.getPair(_substrateAccountAddress));
+      }
+    },
+
+    [setCurrentMetamaskAccount, setCurrentSubstrateAccount]
   );
 
   const loadAccounts = useCallback(
@@ -87,12 +112,21 @@ export function Preloader() {
   }, [setApi, setApiConnected, setApiError, setJsonRPC, socket]);
 
   useEffect(() => {
-    if (!keyring || !currentAccountAddress) {
+    if (!keyring) {
       return;
     }
 
-    loadCurrentAccount(keyring, currentAccountAddress);
-  }, [currentAccountAddress, keyring, loadCurrentAccount]);
+    loadCurrentAccount(
+      keyring,
+      persistMetamaskAccount,
+      persistSubstrateAccount
+    );
+  }, [
+    persistMetamaskAccount,
+    keyring,
+    loadCurrentAccount,
+    persistSubstrateAccount
+  ]);
 
   useEffect(() => {
     if (!api || keyring) {
