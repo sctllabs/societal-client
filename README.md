@@ -50,3 +50,16 @@ npm run start
 # or
 yarn start
 ```
+
+### Run in Docker
+
+First, install [Docker](https://docs.docker.com/get-docker/) and
+[Docker Compose](https://docs.docker.com/compose/install/).
+
+Then run the following command to start a client web application.
+
+```bash
+docker run -p 3000:3000 societal/societal-client:latest
+```
+
+You can use either the `latest` tag or specific one.
