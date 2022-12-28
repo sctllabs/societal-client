@@ -10,6 +10,7 @@
     "generate-assets": "node scripts/generateIcons.mjs",
     "prebuild": "npm run generate-assets",
     "stylelint": "stylelint --quiet --fix \"**/*.(scss|sass)\"",
+    "test": "jest --silent",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -41,12 +42,18 @@
   "devDependencies": {
     "@next/bundle-analyzer": "^13.0.6",
     "@svgr/webpack": "^6.5.1",
+    "@types/jest": "^26.0.24",
     "@types/react-transition-group": "^4.4.5",
     "@typescript-eslint/eslint-plugin": "^5.46.1",
+    "@testing-library/jest-dom": "^5.16.5",
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/react-hooks": "^8.0.1",
+    "babel-jest": "^27.0.6",
     "camelcase": "^7.0.0",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-airbnb-typescript": "^17.0.0",
     "eslint-config-prettier": "^8.5.0",
+    "jest": "^27.0.6",
     "sass": "^1.56.1",
     "stylelint": "^14.16.0",
     "stylelint-config-recommended-scss": "^8.0.0",

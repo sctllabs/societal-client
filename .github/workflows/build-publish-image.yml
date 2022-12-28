@@ -31,6 +31,11 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - name: Check out the repo
         uses: actions/checkout@v2.5.0
+
+      # Preparing env
+      - name: Prepare environment
+        id: env
+        run: cp .env.example .env.local
       
       # Login to Docker hub using the credentials stored in the repository secrets
       - name: Log in to Docker Hub
