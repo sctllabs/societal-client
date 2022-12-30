@@ -1,0 +1,22 @@
+version: "3.2"
+
+services:
+  node:
+    container_name: societal-node
+    image: societal/societal-node:latest
+    ports:
+      - "9944:9944"
+    volumes:
+      - societal-node-data:/var/www/societal-node
+    entrypoint: /usr/local/bin/societal-node --dev --ws-external
+
+  client:
+    container_name: societal-client
+    image: societal/societal-client:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_PROVIDER_SOCKET=ws://127.0.0.1:9944
+
+volumes:
+  societal-node-data:
