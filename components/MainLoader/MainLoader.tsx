@@ -17,7 +17,7 @@ const transitionStyles: Record<string, CSSProperties> = {
 export interface MainLoaderProps extends HTMLAttributes<HTMLDivElement> {}
 
 export function MainLoader({ ...props }: MainLoaderProps) {
-  const ref = useRef(null);
+  const ref = useRef<HTMLDivElement>(null);
   const loading = useAtomValue(statesLoadingAtom);
 
   return (

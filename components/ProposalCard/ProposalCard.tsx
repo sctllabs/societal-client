@@ -1,7 +1,11 @@
 import { useMemo } from 'react';
 import { useAtomValue } from 'jotai';
 import { apiAtom } from 'store/api';
-import { accountsAtom, currentAccountAtom } from 'store/account';
+import {
+  accountsAtom,
+  metamaskAccountAtom,
+  substrateAccountAtom
+} from 'store/account';
 
 import {
   LENGTH_BOUND,
@@ -26,6 +30,8 @@ import { Typography } from 'components/ui-kit/Typography';
 import { Countdown } from 'components/Countdown';
 
 import styles from './ProposalCard.module.scss';
+import { Button } from '../ui-kit/Button';
+import { useDaoCollectiveContract } from '../../hooks/useDaoCollectiveContract';
 
 export enum ProposalEnum {
   TRANSFER = 'Transfer',
@@ -77,9 +83,11 @@ const getProposalSettings = (
 
 export function ProposalCard({ proposal, vote, transfer }: ProposalCardProps) {
   const api = useAtomValue(apiAtom);
-  const currentAccount = useAtomValue(currentAccountAtom);
+  const substrateAccount = useAtomValue(substrateAccountAtom);
+  const metamaskAccount = useAtomValue(metamaskAccountAtom);
   const accounts = useAtomValue(accountsAtom);
   const { title, icon } = getProposalSettings(proposal.method);
+  const daoCollectiveContract = useDaoCollectiveContract();
 
   const proposalWeightBound = useMemo(() => {
     const proposalWeightBoundArg = api?.tx.daoCouncil.close.meta.args.find(
@@ -95,6 +103,42 @@ export function ProposalCard({ proposal, vote, transfer }: ProposalCardProps) {
     }
     return PROPOSAL_WEIGHT_BOUND_OLD;
   }, [api?.tx.daoCouncil.close.meta.args]);
+
+  const handleVoteYes = async () => {
+    if (!metamaskAccount || !vote) {
+      return;
+    }
+
+    await daoCollectiveContract
+      ?.connect(metamaskAccount)
+      .vote(proposal.args.dao_id, proposal.hash, vote.index, true);
+  };
+
+  const handleVoteNo = async () => {
+    if (!metamaskAccount || !vote) {
+      return;
+    }
+
+    await daoCollectiveContract
+      ?.connect(metamaskAccount)
+      .vote(proposal.args.dao_id, proposal.hash, vote.index, false);
+  };
+
+  const handleProposalFinish = async () => {
+    if (!metamaskAccount || !vote) {
+      return;
+    }
+
+    await daoCollectiveContract
+      ?.connect(metamaskAccount)
+      .close(
+        proposal.args.dao_id,
+        proposal.hash,
+        vote.index,
+        100000000000,
+        10000
+      );
+  };
 
   return (
     <Card className={styles['proposal-card']}>
@@ -133,11 +177,9 @@ export function ProposalCard({ proposal, vote, transfer }: ProposalCardProps) {
             <span className={styles['proposal-transfer-info']}>
               <Typography variant="caption3">Target</Typography>
               <Typography variant="title5">
-                {
-                  accounts?.find(
-                    (_account) => _account.address === transfer?.beneficiary
-                  )?.meta.name as string
-                }
+                {(accounts?.find(
+                  (_account) => _account.address === transfer?.beneficiary
+                )?.meta.name as string) ?? transfer?.beneficiary}
               </Typography>
             </span>
           </span>
@@ -159,31 +201,65 @@ export function ProposalCard({ proposal, vote, transfer }: ProposalCardProps) {
         )}
         <span className={styles['proposal-vote-buttons']}>
           <span className={styles['proposal-vote-button-container']}>
-            <TxButton
-              disabled={!vote}
-              accountId={currentAccount?.address}
-              tx={api?.tx.daoCouncil.vote}
-              variant="ghost"
-              params={[proposal.args.dao_id, proposal.hash, vote?.index, false]}
-              className={styles['button-vote']}
-            >
-              <Icon name="vote-no" />
-            </TxButton>
+            {metamaskAccount ? (
+              <Button
+                variant="ghost"
+                disabled={!vote}
+                className={styles['button-vote']}
+                onClick={handleVoteNo}
+              >
+                <Icon name="vote-no" />
+              </Button>
+            ) : (
+              <TxButton
+                disabled={!vote}
+                accountId={substrateAccount?.address}
+                tx={api?.tx.daoCouncil.vote}
+                variant="ghost"
+                params={[
+                  proposal.args.dao_id,
+                  proposal.hash,
+                  vote?.index,
+                  false
+                ]}
+                className={styles['button-vote']}
+              >
+                <Icon name="vote-no" />
+              </TxButton>
+            )}
+
             <Typography variant="caption2">{vote?.nays.length || 0}</Typography>
           </span>
 
           <div className={styles['vertical-break']} />
           <span className={styles['proposal-vote-button-container']}>
-            <TxButton
-              disabled={!vote}
-              accountId={currentAccount?.address}
-              tx={api?.tx.daoCouncil.vote}
-              params={[proposal.args.dao_id, proposal.hash, vote?.index, true]}
-              variant="ghost"
-              className={styles['button-vote']}
-            >
-              <Icon name="vote-yes" />
-            </TxButton>
+            {metamaskAccount ? (
+              <Button
+                variant="ghost"
+                disabled={!vote}
+                className={styles['button-vote']}
+                onClick={handleVoteYes}
+              >
+                <Icon name="vote-yes" />
+              </Button>
+            ) : (
+              <TxButton
+                disabled={!vote}
+                accountId={substrateAccount?.address}
+                tx={api?.tx.daoCouncil.vote}
+                params={[
+                  proposal.args.dao_id,
+                  proposal.hash,
+                  vote?.index,
+                  true
+                ]}
+                variant="ghost"
+                className={styles['button-vote']}
+              >
+                <Icon name="vote-yes" />
+              </TxButton>
+            )}
+
             <Typography variant="caption2">{vote?.ayes.length || 0}</Typography>
           </span>
           {vote &&
@@ -192,22 +268,34 @@ export function ProposalCard({ proposal, vote, transfer }: ProposalCardProps) {
               <>
                 <div className={styles['vertical-break']} />
                 <span className={styles['proposal-vote-button-container']}>
-                  <TxButton
-                    disabled={!vote}
-                    accountId={currentAccount?.address}
-                    tx={api?.tx.daoCouncil.close}
-                    params={[
-                      proposal.args.dao_id,
-                      proposal.hash,
-                      vote.index,
-                      proposalWeightBound,
-                      LENGTH_BOUND
-                    ]}
-                    variant="ghost"
-                    className={styles['button-vote']}
-                  >
-                    <Icon name="send" />
-                  </TxButton>
+                  {metamaskAccount ? (
+                    <Button
+                      disabled={!vote}
+                      variant="ghost"
+                      className={styles['button-vote']}
+                      onClick={handleProposalFinish}
+                    >
+                      <Icon name="send" />
+                    </Button>
+                  ) : (
+                    <TxButton
+                      disabled={!vote}
+                      accountId={substrateAccount?.address}
+                      tx={api?.tx.daoCouncil.close}
+                      params={[
+                        proposal.args.dao_id,
+                        proposal.hash,
+                        vote.index,
+                        proposalWeightBound,
+                        LENGTH_BOUND
+                      ]}
+                      variant="ghost"
+                      className={styles['button-vote']}
+                    >
+                      <Icon name="send" />
+                    </TxButton>
+                  )}
+
                   <Typography variant="caption2">Finish</Typography>
                 </span>
               </>

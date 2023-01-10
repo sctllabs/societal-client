@@ -9,6 +9,7 @@
   "parserOptions": {
     "project": "./tsconfig.json"
   },
+  "ignorePatterns": ["**/*.config.js", "**/*.setup.js"],
   "rules": {
     "react/jsx-props-no-spreading": 0,
     "prefer-arrow-callback": 0,

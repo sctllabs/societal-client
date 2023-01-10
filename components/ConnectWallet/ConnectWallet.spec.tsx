@@ -1,9 +1,9 @@
 import { render } from '@testing-library/react';
-import { Account } from './Account';
+import { ConnectWallet } from './ConnectWallet';
 
 describe('Account', () => {
   it('Should render component', () => {
-    const { container } = render(<Account key="" />);
+    const { container } = render(<ConnectWallet key="" />);
 
     expect(container).toMatchSnapshot();
   });

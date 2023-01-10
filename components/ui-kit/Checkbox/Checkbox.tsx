@@ -1,6 +1,6 @@
 import React, { forwardRef, InputHTMLAttributes } from 'react';
 import clsx from 'clsx';
-import { useControlled } from 'hooks';
+import { useControlled } from 'hooks/useControlled';
 
 import styles from './Checkbox.module.scss';
 

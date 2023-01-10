@@ -7,7 +7,7 @@ import {
 } from 'react';
 import clsx from 'clsx';
 
-import { useRadioContext } from 'hooks';
+import { useRadioContext } from 'hooks/useRadioContext';
 
 import styles from './Radio.module.scss';
 

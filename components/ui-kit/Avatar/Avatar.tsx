@@ -1,6 +1,6 @@
 import { HTMLAttributes } from 'react';
 import clsx from 'clsx';
-import { stringAvatar } from 'utils';
+import { stringAvatar } from 'utils/stringAvatar';
 
 import styles from './Avatar.module.scss';
 

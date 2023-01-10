@@ -12,8 +12,8 @@ import {
 import { Modifier, usePopper } from 'react-popper';
 import clsx from 'clsx';
 
-import { useIsomorphicLayoutEffect } from 'hooks';
-import { handleEnterKeyPress, handleEscKeyPress } from 'utils';
+import { useIsomorphicLayoutEffect } from 'hooks/useIsomorphicLayoutEffect';
+import { handleEnterKeyPress, handleEscKeyPress } from 'utils/keyHandler';
 
 import styles from './Dropdown.module.scss';
 
