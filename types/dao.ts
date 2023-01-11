@@ -3,7 +3,7 @@ import type { TreasuryProposal, Votes } from '@polkadot/types/interfaces';
 
 export interface DaoCodec extends Struct {
   readonly accountId: Bytes;
-  readonly found: Bytes;
+  readonly founder: Bytes;
   readonly tokenId: u32;
   readonly config: DaoConfig;
 }

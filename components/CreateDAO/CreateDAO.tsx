@@ -9,13 +9,25 @@ import {
 } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
+import { toast } from 'react-toastify';
+
 import { useAtom, useAtomValue } from 'jotai';
 import { apiAtom } from 'store/api';
 import { createdDaoIdAtom, daosAtom } from 'store/dao';
-import { accountsAtom, currentAccountAtom } from 'store/account';
+import {
+  accountsAtom,
+  metamaskAccountAtom,
+  substrateAccountAtom
+} from 'store/account';
 
-import { TxCallback } from 'types';
-import type { u32 } from '@polkadot/types';
+import { useDaoContract } from 'hooks/useDaoContract';
+import { ssToEvmAddress } from 'utils/ssToEvmAddress';
+
+import { evmToAddress } from '@polkadot/util-crypto';
+import { isHex, stringToHex } from '@polkadot/util';
+
+import type { u32, Option } from '@polkadot/types';
+import type { DaoCodec } from 'types';
 
 import { Typography } from 'components/ui-kit/Typography';
 import { Button } from 'components/ui-kit/Button';
@@ -25,8 +37,9 @@ import { Dropdown } from 'components/ui-kit/Dropdown';
 import { Card } from 'components/ui-kit/Card';
 import { RadioGroup } from 'components/ui-kit/Radio/RadioGroup';
 import { Radio } from 'components/ui-kit/Radio/Radio';
-import { TxButton } from 'components/TxButton';
+import { Notification } from 'components/ui-kit/Notifications';
 import { MembersDropdown } from 'components/MembersDropdown';
+import { TxButton } from 'components/TxButton';
 
 import styles from './CreateDAO.module.scss';
 
@@ -78,13 +91,18 @@ type State = {
 
 export function CreateDAO() {
   const router = useRouter();
-  const [nextDaoId, setNextDaoId] = useState<number | null>(null);
+  const [nextDaoId, setNextDaoId] = useState<number>(0);
   const api = useAtomValue(apiAtom);
-  const currentAccount = useAtomValue(currentAccountAtom);
   const daos = useAtomValue(daosAtom);
   const accounts = useAtomValue(accountsAtom);
-  const [createdDaoId, setDaoCreatedId] = useAtom(createdDaoIdAtom);
+  const metamaskSigner = useAtomValue(metamaskAccountAtom);
+  const substrateAccount = useAtomValue(substrateAccountAtom);
+
+  const [createdDaoId, setCreatedDaoId] = useAtom(createdDaoIdAtom);
+  const [proposedDaoId, setProposedDaoId] = useState<number | null>(null);
   const daoCreatedRef = useRef<boolean>(false);
+
+  const daoContract = useDaoContract();
 
   const [state, setState] = useState<State>({
     daoName: '',
@@ -108,14 +126,49 @@ export function CreateDAO() {
       return;
     }
 
+    toast.success(
+      <Notification
+        title="You've successfully created a new DAO"
+        body="You can create new DAO and perform other actions."
+        variant="success"
+      />
+    );
     router.push(`/daos/${currentDao.id}`);
-  }, [createdDaoId, daos, router, setDaoCreatedId]);
+  }, [createdDaoId, daos, router, state.daoName]);
 
   useEffect(() => {
-    let unsubscribe: any | null = null;
+    if (proposedDaoId === null) {
+      return undefined;
+    }
 
+    let unsubscribe: any | null = null;
     api?.query.dao
-      .nextDaoId<u32>((x: u32) => setNextDaoId(x.toNumber()))
+      .daos<Option<DaoCodec>>(
+        proposedDaoId,
+        async (_proposedDao: Option<DaoCodec>) => {
+          if (_proposedDao.isEmpty) {
+            return;
+          }
+
+          const founder = _proposedDao.value.founder.toString();
+          const address = metamaskSigner
+            ? await metamaskSigner?.getAddress()
+            : substrateAccount?.address;
+
+          if (!address) {
+            return;
+          }
+
+          const substrateAddress = metamaskSigner
+            ? evmToAddress(address)
+            : address;
+          if (founder !== substrateAddress || !daoCreatedRef.current) {
+            return;
+          }
+
+          setCreatedDaoId(proposedDaoId);
+        }
+      )
       .then((unsub) => {
         unsubscribe = unsub;
       })
@@ -127,12 +180,49 @@ export function CreateDAO() {
         unsubscribe();
       }
     };
-  }, [api]);
+  }, [
+    api?.query.dao,
+    metamaskSigner,
+    proposedDaoId,
+    setCreatedDaoId,
+    substrateAccount?.address
+  ]);
+
+  useEffect(() => {
+    let unsubscribe: any | null = null;
+
+    api?.query.dao
+      .nextDaoId<u32>((_nextDaoId: u32) => setNextDaoId(_nextDaoId.toNumber()))
+      .then((unsub) => {
+        unsubscribe = unsub;
+      })
+      // eslint-disable-next-line no-console
+      .catch(console.error);
+
+    return () => {
+      if (unsubscribe) {
+        unsubscribe();
+      }
+    };
+  }, [api, metamaskSigner, nextDaoId]);
 
   const onInputChange: ChangeEventHandler = (e) => {
     const target = e.target as HTMLInputElement;
     const targetName = target.name;
     const targetValue = target.value;
+
+    if (targetName === InputName.ADDRESSES) {
+      const dataAddressIndex = target.getAttribute('data-address-index');
+      setState((prevState) => ({
+        ...prevState,
+        addresses: prevState.addresses.map((x, index) =>
+          dataAddressIndex && parseInt(dataAddressIndex, 10) === index
+            ? targetValue
+            : x
+        )
+      }));
+      return;
+    }
 
     setState((prevState) => ({
       ...prevState,
@@ -169,7 +259,6 @@ export function CreateDAO() {
   };
 
   const disabled =
-    nextDaoId === null ||
     !state.daoName ||
     !state.purpose ||
     !state.tokenName ||
@@ -225,23 +314,28 @@ export function CreateDAO() {
       }
     };
 
-    return [
-      addresses.filter((x) => x.length > 0).map((x) => x.trim()),
-      JSON.stringify(data).trim()
-    ];
-  };
+    const _members = addresses
+      .filter((_address) => _address.length > 0)
+      .map((_address) => {
+        const _foundAccount = accounts?.find(
+          (_account) => _account.address === _address
+        );
 
-  const onSuccess: TxCallback = (result) => {
-    const _daoCreatedEvent = result.events.find(
-      (x) => x.event.method.toString() === 'DaoRegistered'
-    );
-    if (!_daoCreatedEvent) {
-      return;
-    }
+        if (_foundAccount) {
+          if (_foundAccount.meta.isEthereum) {
+            return _foundAccount.meta.ethAddress;
+          }
+        }
 
-    const _daoCreatedId = (_daoCreatedEvent.event.data[0] as u32).toNumber();
-    daoCreatedRef.current = true;
-    setDaoCreatedId(_daoCreatedId);
+        // TODO: re-work this
+        if (_foundAccount?.type === 'sr25519') {
+          return _address;
+        }
+
+        return isHex(_address) ? _address.trim() : ssToEvmAddress(_address);
+      });
+
+    return [_members, stringToHex(JSON.stringify(data).trim())];
   };
 
   const handleMemberChoose = (target: HTMLUListElement) => {
@@ -251,6 +345,7 @@ export function CreateDAO() {
       return;
     }
     const addressIndex = parseInt(selectedIndex, 10);
+
     setState((prevState) => ({
       ...prevState,
       addresses: prevState.addresses.map((_address, index) =>
@@ -273,6 +368,45 @@ export function CreateDAO() {
     },
     []
   );
+
+  const handleDaoEthereum = async () => {
+    if (!daoContract || !metamaskSigner) {
+      return;
+    }
+
+    const data = handleTransform();
+
+    try {
+      await daoContract
+        .connect(metamaskSigner)
+        .createDao(...data, { gasLimit: 3000000 });
+      daoCreatedRef.current = true;
+      setProposedDaoId(nextDaoId);
+      toast.success(
+        <Notification
+          title="Transaction created"
+          body="DAO will be created soon."
+          variant="success"
+        />
+      );
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error(e);
+
+      toast.error(
+        <Notification
+          title="Transaction declined"
+          body="Transaction was declined."
+          variant="error"
+        />
+      );
+    }
+  };
+
+  const handleOnSuccess = async () => {
+    daoCreatedRef.current = true;
+    setProposedDaoId(nextDaoId);
+  };
 
   return (
     <div className={styles.container}>
@@ -347,15 +481,17 @@ export function CreateDAO() {
                     index={index}
                   >
                     <Input
-                      readOnly
                       name={InputName.ADDRESSES}
                       label={InputLabel.ADDRESS}
+                      onChange={onInputChange}
+                      data-address-index={index}
                       value={
                         (accounts?.find(
                           (_account) =>
                             _account.address === state.addresses[index]
-                        )?.meta.name as string) || ''
+                        )?.meta.name as string) || state.addresses[index]
                       }
+                      autoComplete="off"
                       required
                       endAdornment={
                         <span className={styles['members-button-group']}>
@@ -484,16 +620,26 @@ export function CreateDAO() {
           </div>
         </div>
         <div className={styles['create-proposal']}>
-          <TxButton
-            onSuccess={onSuccess}
-            disabled={disabled}
-            accountId={currentAccount?.address}
-            params={handleTransform}
-            tx={api?.tx.dao.createDao}
-            className={styles['create-button']}
-          >
-            Create DAO
-          </TxButton>
+          {substrateAccount ? (
+            <TxButton
+              onSuccess={handleOnSuccess}
+              disabled={disabled}
+              accountId={substrateAccount?.address}
+              params={handleTransform}
+              tx={api?.tx.dao.createDao}
+              className={styles['create-button']}
+            >
+              Create DAO
+            </TxButton>
+          ) : (
+            <Button
+              onClick={handleDaoEthereum}
+              disabled={disabled}
+              className={styles['create-button']}
+            >
+              Create DAO
+            </Button>
+          )}
         </div>
       </div>
     </div>

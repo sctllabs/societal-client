@@ -1,0 +1,50 @@
+@use 'styles/colors';
+@use 'styles/typography';
+
+.dropdown-title {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+
+.dropdown-title-text {
+  color: #{colors.$grayscale-55};
+}
+
+.logo {
+  align-items: center;
+  display: flex;
+  height: 2rem;
+  justify-content: center;
+  pointer-events: none;
+  position: relative;
+  width: 2rem;
+}
+
+.button {
+  gap: 0.5rem;
+  min-width: 8.25rem;
+  padding: 0.5rem;
+}
+
+.card {
+  min-width: 15rem;
+}
+
+.wallet-button {
+  gap: 0.5rem;
+  justify-content: flex-start;
+  padding: 0;
+
+   > * {
+    pointer-events: none;
+  }
+}
+
+.disconnect-title {
+  color: #{colors.$red-2};
+}
+
+.disconnect-icon {
+  color: #{colors.$red-2};
+}

@@ -1,7 +1,14 @@
 import { useMemo } from 'react';
+import { toast } from 'react-toastify';
 import { useAtomValue } from 'jotai';
 import { apiAtom } from 'store/api';
-import { accountsAtom, currentAccountAtom } from 'store/account';
+import {
+  accountsAtom,
+  metamaskAccountAtom,
+  substrateAccountAtom
+} from 'store/account';
+
+import { useDaoCollectiveContract } from 'hooks/useDaoCollectiveContract';
 
 import {
   LENGTH_BOUND,
@@ -19,10 +26,12 @@ import type {
   VoteMeta
 } from 'types';
 
+import { Button } from 'components/ui-kit/Button';
 import { TxButton } from 'components/TxButton';
 import { Icon, IconNamesType } from 'components/ui-kit/Icon';
 import { Card } from 'components/ui-kit/Card';
 import { Typography } from 'components/ui-kit/Typography';
+import { Notification } from 'components/ui-kit/Notifications';
 import { Countdown } from 'components/Countdown';
 
 import styles from './ProposalCard.module.scss';
@@ -77,9 +86,11 @@ const getProposalSettings = (
 
 export function ProposalCard({ proposal, vote, transfer }: ProposalCardProps) {
   const api = useAtomValue(apiAtom);
-  const currentAccount = useAtomValue(currentAccountAtom);
+  const substrateAccount = useAtomValue(substrateAccountAtom);
+  const metamaskAccount = useAtomValue(metamaskAccountAtom);
   const accounts = useAtomValue(accountsAtom);
   const { title, icon } = getProposalSettings(proposal.method);
+  const daoCollectiveContract = useDaoCollectiveContract();
 
   const proposalWeightBound = useMemo(() => {
     const proposalWeightBoundArg = api?.tx.daoCouncil.close.meta.args.find(
@@ -95,6 +106,102 @@ export function ProposalCard({ proposal, vote, transfer }: ProposalCardProps) {
     }
     return PROPOSAL_WEIGHT_BOUND_OLD;
   }, [api?.tx.daoCouncil.close.meta.args]);
+
+  const handleVoteYes = async () => {
+    if (!metamaskAccount || !vote) {
+      return;
+    }
+
+    try {
+      await daoCollectiveContract
+        ?.connect(metamaskAccount)
+        .vote(proposal.args.dao_id, proposal.hash, vote.index, true);
+      toast.success(
+        <Notification
+          title="Vote created"
+          body="You've voted Aye for proposal."
+          variant="success"
+        />
+      );
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error(e);
+
+      toast.error(
+        <Notification
+          title="Transaction declined"
+          body="Transaction was declined."
+          variant="error"
+        />
+      );
+    }
+  };
+
+  const handleVoteNo = async () => {
+    if (!metamaskAccount || !vote) {
+      return;
+    }
+
+    try {
+      await daoCollectiveContract
+        ?.connect(metamaskAccount)
+        .vote(proposal.args.dao_id, proposal.hash, vote.index, false);
+      toast.success(
+        <Notification
+          title="Vote created"
+          body="You've voted Nay for proposal."
+          variant="success"
+        />
+      );
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error(e);
+
+      toast.error(
+        <Notification
+          title="Transaction declined"
+          body="Transaction was declined."
+          variant="error"
+        />
+      );
+    }
+  };
+
+  const handleProposalFinish = async () => {
+    if (!metamaskAccount || !vote) {
+      return;
+    }
+
+    try {
+      await daoCollectiveContract
+        ?.connect(metamaskAccount)
+        .close(
+          proposal.args.dao_id,
+          proposal.hash,
+          vote.index,
+          100000000000,
+          10000
+        );
+      toast.success(
+        <Notification
+          title="Proposal closed"
+          body="Proposal will be closed soon."
+          variant="success"
+        />
+      );
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error(e);
+
+      toast.error(
+        <Notification
+          title="Transaction declined"
+          body="Transaction was declined."
+          variant="error"
+        />
+      );
+    }
+  };
 
   return (
     <Card className={styles['proposal-card']}>
@@ -133,11 +240,9 @@ export function ProposalCard({ proposal, vote, transfer }: ProposalCardProps) {
             <span className={styles['proposal-transfer-info']}>
               <Typography variant="caption3">Target</Typography>
               <Typography variant="title5">
-                {
-                  accounts?.find(
-                    (_account) => _account.address === transfer?.beneficiary
-                  )?.meta.name as string
-                }
+                {(accounts?.find(
+                  (_account) => _account.address === transfer?.beneficiary
+                )?.meta.name as string) ?? transfer?.beneficiary}
               </Typography>
             </span>
           </span>
@@ -147,43 +252,76 @@ export function ProposalCard({ proposal, vote, transfer }: ProposalCardProps) {
             <span className={styles['proposal-member-address']}>
               <Icon name="user-profile" size="xs" />
               <Typography variant="title5">
-                {
-                  accounts?.find(
-                    (_account) =>
-                      _account.address === (proposal.args as ProposalMember).who
-                  )?.meta.name as string
-                }
+                {(accounts?.find(
+                  (_account) =>
+                    _account.address === (proposal.args as ProposalMember).who
+                )?.meta.name as string) ??
+                  (proposal.args as ProposalMember).who}
               </Typography>
             </span>
           </span>
         )}
         <span className={styles['proposal-vote-buttons']}>
           <span className={styles['proposal-vote-button-container']}>
-            <TxButton
-              disabled={!vote}
-              accountId={currentAccount?.address}
-              tx={api?.tx.daoCouncil.vote}
-              variant="ghost"
-              params={[proposal.args.dao_id, proposal.hash, vote?.index, false]}
-              className={styles['button-vote']}
-            >
-              <Icon name="vote-no" />
-            </TxButton>
+            {metamaskAccount ? (
+              <Button
+                variant="ghost"
+                disabled={!vote}
+                className={styles['button-vote']}
+                onClick={handleVoteNo}
+              >
+                <Icon name="vote-no" />
+              </Button>
+            ) : (
+              <TxButton
+                disabled={!vote}
+                accountId={substrateAccount?.address}
+                tx={api?.tx.daoCouncil.vote}
+                variant="ghost"
+                params={[
+                  proposal.args.dao_id,
+                  proposal.hash,
+                  vote?.index,
+                  false
+                ]}
+                className={styles['button-vote']}
+              >
+                <Icon name="vote-no" />
+              </TxButton>
+            )}
+
             <Typography variant="caption2">{vote?.nays.length || 0}</Typography>
           </span>
 
           <div className={styles['vertical-break']} />
           <span className={styles['proposal-vote-button-container']}>
-            <TxButton
-              disabled={!vote}
-              accountId={currentAccount?.address}
-              tx={api?.tx.daoCouncil.vote}
-              params={[proposal.args.dao_id, proposal.hash, vote?.index, true]}
-              variant="ghost"
-              className={styles['button-vote']}
-            >
-              <Icon name="vote-yes" />
-            </TxButton>
+            {metamaskAccount ? (
+              <Button
+                variant="ghost"
+                disabled={!vote}
+                className={styles['button-vote']}
+                onClick={handleVoteYes}
+              >
+                <Icon name="vote-yes" />
+              </Button>
+            ) : (
+              <TxButton
+                disabled={!vote}
+                accountId={substrateAccount?.address}
+                tx={api?.tx.daoCouncil.vote}
+                params={[
+                  proposal.args.dao_id,
+                  proposal.hash,
+                  vote?.index,
+                  true
+                ]}
+                variant="ghost"
+                className={styles['button-vote']}
+              >
+                <Icon name="vote-yes" />
+              </TxButton>
+            )}
+
             <Typography variant="caption2">{vote?.ayes.length || 0}</Typography>
           </span>
           {vote &&
@@ -192,22 +330,34 @@ export function ProposalCard({ proposal, vote, transfer }: ProposalCardProps) {
               <>
                 <div className={styles['vertical-break']} />
                 <span className={styles['proposal-vote-button-container']}>
-                  <TxButton
-                    disabled={!vote}
-                    accountId={currentAccount?.address}
-                    tx={api?.tx.daoCouncil.close}
-                    params={[
-                      proposal.args.dao_id,
-                      proposal.hash,
-                      vote.index,
-                      proposalWeightBound,
-                      LENGTH_BOUND
-                    ]}
-                    variant="ghost"
-                    className={styles['button-vote']}
-                  >
-                    <Icon name="send" />
-                  </TxButton>
+                  {metamaskAccount ? (
+                    <Button
+                      disabled={!vote}
+                      variant="ghost"
+                      className={styles['button-vote']}
+                      onClick={handleProposalFinish}
+                    >
+                      <Icon name="send" />
+                    </Button>
+                  ) : (
+                    <TxButton
+                      disabled={!vote}
+                      accountId={substrateAccount?.address}
+                      tx={api?.tx.daoCouncil.close}
+                      params={[
+                        proposal.args.dao_id,
+                        proposal.hash,
+                        vote.index,
+                        proposalWeightBound,
+                        LENGTH_BOUND
+                      ]}
+                      variant="ghost"
+                      className={styles['button-vote']}
+                    >
+                      <Icon name="send" />
+                    </TxButton>
+                  )}
+
                   <Typography variant="caption2">Finish</Typography>
                 </span>
               </>

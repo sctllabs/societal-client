@@ -1,27 +1,68 @@
 import { atom } from 'jotai';
-import { KeyringPair } from '@polkadot/keyring/types';
+import type { KeyringPair } from '@polkadot/keyring/types';
+import type { JsonRpcSigner } from '@ethersproject/providers';
 import { keyringAtom } from './api';
 
-const accountStorageKey = 'currentAccountAddress';
+const substrateAccountStorageKey = 'substrateAccountStorageKey';
+const metamaskAccountStorageKey = 'metamaskAccountStorageKey';
 
-export const currentAccountAddressAtom = atom<string | null>(
-  typeof window !== 'undefined' ? localStorage.getItem(accountStorageKey) : null
+// Metamask
+export const metamaskAccountAddressAtom = atom<string | null>(null);
+export const metamaskAccountAtom = atom<JsonRpcSigner | null>(null);
+export const persistMetamaskAccountAtom = atom<string | null>(
+  typeof window !== 'undefined'
+    ? localStorage.getItem(metamaskAccountStorageKey)
+    : null
 );
-
-export const currentAccountAtom = atom<KeyringPair | null>(null);
-
-export const setCurrentAccountAtom = atom(
+export const setCurrentMetamaskAccountAtom = atom(
   null,
-  (_get, _set, account: KeyringPair) => {
-    const _currentAccountAddress = _get(currentAccountAddressAtom);
+  async (_get, _set, _account: JsonRpcSigner) => {
+    _set(metamaskAccountAtom, _account);
 
-    _set(currentAccountAtom, account);
+    const accountAddress = await _account?.getAddress();
+    _set(metamaskAccountAddressAtom, accountAddress);
 
-    if (_currentAccountAddress !== account.address.toString()) {
-      _set(currentAccountAddressAtom, account.address.toString());
-      localStorage.setItem(accountStorageKey, account.address);
-    }
+    localStorage.setItem(metamaskAccountStorageKey, accountAddress);
   }
 );
 
-export const accountsAtom = atom((_get) => _get(keyringAtom)?.getPairs());
+// Substrate
+export const substrateAccountAddressAtom = atom<string | null>(
+  typeof window !== 'undefined'
+    ? localStorage.getItem(substrateAccountStorageKey)
+    : null
+);
+export const substrateAccountAtom = atom<KeyringPair | null>(null);
+export const setCurrentSubstrateAccountAtom = atom(
+  null,
+  (_get, _set, _account: KeyringPair) => {
+    _set(substrateAccountAtom, _account);
+    _set(substrateAccountAddressAtom, _account?.address.toString());
+
+    localStorage.setItem(substrateAccountStorageKey, _account.address);
+  }
+);
+
+export const accountsAtom = atom((_get) =>
+  _get(keyringAtom)
+    ?.getPairs()
+    .filter((_account) =>
+      _get(metamaskAccountAtom)
+        ? _account.meta.isEthereum
+        : !_account.meta.isEthereum
+    )
+);
+
+export const currentAccountAtom = atom(
+  (_get) => _get(metamaskAccountAtom) ?? _get(substrateAccountAtom)
+);
+
+export const disconnectAccountsAtom = atom(null, (_get, _set) => {
+  localStorage.removeItem(substrateAccountStorageKey);
+  localStorage.removeItem(metamaskAccountStorageKey);
+  _set(metamaskAccountAtom, null);
+  _set(metamaskAccountAddressAtom, null);
+  _set(persistMetamaskAccountAtom, null);
+  _set(substrateAccountAtom, null);
+  _set(substrateAccountAddressAtom, null);
+});

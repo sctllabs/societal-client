@@ -1,0 +1,26 @@
+@use "styles/colors";
+
+.root {
+  inset: 0;
+  position: fixed;
+  transition: opacity 100ms ease-in-out;
+  z-index: 1000;
+}
+
+.backdrop {
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  pointer-events: none;
+  position: fixed;
+  z-index: -1;
+}
+
+.content {
+  left: 50%;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
