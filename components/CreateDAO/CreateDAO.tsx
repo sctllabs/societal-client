@@ -326,6 +326,12 @@ export function CreateDAO() {
             return _foundAccount.meta.ethAddress;
           }
         }
+
+        // TODO: re-work this
+        if (_foundAccount?.type === 'sr25519') {
+          return _address;
+        }
+
         return isHex(_address) ? _address.trim() : ssToEvmAddress(_address);
       });
 
