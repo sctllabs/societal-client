@@ -16,17 +16,13 @@ export const persistMetamaskAccountAtom = atom<string | null>(
 );
 export const setCurrentMetamaskAccountAtom = atom(
   null,
-  async (_get, _set, _account: JsonRpcSigner | null) => {
+  async (_get, _set, _account: JsonRpcSigner) => {
     _set(metamaskAccountAtom, _account);
 
-    const accountAddress = (await _account?.getAddress()) ?? null;
+    const accountAddress = await _account?.getAddress();
     _set(metamaskAccountAddressAtom, accountAddress);
 
-    if (accountAddress) {
-      localStorage.setItem(metamaskAccountStorageKey, accountAddress);
-    } else {
-      localStorage.removeItem(metamaskAccountStorageKey);
-    }
+    localStorage.setItem(metamaskAccountStorageKey, accountAddress);
   }
 );
 
@@ -39,20 +35,34 @@ export const substrateAccountAddressAtom = atom<string | null>(
 export const substrateAccountAtom = atom<KeyringPair | null>(null);
 export const setCurrentSubstrateAccountAtom = atom(
   null,
-  (_get, _set, _account: KeyringPair | null) => {
+  (_get, _set, _account: KeyringPair) => {
     _set(substrateAccountAtom, _account);
-    _set(substrateAccountAddressAtom, _account?.address.toString() ?? null);
+    _set(substrateAccountAddressAtom, _account?.address.toString());
 
-    if (_account) {
-      localStorage.setItem(substrateAccountStorageKey, _account.address);
-    } else {
-      localStorage.removeItem(substrateAccountStorageKey);
-    }
+    localStorage.setItem(substrateAccountStorageKey, _account.address);
   }
 );
 
-export const accountsAtom = atom((_get) => _get(keyringAtom)?.getPairs());
+export const accountsAtom = atom((_get) =>
+  _get(keyringAtom)
+    ?.getPairs()
+    .filter((_account) =>
+      _get(metamaskAccountAtom)
+        ? _account.meta.isEthereum
+        : !_account.meta.isEthereum
+    )
+);
 
 export const currentAccountAtom = atom(
   (_get) => _get(metamaskAccountAtom) ?? _get(substrateAccountAtom)
 );
+
+export const disconnectAccountsAtom = atom(null, (_get, _set) => {
+  localStorage.removeItem(substrateAccountStorageKey);
+  localStorage.removeItem(metamaskAccountStorageKey);
+  _set(metamaskAccountAtom, null);
+  _set(metamaskAccountAddressAtom, null);
+  _set(persistMetamaskAccountAtom, null);
+  _set(substrateAccountAtom, null);
+  _set(substrateAccountAddressAtom, null);
+});

@@ -8,6 +8,7 @@ export enum Environment {
 
 export type AppConfig = {
   appName: string;
+  networkName: string;
   providerSocket: string;
   customRPCMethods?: object;
   chainId: number;
@@ -19,6 +20,7 @@ export type AppConfig = {
 };
 
 const appName = process.env.NEXT_PUBLIC_APP_NAME;
+const networkName = process.env.NEXT_PUBLIC_NETWORK_NAME;
 const providerSocket = process.env.NEXT_PUBLIC_PROVIDER_SOCKET;
 const rpcURL = process.env.NEXT_PUBLIC_RPC_URL;
 const chainIdString = process.env.NEXT_PUBLIC_CHAIN_ID;
@@ -32,6 +34,7 @@ const daoMembershipContractAddress =
   process.env.NEXT_PUBLIC_DAO_MEMBERSHIP_CONTRACT_ADDRESS;
 
 assert(appName, 'APP_NAME was not provided.');
+assert(networkName, 'NETWORK_NAME was not provided.');
 assert(providerSocket, 'PROVIDER_SOCKET was not provided.');
 assert(rpcURL, 'RPC_URL was not provided.');
 assert(chainIdString, 'CHAIN_ID was not provided.');
@@ -56,6 +59,7 @@ const chainId = parseInt(chainIdString, 10);
 
 export const appConfig: AppConfig = {
   appName,
+  networkName,
   providerSocket,
   chainId,
   rpcURL,

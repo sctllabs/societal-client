@@ -8,6 +8,7 @@ import {
   useState
 } from 'react';
 import { useRouter } from 'next/router';
+import { toast } from 'react-toastify';
 import { useDaoCollectiveContract } from 'hooks/useDaoCollectiveContract';
 import { useDaoTreasuryContract } from 'hooks/useDaoTreasuryContract';
 
@@ -42,6 +43,7 @@ import { Typography } from 'components/ui-kit/Typography';
 import { Input } from 'components/ui-kit/Input';
 import { MembersDropdown } from 'components/MembersDropdown';
 import { TxButton } from 'components/TxButton';
+import { Notification } from 'components/ui-kit/Notifications';
 
 import styles from './CreateProposal.module.scss';
 
@@ -52,8 +54,7 @@ export interface CreateProposalProps {
 enum InputName {
   PROPOSAL_TYPE = 'proposalType',
   AMOUNT = 'amount',
-  TARGET = 'target',
-  MEMBER = 'member'
+  TARGET = 'target'
 }
 
 enum InputLabel {
@@ -128,6 +129,18 @@ export function CreateProposal({ daoId }: CreateProposalProps) {
     };
   }, [accounts, api, daoId]);
 
+  const proposalCreatedHandler = useCallback(() => {
+    toast.success(
+      <Notification
+        title="Proposal created"
+        body="Proposal was created."
+        variant="success"
+      />
+    );
+
+    router.push(`/daos/${daoId}`);
+  }, [daoId, router]);
+
   useEffect(() => {
     let unsubscribe: any | null = null;
 
@@ -157,7 +170,7 @@ export function CreateProposal({ daoId }: CreateProposalProps) {
             ?.connect(metamaskAccount)
             .propose(daoId, members.length, proposalCallData);
 
-          await router.push(`/daos/${daoId}`);
+          proposalCreatedHandler();
         }
       )
       .then((unsub) => {
@@ -178,8 +191,8 @@ export function CreateProposal({ daoId }: CreateProposalProps) {
     daoId,
     members.length,
     metamaskAccount,
-    proposedTreasuryId,
-    router
+    proposalCreatedHandler,
+    proposedTreasuryId
   ]);
 
   useEffect(() => {
@@ -345,7 +358,7 @@ export function CreateProposal({ daoId }: CreateProposalProps) {
 
   const onSuccess = () => {
     setProposedTreasuryId(nextTreasuryProposalId);
-    router.push(`/daos/${daoId}`);
+    proposalCreatedHandler();
   };
 
   let _accounts: KeyringPair[] | undefined;
@@ -374,52 +387,72 @@ export function CreateProposal({ daoId }: CreateProposalProps) {
       return;
     }
 
-    switch (state.proposalType) {
-      case ProposalEnum.PROPOSE_TRANSFER: {
-        await daoTreasuryContract
-          ?.connect(metamaskAccount)
-          .proposeSpend(
-            parseInt(daoId, 10),
-            parseInt(state.amount, 10),
+    try {
+      switch (state.proposalType) {
+        case ProposalEnum.PROPOSE_TRANSFER: {
+          await daoTreasuryContract
+            ?.connect(metamaskAccount)
+            .proposeSpend(
+              parseInt(daoId, 10),
+              parseInt(state.amount, 10),
+              isEthereumAddress(state.target)
+                ? state.target
+                : u8aToHex(addressToEvm(state.target))
+            );
+          setProposedTreasuryId(nextTreasuryProposalId);
+          break;
+        }
+        case ProposalEnum.PROPOSE_ADD_MEMBER: {
+          const _tx = api?.tx.daoCouncilMemberships.addMember(
+            daoId,
             isEthereumAddress(state.target)
-              ? state.target
-              : u8aToHex(addressToEvm(state.target))
+              ? evmToAddress(state.target)
+              : state.target
           );
-        setProposedTreasuryId(nextTreasuryProposalId);
-        break;
+          const proposalCallData = _tx?.method.toHex();
+          await daoCollectiveContract
+            ?.connect(metamaskAccount)
+            .propose(daoId, members.length, proposalCallData);
+          proposalCreatedHandler();
+          break;
+        }
+        case ProposalEnum.PROPOSE_REMOVE_MEMBER: {
+          const _tx = api?.tx.daoCouncilMemberships.removeMember(
+            daoId,
+            isEthereumAddress(state.target)
+              ? evmToAddress(state.target)
+              : state.target
+          );
+          const proposalCallData = _tx?.method.toHex();
+          await daoCollectiveContract
+            ?.connect(metamaskAccount)
+            .propose(daoId, members.length, proposalCallData);
+          proposalCreatedHandler();
+          break;
+        }
+        default: {
+          // eslint-disable-next-line no-console
+          console.error('No such case');
+        }
       }
-      case ProposalEnum.PROPOSE_ADD_MEMBER: {
-        const _tx = api?.tx.daoCouncilMemberships.addMember(
-          daoId,
-          isEthereumAddress(state.target)
-            ? evmToAddress(state.target)
-            : state.target
-        );
-        const proposalCallData = _tx?.method.toHex();
-        await daoCollectiveContract
-          ?.connect(metamaskAccount)
-          .propose(daoId, members.length, proposalCallData);
-        await router.push(`/daos/${daoId}`);
-        break;
-      }
-      case ProposalEnum.PROPOSE_REMOVE_MEMBER: {
-        const _tx = api?.tx.daoCouncilMemberships.removeMember(
-          daoId,
-          isEthereumAddress(state.target)
-            ? evmToAddress(state.target)
-            : state.target
-        );
-        const proposalCallData = _tx?.method.toHex();
-        await daoCollectiveContract
-          ?.connect(metamaskAccount)
-          .propose(daoId, members.length, proposalCallData);
-        await router.push(`/daos/${daoId}`);
-        break;
-      }
-      default: {
-        // eslint-disable-next-line no-console
-        console.error('No such case');
-      }
+      toast.success(
+        <Notification
+          title="Transaction created"
+          body="Proposal will be created soon."
+          variant="success"
+        />
+      );
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error(e);
+
+      toast.error(
+        <Notification
+          title="Transaction declined"
+          body="Transaction was declined."
+          variant="error"
+        />
+      );
     }
   };
 

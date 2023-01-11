@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { toast } from 'react-toastify';
 import { useAtomValue } from 'jotai';
 import { apiAtom } from 'store/api';
 import {
@@ -6,6 +7,8 @@ import {
   metamaskAccountAtom,
   substrateAccountAtom
 } from 'store/account';
+
+import { useDaoCollectiveContract } from 'hooks/useDaoCollectiveContract';
 
 import {
   LENGTH_BOUND,
@@ -23,15 +26,15 @@ import type {
   VoteMeta
 } from 'types';
 
+import { Button } from 'components/ui-kit/Button';
 import { TxButton } from 'components/TxButton';
 import { Icon, IconNamesType } from 'components/ui-kit/Icon';
 import { Card } from 'components/ui-kit/Card';
 import { Typography } from 'components/ui-kit/Typography';
+import { Notification } from 'components/ui-kit/Notifications';
 import { Countdown } from 'components/Countdown';
 
 import styles from './ProposalCard.module.scss';
-import { Button } from '../ui-kit/Button';
-import { useDaoCollectiveContract } from '../../hooks/useDaoCollectiveContract';
 
 export enum ProposalEnum {
   TRANSFER = 'Transfer',
@@ -109,9 +112,29 @@ export function ProposalCard({ proposal, vote, transfer }: ProposalCardProps) {
       return;
     }
 
-    await daoCollectiveContract
-      ?.connect(metamaskAccount)
-      .vote(proposal.args.dao_id, proposal.hash, vote.index, true);
+    try {
+      await daoCollectiveContract
+        ?.connect(metamaskAccount)
+        .vote(proposal.args.dao_id, proposal.hash, vote.index, true);
+      toast.success(
+        <Notification
+          title="Vote created"
+          body="You've voted Aye for proposal."
+          variant="success"
+        />
+      );
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error(e);
+
+      toast.error(
+        <Notification
+          title="Transaction declined"
+          body="Transaction was declined."
+          variant="error"
+        />
+      );
+    }
   };
 
   const handleVoteNo = async () => {
@@ -119,9 +142,29 @@ export function ProposalCard({ proposal, vote, transfer }: ProposalCardProps) {
       return;
     }
 
-    await daoCollectiveContract
-      ?.connect(metamaskAccount)
-      .vote(proposal.args.dao_id, proposal.hash, vote.index, false);
+    try {
+      await daoCollectiveContract
+        ?.connect(metamaskAccount)
+        .vote(proposal.args.dao_id, proposal.hash, vote.index, false);
+      toast.success(
+        <Notification
+          title="Vote created"
+          body="You've voted Nay for proposal."
+          variant="success"
+        />
+      );
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error(e);
+
+      toast.error(
+        <Notification
+          title="Transaction declined"
+          body="Transaction was declined."
+          variant="error"
+        />
+      );
+    }
   };
 
   const handleProposalFinish = async () => {
@@ -129,15 +172,35 @@ export function ProposalCard({ proposal, vote, transfer }: ProposalCardProps) {
       return;
     }
 
-    await daoCollectiveContract
-      ?.connect(metamaskAccount)
-      .close(
-        proposal.args.dao_id,
-        proposal.hash,
-        vote.index,
-        100000000000,
-        10000
+    try {
+      await daoCollectiveContract
+        ?.connect(metamaskAccount)
+        .close(
+          proposal.args.dao_id,
+          proposal.hash,
+          vote.index,
+          100000000000,
+          10000
+        );
+      toast.success(
+        <Notification
+          title="Proposal closed"
+          body="Proposal will be closed soon."
+          variant="success"
+        />
       );
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error(e);
+
+      toast.error(
+        <Notification
+          title="Transaction declined"
+          body="Transaction was declined."
+          variant="error"
+        />
+      );
+    }
   };
 
   return (
@@ -189,12 +252,11 @@ export function ProposalCard({ proposal, vote, transfer }: ProposalCardProps) {
             <span className={styles['proposal-member-address']}>
               <Icon name="user-profile" size="xs" />
               <Typography variant="title5">
-                {
-                  accounts?.find(
-                    (_account) =>
-                      _account.address === (proposal.args as ProposalMember).who
-                  )?.meta.name as string
-                }
+                {(accounts?.find(
+                  (_account) =>
+                    _account.address === (proposal.args as ProposalMember).who
+                )?.meta.name as string) ??
+                  (proposal.args as ProposalMember).who}
               </Typography>
             </span>
           </span>

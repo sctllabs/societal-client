@@ -1,6 +1,5 @@
 import { KeyboardEventHandler, MouseEventHandler } from 'react';
 import Image from 'next/image';
-import { ethers } from 'ethers';
 
 import { useAtomValue, useSetAtom } from 'jotai';
 import {
@@ -8,18 +7,25 @@ import {
   metamaskAccountAddressAtom,
   setCurrentSubstrateAccountAtom,
   accountsAtom,
-  substrateAccountAtom
+  substrateAccountAtom,
+  disconnectAccountsAtom
 } from 'store/account';
+import { keyringAtom } from 'store/api';
 
 import { Dropdown } from 'components/ui-kit/Dropdown';
 import { Card } from 'components/ui-kit/Card';
 import { Typography } from 'components/ui-kit/Typography';
 import { Button } from 'components/ui-kit/Button';
 import { Icon } from 'components/ui-kit/Icon';
+import { Notification } from 'components/ui-kit/Notifications';
 
+import { toast } from 'react-toastify';
 import styles from './ConnectWallet.module.scss';
 
-const wallets = [{ name: 'MetaMask', icon: '/logo/metamask.svg' }];
+const wallets = [
+  { name: 'MetaMask', icon: '/logo/metamask.svg' },
+  { name: 'Talisman', icon: '/logo/talisman.svg' }
+];
 
 export function ConnectWallet() {
   const currentMetamaskAccountAddress = useAtomValue(
@@ -28,26 +34,30 @@ export function ConnectWallet() {
   const currentSubstrateAccount = useAtomValue(substrateAccountAtom);
   const setSubstrateAccount = useSetAtom(setCurrentSubstrateAccountAtom);
   const setMetamaskAccount = useSetAtom(setCurrentMetamaskAccountAtom);
+  const disconnectAccounts = useSetAtom(disconnectAccountsAtom);
   const accounts = useAtomValue(accountsAtom);
+  const keyring = useAtomValue(keyringAtom);
 
   const handleWalletConnect = async (targetText: string) => {
     switch (targetText) {
       case 'Disconnect': {
-        setSubstrateAccount(null);
-        await setMetamaskAccount(null);
+        disconnectAccounts();
         return;
       }
       case 'MetaMask': {
         // @ts-ignore
-        const { ethereum } = window;
-        if (!ethereum.isMetaMask) {
+        if (!window.ethereum || !window.ethereum.isMetaMask) {
+          toast.error(
+            <Notification
+              title="Error"
+              body="MetaMask not installed."
+              variant="error"
+            />
+          );
           return;
         }
-        const provider = new ethers.providers.Web3Provider(ethereum);
-        await provider.send('eth_requestAccounts', []);
-        const signer = await provider.getSigner();
-
-        await setMetamaskAccount(signer);
+        const { metamask } = await import('providers/metamask');
+        await metamask.connectWallet(keyring!, setMetamaskAccount);
         return;
       }
       default: {
@@ -154,21 +164,19 @@ export function ConnectWallet() {
               </li>
             ) : (
               <>
-                {wallets.map((_wallet) => (
-                  <li key={_wallet.name}>
-                    <Button
-                      fullWidth
-                      variant="text"
-                      className={styles['wallet-button']}
-                      data-wallet="MetaMask"
-                    >
-                      <span className={styles.logo}>
-                        <Image src={_wallet.icon} alt="wallet icon" fill />
-                      </span>
-                      <Typography variant="title4">{_wallet.name}</Typography>
-                    </Button>
-                  </li>
-                ))}
+                <li key={wallets[0].name}>
+                  <Button
+                    fullWidth
+                    variant="text"
+                    className={styles['wallet-button']}
+                    data-wallet="MetaMask"
+                  >
+                    <span className={styles.logo}>
+                      <Image src={wallets[0].icon} alt="wallet icon" fill />
+                    </span>
+                    <Typography variant="title4">{wallets[0].name}</Typography>
+                  </Button>
+                </li>
                 {accounts?.map((_account) => (
                   <li key={_account.address}>
                     <Button
@@ -198,6 +206,19 @@ export function ConnectWallet() {
         }
         className={styles.button}
       >
+        {(currentMetamaskAccountAddress || currentSubstrateAccount) && (
+          <span className={styles.logo}>
+            <Image
+              src={
+                currentMetamaskAccountAddress
+                  ? wallets[0].icon
+                  : wallets[1].icon
+              }
+              alt="wallet icon"
+              fill
+            />
+          </span>
+        )}
         {visualAddress ?? 'Connect Wallet'}
       </Button>
     </Dropdown>

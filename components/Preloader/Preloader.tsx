@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useRef } from 'react';
-import { ethers } from 'ethers';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import {
   apiAtom,
@@ -22,7 +21,6 @@ import type { Keyring } from '@polkadot/ui-keyring';
 
 export function Preloader() {
   const connectRef = useRef<boolean>(false);
-
   const [api, setApi] = useAtom(apiAtom);
   const [keyring, setKeyring] = useAtom(keyringAtom);
   const persistMetamaskAccount = useAtomValue(persistMetamaskAccountAtom);
@@ -41,16 +39,12 @@ export function Preloader() {
       _substrateAccountAddress: string | null
     ) => {
       if (_metamaskAccountAddress) {
-        // @ts-ignore
-        const { ethereum } = window;
-        if (!ethereum.isMetaMask) {
-          return;
-        }
-        const provider = new ethers.providers.Web3Provider(ethereum);
-        await provider.send('eth_requestAccounts', []);
-        const signer = await provider.getSigner(_metamaskAccountAddress);
-
-        await setCurrentMetamaskAccount(signer);
+        const { metamask } = await import('providers/metamask');
+        await metamask.connectWallet(
+          _keyring,
+          setCurrentMetamaskAccount,
+          _metamaskAccountAddress
+        );
       }
       if (_substrateAccountAddress) {
         setCurrentSubstrateAccount(_keyring.getPair(_substrateAccountAddress));
@@ -74,7 +68,11 @@ export function Preloader() {
 
         allAccounts = allAccounts.map(({ address, meta }) => ({
           address,
-          meta: { ...meta, name: `${meta.name} (${meta.source})` }
+          meta: {
+            ...meta,
+            name: `${meta.name} (${meta.source})`,
+            isEthereum: false
+          }
         }));
 
         const { systemChain, systemChainType } = await retrieveChainInfo(_api);

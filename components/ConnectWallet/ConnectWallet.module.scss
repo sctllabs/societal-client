@@ -2,8 +2,8 @@
 @use 'styles/typography';
 
 .dropdown-title {
-  display: flex;
   align-items: center;
+  display: flex;
   justify-content: space-between;
 }
 
@@ -12,17 +12,19 @@
 }
 
 .logo {
-  position: relative;
-  display: flex;
-  justify-content: center;
   align-items: center;
-  width: 2rem;
+  display: flex;
   height: 2rem;
+  justify-content: center;
   pointer-events: none;
+  position: relative;
+  width: 2rem;
 }
 
 .button {
+  gap: 0.5rem;
   min-width: 8.25rem;
+  padding: 0.5rem;
 }
 
 .card {
@@ -30,8 +32,8 @@
 }
 
 .wallet-button {
-  justify-content: flex-start;
   gap: 0.5rem;
+  justify-content: flex-start;
   padding: 0;
 
    > * {

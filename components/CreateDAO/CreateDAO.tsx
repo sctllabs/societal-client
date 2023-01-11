@@ -9,6 +9,7 @@ import {
 } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
+import { toast } from 'react-toastify';
 
 import { useAtom, useAtomValue } from 'jotai';
 import { apiAtom } from 'store/api';
@@ -20,12 +21,9 @@ import {
 } from 'store/account';
 
 import { useDaoContract } from 'hooks/useDaoContract';
+import { ssToEvmAddress } from 'utils/ssToEvmAddress';
 
-import {
-  blake2AsHex,
-  decodeAddress,
-  evmToAddress
-} from '@polkadot/util-crypto';
+import { evmToAddress } from '@polkadot/util-crypto';
 import { isHex, stringToHex } from '@polkadot/util';
 
 import type { u32, Option } from '@polkadot/types';
@@ -39,6 +37,7 @@ import { Dropdown } from 'components/ui-kit/Dropdown';
 import { Card } from 'components/ui-kit/Card';
 import { RadioGroup } from 'components/ui-kit/Radio/RadioGroup';
 import { Radio } from 'components/ui-kit/Radio/Radio';
+import { Notification } from 'components/ui-kit/Notifications';
 import { MembersDropdown } from 'components/MembersDropdown';
 import { TxButton } from 'components/TxButton';
 
@@ -127,8 +126,15 @@ export function CreateDAO() {
       return;
     }
 
+    toast.success(
+      <Notification
+        title="You've successfully created a new DAO"
+        body="You can create new DAO and perform other actions."
+        variant="success"
+      />
+    );
     router.push(`/daos/${currentDao.id}`);
-  }, [createdDaoId, daos, router]);
+  }, [createdDaoId, daos, router, state.daoName]);
 
   useEffect(() => {
     if (proposedDaoId === null) {
@@ -308,16 +314,22 @@ export function CreateDAO() {
       }
     };
 
-    return [
-      addresses
-        .filter((_address) => _address.length > 0)
-        .map((_address) =>
-          substrateAccount || isHex(_address)
-            ? _address.trim()
-            : `0x${blake2AsHex(decodeAddress(_address), 256).substring(26)}`
-        ),
-      stringToHex(JSON.stringify(data).trim())
-    ];
+    const _members = addresses
+      .filter((_address) => _address.length > 0)
+      .map((_address) => {
+        const _foundAccount = accounts?.find(
+          (_account) => _account.address === _address
+        );
+
+        if (_foundAccount) {
+          if (_foundAccount.meta.isEthereum) {
+            return _foundAccount.meta.ethAddress;
+          }
+        }
+        return isHex(_address) ? _address.trim() : ssToEvmAddress(_address);
+      });
+
+    return [_members, stringToHex(JSON.stringify(data).trim())];
   };
 
   const handleMemberChoose = (target: HTMLUListElement) => {
@@ -364,9 +376,24 @@ export function CreateDAO() {
         .createDao(...data, { gasLimit: 3000000 });
       daoCreatedRef.current = true;
       setProposedDaoId(nextDaoId);
+      toast.success(
+        <Notification
+          title="Transaction created"
+          body="DAO will be created soon."
+          variant="success"
+        />
+      );
     } catch (e) {
       // eslint-disable-next-line no-console
       console.error(e);
+
+      toast.error(
+        <Notification
+          title="Transaction declined"
+          body="Transaction was declined."
+          variant="error"
+        />
+      );
     }
   };
 
@@ -458,6 +485,7 @@ export function CreateDAO() {
                             _account.address === state.addresses[index]
                         )?.meta.name as string) || state.addresses[index]
                       }
+                      autoComplete="off"
                       required
                       endAdornment={
                         <span className={styles['members-button-group']}>
@@ -611,8 +639,3 @@ export function CreateDAO() {
     </div>
   );
 }
-
-// 0x6Be02d1d3665660d22FF9624b7BE0551ee1Ac91b account3
-// 0x7b9Dad6967d635f3c793a374015D74DfA538080C ger
-// 0x4Cc5bB84F75456641aFfD3503cA25E87305ddC13 acc 1
-// 0xcF22A2f92CC8ba1987657b07FAb6e41C417Dd3B7 acc 2
