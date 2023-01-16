@@ -1,6 +1,35 @@
 import type { Struct, u32, Bytes } from '@polkadot/types';
 import type { TreasuryProposal, Votes } from '@polkadot/types/interfaces';
 
+type CreateDaoPolicy = {
+  proposal_bond: number;
+  proposal_bond_min: number;
+  proposal_period: number;
+  approve_origin: number[];
+  reject_origin: number[];
+};
+
+type CreateDaoTokenMetadata = {
+  name: string;
+  symbol: string;
+  decimals: number;
+};
+
+type CreateDaoToken = {
+  token_id: number;
+  min_balance: string;
+  metadata: CreateDaoTokenMetadata;
+};
+
+export type CreateDaoInput = {
+  name: string;
+  purpose: string;
+  metadata: string;
+  policy: CreateDaoPolicy;
+  token?: CreateDaoToken;
+  token_address?: string;
+};
+
 export interface DaoCodec extends Struct {
   readonly accountId: Bytes;
   readonly founder: Bytes;

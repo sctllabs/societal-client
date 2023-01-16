@@ -27,7 +27,7 @@ import { evmToAddress } from '@polkadot/util-crypto';
 import { isHex, stringToHex } from '@polkadot/util';
 
 import type { u32, Option } from '@polkadot/types';
-import type { DaoCodec } from 'types';
+import type { CreateDaoInput, DaoCodec } from 'types';
 
 import { Typography } from 'components/ui-kit/Typography';
 import { Button } from 'components/ui-kit/Button';
@@ -51,7 +51,9 @@ enum InputName {
   ROLE = 'role',
   TOKEN_NAME = 'tokenName',
   TOKEN_SYMBOL = 'tokenSymbol',
+  TOKEN_TYPE = 'tokenType',
   PROPOSAL_PERIOD = 'proposalPeriod',
+  TOKEN_ADDRESS = 'tokenAddress',
   PROPOSAL_PERIOD_TYPE = 'proposalPeriodType'
 }
 
@@ -63,12 +65,18 @@ enum InputLabel {
   ADDRESS = 'New Member',
   TOKEN_NAME = 'Token Name',
   TOKEN_SYMBOL = 'Token Symbol',
+  TOKEN_ADDRESS = 'ETH Token Address',
   PROPOSAL_PERIOD = 'Proposal Period'
 }
 
 enum ProposalPeriod {
   DAYS = 'Days',
   HOURS = 'Hours'
+}
+
+enum TokenType {
+  FUNGIBLE_TOKEN = 'Fungible Token',
+  ETH_TOKEN = 'ETH Token Address'
 }
 
 const PURPOSE_INPUT_MAX_LENGTH = 500;
@@ -85,6 +93,8 @@ type State = {
   addresses: string[];
   tokenName: string;
   tokenSymbol: string;
+  tokenType: TokenType;
+  tokenAddress: string;
   proposalPeriod: string;
   proposalPeriodType: ProposalPeriod;
 };
@@ -111,6 +121,8 @@ export function CreateDAO() {
     role: 'Council',
     addresses: [''],
     tokenName: '',
+    tokenType: TokenType.FUNGIBLE_TOKEN,
+    tokenAddress: '',
     tokenSymbol: '',
     proposalPeriod: '',
     proposalPeriodType: ProposalPeriod.DAYS
@@ -261,9 +273,10 @@ export function CreateDAO() {
   const disabled =
     !state.daoName ||
     !state.purpose ||
-    !state.tokenName ||
+    (state.tokenType === TokenType.FUNGIBLE_TOKEN &&
+      (!state.tokenName || !state.tokenSymbol)) ||
+    (state.tokenType === TokenType.ETH_TOKEN && !state.tokenAddress) ||
     !state.role ||
-    !state.tokenSymbol ||
     !state.proposalPeriod ||
     !state.proposalPeriodType;
 
@@ -292,7 +305,7 @@ export function CreateDAO() {
     const min_balance = quantity;
     const token_id = nextDaoId;
 
-    const data = {
+    const data: CreateDaoInput = {
       name: daoName.trim(),
       purpose: purpose.trim(),
       metadata: 'metadata',
@@ -302,8 +315,11 @@ export function CreateDAO() {
         proposal_period,
         approve_origin: [1, 2],
         reject_origin: [1, 2]
-      },
-      token: {
+      }
+    };
+
+    if (state.tokenType === TokenType.FUNGIBLE_TOKEN) {
+      data.token = {
         token_id,
         min_balance,
         metadata: {
@@ -311,8 +327,10 @@ export function CreateDAO() {
           symbol: tokenSymbol.trim(),
           decimals: 10
         }
-      }
-    };
+      };
+    } else if (state.tokenType === TokenType.ETH_TOKEN) {
+      data.token_address = state.tokenAddress;
+    }
 
     const _members = addresses
       .filter((_address) => _address.length > 0)
@@ -526,46 +544,83 @@ export function CreateDAO() {
             </div>
           </div>
         </div>
-        <div className={styles['quantity-of-tokens']}>
-          <Typography variant="h3">Select the Quantity of Tokens</Typography>
+        <div>
+          <Typography variant="h3">Select Governance Token</Typography>
           <Typography variant="body1">
-            Specify the number of tokens, the maximum amount is 1 billion.
+            Choose the type of your Governance token.
           </Typography>
 
-          <div className={styles['quantity-of-tokens-inputs']}>
-            <Input
-              name={InputName.QUANTITY}
-              label={InputLabel.QUANTITY}
-              value={state.quantity}
-              onChange={onInputChange}
-              type="tel"
-              required
-            />
-          </div>
+          <RadioGroup
+            name={InputName.TOKEN_TYPE}
+            onChange={onInputChange}
+            defaultValue={TokenType.FUNGIBLE_TOKEN}
+          >
+            {Object.values(TokenType).map((_tokenType) => (
+              <Radio label={_tokenType} value={_tokenType} key={_tokenType} />
+            ))}
+          </RadioGroup>
         </div>
-        <div className={styles['token-info']}>
-          <Typography variant="h3">Select Token Info</Typography>
-          <Typography variant="body1">
-            Choose a name and symbol for the Governance token.
-          </Typography>
+        {state.tokenType === TokenType.FUNGIBLE_TOKEN ? (
+          <div className={styles['quantity-of-tokens']}>
+            <Typography variant="h3">Select the Quantity of Tokens</Typography>
+            <Typography variant="body1">
+              Specify the number of tokens, the maximum amount is 1 billion.
+            </Typography>
 
-          <div className={styles['token-info-inputs']}>
-            <Input
-              name={InputName.TOKEN_NAME}
-              label={InputLabel.TOKEN_NAME}
-              value={state.tokenName}
-              onChange={onInputChange}
-              required
-            />
-            <Input
-              name={InputName.TOKEN_SYMBOL}
-              label={InputLabel.TOKEN_SYMBOL}
-              value={state.tokenSymbol}
-              onChange={onInputChange}
-              required
-            />
+            <div className={styles['quantity-of-tokens-inputs']}>
+              <Input
+                name={InputName.QUANTITY}
+                label={InputLabel.QUANTITY}
+                value={state.quantity}
+                onChange={onInputChange}
+                type="tel"
+                required
+              />
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className={styles['quantity-of-tokens']}>
+            <Typography variant="h3">ETH Token Address</Typography>
+            <Typography variant="body1">Specify ETH Token Address.</Typography>
+
+            <div className={styles['quantity-of-tokens-inputs']}>
+              <Input
+                name={InputName.TOKEN_ADDRESS}
+                label={InputLabel.TOKEN_ADDRESS}
+                value={state.tokenAddress}
+                onChange={onInputChange}
+                required
+              />
+            </div>
+          </div>
+        )}
+
+        {state.tokenType === TokenType.FUNGIBLE_TOKEN && (
+          <div className={styles['token-info']}>
+            <Typography variant="h3">Select Token Info</Typography>
+            <Typography variant="body1">
+              Choose a name and symbol for the Governance token.
+            </Typography>
+
+            <div className={styles['token-info-inputs']}>
+              <Input
+                name={InputName.TOKEN_NAME}
+                label={InputLabel.TOKEN_NAME}
+                value={state.tokenName}
+                onChange={onInputChange}
+                required
+              />
+              <Input
+                name={InputName.TOKEN_SYMBOL}
+                label={InputLabel.TOKEN_SYMBOL}
+                value={state.tokenSymbol}
+                onChange={onInputChange}
+                required
+              />
+            </div>
+          </div>
+        )}
+
         <div className={styles['proposal-period']}>
           <Typography variant="h3">Proposal Period</Typography>
           <Typography variant="body1">
