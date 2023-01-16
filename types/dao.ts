@@ -1,12 +1,16 @@
 import type { Struct, u32, Bytes } from '@polkadot/types';
 import type { TreasuryProposal, Votes } from '@polkadot/types/interfaces';
 
+type DaoPolicyProportionType = 'AtLeast' | 'MoreThan';
+
+type DaoPolicyProportion = {
+  type: DaoPolicyProportionType;
+  proportion: number[];
+};
+
 type CreateDaoPolicy = {
-  proposal_bond: number;
-  proposal_bond_min: number;
   proposal_period: number;
-  approve_origin: number[];
-  reject_origin: number[];
+  approve_origin: DaoPolicyProportion;
 };
 
 type CreateDaoTokenMetadata = {
