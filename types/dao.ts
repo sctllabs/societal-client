@@ -1,12 +1,16 @@
 import type { Struct, u32, Bytes } from '@polkadot/types';
 import type { TreasuryProposal, Votes } from '@polkadot/types/interfaces';
 
+type DaoPolicyProportionType = 'AtLeast' | 'MoreThan';
+
+type DaoPolicyProportion = {
+  type: DaoPolicyProportionType;
+  proportion: number[];
+};
+
 type CreateDaoPolicy = {
-  proposal_bond: number;
-  proposal_bond_min: number;
   proposal_period: number;
-  approve_origin: number[];
-  reject_origin: number[];
+  approve_origin: DaoPolicyProportion;
 };
 
 type CreateDaoTokenMetadata = {
@@ -33,7 +37,7 @@ export type CreateDaoInput = {
 export interface DaoCodec extends Struct {
   readonly accountId: Bytes;
   readonly founder: Bytes;
-  readonly tokenId: u32;
+  readonly token: DaoTokenVariant;
   readonly config: DaoConfig;
 }
 
@@ -65,7 +69,7 @@ export type DaoConfig = {
 };
 
 export type DaoInfo = {
-  tokenId: string;
+  token: any; //TODO: add casting to DaoTokenVariant
   founder: string;
   accountId: string;
   config: DaoConfig;
@@ -81,6 +85,16 @@ export type DaoToken = {
   symbol: string;
   decimals: number;
   quantity: string;
+};
+
+export type DaoTokenVariant = DaoFungibleToken | DaoEthTokenAddress;
+
+export type DaoFungibleToken = {
+  tokenId: string;
+};
+
+export type DaoEthTokenAddress = {
+  tokenAddress: string;
 };
 
 export type MemberMeta = {

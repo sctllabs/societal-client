@@ -36,14 +36,19 @@ export function Token({ daoId }: TokenProps) {
       return undefined;
     }
 
+    if (currentDao.dao.token.isEthTokenAddress) {
+      // TODO: handle ETH Token Address
+
+      return undefined;
+    }
+
+    const tokenId = currentDao.dao.token.asFungibleToken.toString();
+
     api
       .queryMulti<[Option<AssetBalance>, AssetMetadata]>(
         [
-          [
-            api.query.assets.account,
-            [currentDao.dao.tokenId, currentDao.dao.accountId]
-          ],
-          [api.query.assets.metadata, currentDao.dao.tokenId]
+          [api.query.assets.account, [tokenId, currentDao.dao.accountId]],
+          [api.query.assets.metadata, tokenId]
         ],
         ([_assetBalance, _assetMetadata]) =>
           setToken({

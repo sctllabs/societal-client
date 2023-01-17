@@ -310,11 +310,8 @@ export function CreateDAO() {
       purpose: purpose.trim(),
       metadata: 'metadata',
       policy: {
-        proposal_bond: 1,
-        proposal_bond_min: 1,
         proposal_period,
-        approve_origin: [1, 2],
-        reject_origin: [1, 2]
+        approve_origin: { type: 'AtLeast', proportion: [1, 2] }
       }
     };
 
@@ -353,7 +350,7 @@ export function CreateDAO() {
         return isHex(_address) ? _address.trim() : ssToEvmAddress(_address);
       });
 
-    return [_members, stringToHex(JSON.stringify(data).trim())];
+    return [_members, [], stringToHex(JSON.stringify(data).trim())];
   };
 
   const handleMemberChoose = (target: HTMLUListElement) => {
