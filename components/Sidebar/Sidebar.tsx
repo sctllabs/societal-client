@@ -37,7 +37,7 @@ export function Sidebar() {
               id: (id.toHuman() as string[])[0],
               dao: {
                 ...(dao.value.toHuman() as DaoInfo),
-                tokenId: dao.value.tokenId.toString()
+                token: dao.value.token
               }
             }))
         )
