@@ -39,12 +39,12 @@ export function Preloader() {
       _substrateAccountAddress: string | null
     ) => {
       if (_metamaskAccountAddress) {
-        const { metamask } = await import('providers/metamask');
-        await metamask.connectWallet(
+        const { metamaskWallet } = await import('providers/metamaskWallet');
+        const signer = await metamaskWallet.connectWallet(
           _keyring,
-          setCurrentMetamaskAccount,
           _metamaskAccountAddress
         );
+        await setCurrentMetamaskAccount(signer);
       }
       if (_substrateAccountAddress) {
         setCurrentSubstrateAccount(_keyring.getPair(_substrateAccountAddress));
@@ -56,32 +56,17 @@ export function Preloader() {
 
   const loadAccounts = useCallback(
     async (_api: ApiPromise) => {
-      const { web3Enable, web3Accounts } = await import(
-        '@polkadot/extension-dapp'
-      );
       const { isTestChain } = await import('@polkadot/util');
       const { keyring: uikeyring } = await import('@polkadot/ui-keyring');
 
       try {
-        await web3Enable(appConfig.appName);
-        let allAccounts = await web3Accounts();
-
-        allAccounts = allAccounts.map(({ address, meta }) => ({
-          address,
-          meta: {
-            ...meta,
-            name: `${meta.name} (${meta.source})`,
-            isEthereum: false
-          }
-        }));
-
         const { systemChain, systemChainType } = await retrieveChainInfo(_api);
         const isDevelopment =
           systemChainType.isDevelopment ||
           systemChainType.isLocal ||
           isTestChain(systemChain);
 
-        uikeyring.loadAll({ isDevelopment }, allAccounts);
+        uikeyring.loadAll({ isDevelopment });
 
         setKeyring(uikeyring);
       } catch (e) {

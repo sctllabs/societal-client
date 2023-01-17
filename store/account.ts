@@ -1,7 +1,7 @@
 import { atom } from 'jotai';
 import type { KeyringPair } from '@polkadot/keyring/types';
 import type { JsonRpcSigner } from '@ethersproject/providers';
-import { keyringAtom } from './api';
+import { keyringAtom } from 'store/api';
 
 const substrateAccountStorageKey = 'substrateAccountStorageKey';
 const metamaskAccountStorageKey = 'metamaskAccountStorageKey';
@@ -46,11 +46,13 @@ export const setCurrentSubstrateAccountAtom = atom(
 export const accountsAtom = atom((_get) =>
   _get(keyringAtom)
     ?.getPairs()
-    .filter((_account) =>
-      _get(metamaskAccountAtom)
-        ? _account.meta.isEthereum
-        : !_account.meta.isEthereum
-    )
+    .filter((_account) => {
+      _get(substrateAccountAtom);
+      if (_get(metamaskAccountAtom)) {
+        return _account.meta.isEthereum;
+      }
+      return !_account.meta.isEthereum;
+    })
 );
 
 export const currentAccountAtom = atom(

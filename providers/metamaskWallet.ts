@@ -3,7 +3,7 @@ import { appConfig } from 'config';
 import type { Keyring } from '@polkadot/ui-keyring';
 import { evmToAddress } from '@polkadot/util-crypto';
 
-class Metamask {
+class MetamaskWallet {
   private readonly networkName: string;
   private readonly chainId: number;
   private readonly hexChainId: string;
@@ -58,35 +58,23 @@ class Metamask {
     }
   }
 
-  async connectWallet(
-    keyring: Keyring,
-    setMetamaskAccount: (
-      update: ethers.providers.JsonRpcSigner
-    ) => Promise<void>,
-    address?: string
-  ) {
-    try {
-      await this.switchNetwork();
-      const _metamaskAccounts: string[] = await this.provider.send(
-        'eth_requestAccounts',
-        []
-      );
+  async connectWallet(keyring: Keyring, address?: string) {
+    await this.switchNetwork();
+    const _metamaskAccounts: string[] = await this.provider.send(
+      'eth_requestAccounts',
+      []
+    );
 
-      _metamaskAccounts.forEach((_metamaskAccount) => {
-        keyring.addExternal(evmToAddress(_metamaskAccount), {
-          isEthereum: true,
-          name: _metamaskAccount,
-          ethAddress: _metamaskAccount
-        });
+    _metamaskAccounts.forEach((_metamaskAccount) => {
+      keyring.addExternal(evmToAddress(_metamaskAccount), {
+        isEthereum: true,
+        name: _metamaskAccount,
+        ethAddress: _metamaskAccount
       });
+    });
 
-      const signer = await this.provider.getSigner(address);
-      await setMetamaskAccount(signer);
-    } catch (e) {
-      // eslint-disable-next-line no-console
-      console.error(e);
-    }
+    return this.provider.getSigner(address);
   }
 }
 
-export const metamask = new Metamask();
+export const metamaskWallet = new MetamaskWallet();
