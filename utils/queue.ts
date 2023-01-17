@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-
+import { appConfig } from 'config';
 import type { Keyring } from '@polkadot/ui-keyring';
 import type { Option } from '@polkadot/types';
 import type { ApiPromise, SubmittableResult } from '@polkadot/api';
@@ -7,6 +7,7 @@ import type { SubmittableExtrinsic } from '@polkadot/api/types';
 import type { Multisig, Timepoint } from '@polkadot/types/interfaces';
 import type { KeyringPair } from '@polkadot/keyring/types';
 import type { SignerOptions } from '@polkadot/api/submittable/types';
+import type { InjectedWindow } from '@polkadot/extension-inject/types';
 
 import type {
   QueueTx,
@@ -19,7 +20,7 @@ import type {
 import { assert } from '@polkadot/util';
 import { addressEq } from '@polkadot/util-crypto';
 
-import { AccountSigner, lockCountdown } from './accountSigner';
+import { AccountSigner, lockCountdown } from 'utils/accountSigner';
 
 const NOOP = () => undefined;
 
@@ -34,10 +35,13 @@ export async function extractParams(
     meta: { isInjected, source }
   } = pair;
 
-  const { web3FromSource } = await import('@polkadot/extension-dapp');
-
   if (isInjected) {
-    const injected = await web3FromSource(source as string);
+    const injectedWindow = window as Window & InjectedWindow;
+    if (!injectedWindow || !injectedWindow.injectedWeb3[source as string]) {
+      throw new Error('Polkadot.js wallet is not installed.');
+    }
+    const provider = injectedWindow.injectedWeb3[source as string];
+    const injected = await provider.enable(appConfig.appName);
 
     assert(injected, `Unable to find a signer for ${address}`);
 

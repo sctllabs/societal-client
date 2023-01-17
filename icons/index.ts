@@ -35,6 +35,7 @@ import home from './home.svg';
 import link from './link.svg';
 import load from './load.svg';
 import logout from './logout.svg';
+import metamask from './metamask.svg';
 import mobile from './mobile.svg';
 import more from './more.svg';
 import notiErrorFilled from './noti-error-filled.svg';
@@ -50,6 +51,7 @@ import notificationsDefault from './notifications-default.svg';
 import open from './open.svg';
 import payroll from './payroll.svg';
 import placeholder from './placeholder.svg';
+import polkadot from './polkadot.svg';
 import pools from './pools.svg';
 import preferences from './preferences.svg';
 import pricing from './pricing.svg';
@@ -78,6 +80,7 @@ import socialTiktok from './social-tiktok.svg';
 import socialTwitch from './social-twitch.svg';
 import socialTwitter from './social-twitter.svg';
 import socialYoutube from './social-youtube.svg';
+import talisman from './talisman.svg';
 import taskAdd from './task-add.svg';
 import task from './task.svg';
 import tax from './tax.svg';
@@ -137,6 +140,7 @@ const icons = {
   link,
   load,
   logout,
+  metamask,
   mobile,
   more,
   'noti-error-filled': notiErrorFilled,
@@ -152,6 +156,7 @@ const icons = {
   open,
   payroll,
   placeholder,
+  polkadot,
   pools,
   preferences,
   pricing,
@@ -180,6 +185,7 @@ const icons = {
   'social-twitch': socialTwitch,
   'social-twitter': socialTwitter,
   'social-youtube': socialYoutube,
+  talisman,
   'task-add': taskAdd,
   task,
   tax,

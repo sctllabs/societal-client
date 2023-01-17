@@ -1,16 +1,24 @@
-import { KeyboardEventHandler, MouseEventHandler } from 'react';
-import Image from 'next/image';
+import {
+  useState,
+  KeyboardEventHandler,
+  MouseEventHandler,
+  useCallback,
+  useEffect,
+  useMemo
+} from 'react';
+import { toast } from 'react-toastify';
 
 import { useAtomValue, useSetAtom } from 'jotai';
 import {
   setCurrentMetamaskAccountAtom,
   metamaskAccountAddressAtom,
   setCurrentSubstrateAccountAtom,
-  accountsAtom,
   substrateAccountAtom,
   disconnectAccountsAtom
 } from 'store/account';
 import { keyringAtom } from 'store/api';
+
+import { WalletMeta, WalletType } from 'types';
 
 import { Dropdown } from 'components/ui-kit/Dropdown';
 import { Card } from 'components/ui-kit/Card';
@@ -18,61 +26,134 @@ import { Typography } from 'components/ui-kit/Typography';
 import { Button } from 'components/ui-kit/Button';
 import { Icon } from 'components/ui-kit/Icon';
 import { Notification } from 'components/ui-kit/Notifications';
+import { Modal } from 'components/ui-kit/Modal';
+import { Input } from 'components/ui-kit/Input';
+import { MembersDropdown } from 'components/MembersDropdown';
 
-import { toast } from 'react-toastify';
 import styles from './ConnectWallet.module.scss';
 
-const wallets = [
-  { name: 'MetaMask', icon: '/logo/metamask.svg' },
-  { name: 'Talisman', icon: '/logo/talisman.svg' }
+const wallets: WalletMeta[] = [
+  { name: 'MetaMask', icon: 'metamask' },
+  { name: 'Polkadot.js', icon: 'polkadot' },
+  { name: 'Talisman', icon: 'talisman' },
+  { name: 'Development Accounts', icon: 'wallet' }
 ];
 
 export function ConnectWallet() {
+  const [openModal, setOpenModal] = useState<boolean>(false);
+  const [selectedWallet, setSelectedWallet] = useState<WalletType | null>(null);
+  const [selectedAccountAddress, setSelectedAccountAddress] =
+    useState<string>('');
+
   const currentMetamaskAccountAddress = useAtomValue(
     metamaskAccountAddressAtom
   );
   const currentSubstrateAccount = useAtomValue(substrateAccountAtom);
+  const keyring = useAtomValue(keyringAtom);
   const setSubstrateAccount = useSetAtom(setCurrentSubstrateAccountAtom);
   const setMetamaskAccount = useSetAtom(setCurrentMetamaskAccountAtom);
   const disconnectAccounts = useSetAtom(disconnectAccountsAtom);
-  const accounts = useAtomValue(accountsAtom);
-  const keyring = useAtomValue(keyringAtom);
 
-  const handleWalletConnect = async (targetText: string) => {
-    switch (targetText) {
-      case 'Disconnect': {
-        disconnectAccounts();
+  useEffect(() => {
+    if (selectedAccountAddress) {
+      const foundAccount = keyring
+        ?.getPairs()
+        .find((_account) => _account.address === selectedAccountAddress);
+
+      if (!foundAccount) {
         return;
       }
+
+      setSubstrateAccount(foundAccount);
+      setSelectedAccountAddress('');
+      setSelectedWallet(null);
+      setOpenModal(false);
+    }
+  }, [keyring, selectedAccountAddress, setSubstrateAccount]);
+
+  const handleDisconnect = async () => {
+    disconnectAccounts();
+  };
+
+  const handleWalletConnect = async (targetText: string) => {
+    if (!keyring) {
+      return;
+    }
+
+    switch (targetText) {
       case 'MetaMask': {
         // @ts-ignore
         if (!window.ethereum || !window.ethereum.isMetaMask) {
           toast.error(
             <Notification
               title="Error"
-              body="MetaMask not installed."
+              body="MetaMask wallet is not installed."
               variant="error"
             />
           );
           return;
         }
-        const { metamask } = await import('providers/metamask');
-        await metamask.connectWallet(keyring!, setMetamaskAccount);
+        const { metamaskWallet } = await import('providers/metamaskWallet');
+        try {
+          const signer = await metamaskWallet.connectWallet(keyring);
+          await setMetamaskAccount(signer);
+          setOpenModal(false);
+        } catch (e) {
+          toast.error(
+            <Notification
+              title="Error"
+              body={(e as Error).message}
+              variant="error"
+            />
+          );
+        }
+        return;
+      }
+      case 'Polkadot.js': {
+        try {
+          const { polkadotWallet } = await import('providers/polkadotWallet');
+          await polkadotWallet.connectWallet(keyring, 'polkadot-js');
+          setSelectedWallet('polkadot-js');
+        } catch (e) {
+          toast.error(
+            <Notification
+              title="Error"
+              body={(e as Error).message}
+              variant="error"
+            />
+          );
+        }
+        return;
+      }
+      case 'Talisman': {
+        try {
+          const { polkadotWallet } = await import('providers/polkadotWallet');
+          await polkadotWallet.connectWallet(keyring, 'talisman');
+          setSelectedWallet('talisman');
+        } catch (e) {
+          toast.error(
+            <Notification
+              title="Error"
+              body={(e as Error).message}
+              variant="error"
+            />
+          );
+        }
+
+        return;
+      }
+      case 'Development Accounts': {
+        setSelectedWallet('development');
         return;
       }
       default: {
-        const account = accounts?.find(
-          (_account) => _account.address === targetText
-        );
-        if (!account) {
-          return;
-        }
-        setSubstrateAccount(account);
+        // eslint-disable-next-line no-console
+        console.error('No such wallet exists.');
       }
     }
   };
 
-  const handleOnClick: MouseEventHandler<HTMLUListElement> = (e) => {
+  const handleOnWalletClick: MouseEventHandler<HTMLUListElement> = (e) => {
     const targetWallet = (e.target as HTMLLIElement).getAttribute(
       'data-wallet'
     );
@@ -121,106 +202,164 @@ export function ConnectWallet() {
       currentSubstrateAccount.address;
   }
 
-  return (
-    <Dropdown
-      className={styles.dropdown}
-      dropdownItems={
-        <Card dropdown className={styles.card}>
-          <span className={styles['dropdown-title']}>
-            <Typography
-              variant="body2"
-              className={styles['dropdown-title-text']}
-            >
-              {visualAddress ?? 'Please select a wallet to continue'}
-            </Typography>
-            {visualAddress && (
-              <Button variant="icon" size="xs" onClick={handleCopyAddress}>
-                <Icon name="copy" size="xs" />
-              </Button>
-            )}
-          </span>
+  const handleOpenModal = () => {
+    setOpenModal(true);
+  };
 
-          <ul
-            onClick={handleOnClick}
-            onKeyDown={handleKeyDown}
-            role="presentation"
-          >
-            {currentMetamaskAccountAddress || currentSubstrateAccount ? (
-              <li>
-                <Button
-                  variant="text"
-                  fullWidth
-                  className={styles['wallet-button']}
-                  data-wallet="Disconnect"
+  const handleCloseModal = () => {
+    setSelectedWallet(null);
+    setOpenModal(false);
+  };
+
+  const accounts = keyring?.getPairs();
+
+  const handleAccountChoose = (target: HTMLUListElement) => {
+    const _selectedWalletAddress = target.getAttribute('data-address');
+    if (!_selectedWalletAddress) {
+      return;
+    }
+
+    setSelectedAccountAddress(_selectedWalletAddress);
+  };
+
+  const handleOnAccountClick: MouseEventHandler<HTMLUListElement> = useCallback(
+    (e) => handleAccountChoose(e.target as HTMLUListElement),
+    []
+  );
+
+  const handleOnAccountKeyDown: KeyboardEventHandler<HTMLUListElement> =
+    useCallback((e) => {
+      if (e.key !== ' ' && e.key !== 'Enter') {
+        return;
+      }
+
+      handleAccountChoose(e.target as HTMLUListElement);
+    }, []);
+
+  const walletIcon = useMemo(() => {
+    if (currentMetamaskAccountAddress) {
+      return wallets[0].icon;
+    }
+    const source = currentSubstrateAccount?.meta.source;
+
+    return wallets.find((_wallet) => _wallet.name === source)?.icon ?? 'wallet';
+  }, [currentMetamaskAccountAddress, currentSubstrateAccount?.meta.source]);
+
+  return (
+    <>
+      {currentMetamaskAccountAddress || currentSubstrateAccount ? (
+        <Dropdown
+          className={styles.dropdown}
+          dropdownItems={
+            <Card dropdown className={styles.card}>
+              <span className={styles['dropdown-title']}>
+                <Typography
+                  variant="body2"
+                  className={styles['dropdown-title-text']}
                 >
-                  <Icon name="logout" className={styles['disconnect-icon']} />
-                  <Typography
-                    variant="title4"
-                    className={styles['disconnect-title']}
-                  >
-                    Disconnect
-                  </Typography>
-                </Button>
-              </li>
-            ) : (
-              <>
-                <li key={wallets[0].name}>
+                  {visualAddress ?? 'Please select a wallet to continue'}
+                </Typography>
+                {visualAddress && (
+                  <Button variant="icon" size="xs" onClick={handleCopyAddress}>
+                    <Icon name="copy" size="xs" />
+                  </Button>
+                )}
+              </span>
+
+              <Button
+                variant="text"
+                fullWidth
+                className={styles['disconnect-button']}
+                onClick={handleDisconnect}
+              >
+                <Icon name="logout" className={styles['disconnect-icon']} />
+                <Typography
+                  variant="title4"
+                  className={styles['disconnect-title']}
+                >
+                  Disconnect
+                </Typography>
+              </Button>
+            </Card>
+          }
+        >
+          <Button variant="outlined" className={styles.button}>
+            {walletIcon && <Icon name={walletIcon} />}
+            {visualAddress}
+          </Button>
+        </Dropdown>
+      ) : (
+        <Button
+          variant="filled"
+          className={styles.button}
+          onClick={handleOpenModal}
+        >
+          Connect Wallet
+        </Button>
+      )}
+
+      <Modal open={openModal} closeable onClose={handleCloseModal}>
+        <Card className={styles['wallets-card']}>
+          <Typography variant="title4">Connect wallet</Typography>
+          <hr className={styles.hr} />
+
+          {selectedWallet ? (
+            <MembersDropdown
+              accounts={accounts?.filter(
+                (_account) =>
+                  _account.meta.source ===
+                  (selectedWallet === 'development'
+                    ? undefined
+                    : selectedWallet)
+              )}
+              handleOnClick={handleOnAccountClick}
+              handleOnKeyDown={handleOnAccountKeyDown}
+            >
+              <Input
+                readOnly
+                label="Choose an account"
+                value={
+                  (accounts?.find(
+                    (_account) => _account.address === selectedAccountAddress
+                  )?.meta.name as string) ?? selectedAccountAddress
+                }
+                required
+              />
+            </MembersDropdown>
+          ) : (
+            <ul
+              className={styles.wallets}
+              onClick={handleOnWalletClick}
+              onKeyDown={handleKeyDown}
+              role="presentation"
+            >
+              {wallets.map((_wallet) => (
+                <li key={_wallet.name}>
                   <Button
                     fullWidth
-                    variant="text"
+                    variant="outlined"
                     className={styles['wallet-button']}
-                    data-wallet="MetaMask"
+                    data-wallet={_wallet.name}
                   >
-                    <span className={styles.logo}>
-                      <Image src={wallets[0].icon} alt="wallet icon" fill />
-                    </span>
-                    <Typography variant="title4">{wallets[0].name}</Typography>
+                    <Icon name={_wallet.icon} />
+                    <Typography variant="title4">{_wallet.name}</Typography>
                   </Button>
                 </li>
-                {accounts?.map((_account) => (
-                  <li key={_account.address}>
-                    <Button
-                      variant="text"
-                      fullWidth
-                      className={styles['wallet-button']}
-                      data-wallet={_account.address}
-                    >
-                      <Icon name="user-profile" size="lg" />
-                      <Typography variant="title4">
-                        {_account.meta.name as string}
-                      </Typography>
-                    </Button>
-                  </li>
-                ))}
-              </>
-            )}
-          </ul>
+              ))}
+            </ul>
+          )}
+
+          <hr className={styles.hr} />
+          <Button
+            variant="outlined"
+            color="destructive"
+            fullWidth
+            onClick={handleCloseModal}
+          >
+            Cancel
+          </Button>
         </Card>
-      }
-    >
-      <Button
-        variant={
-          currentMetamaskAccountAddress || currentSubstrateAccount
-            ? 'outlined'
-            : 'filled'
-        }
-        className={styles.button}
-      >
-        {(currentMetamaskAccountAddress || currentSubstrateAccount) && (
-          <span className={styles.logo}>
-            <Image
-              src={
-                currentMetamaskAccountAddress
-                  ? wallets[0].icon
-                  : wallets[1].icon
-              }
-              alt="wallet icon"
-              fill
-            />
-          </span>
-        )}
-        {visualAddress ?? 'Connect Wallet'}
-      </Button>
-    </Dropdown>
+      </Modal>
+    </>
   );
 }
