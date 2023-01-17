@@ -35,7 +35,8 @@ import styles from './ConnectWallet.module.scss';
 const wallets: WalletMeta[] = [
   { name: 'MetaMask', icon: 'metamask' },
   { name: 'Polkadot.js', icon: 'polkadot' },
-  { name: 'Talisman', icon: 'talisman' }
+  { name: 'Talisman', icon: 'talisman' },
+  { name: 'Development Accounts', icon: 'wallet' }
 ];
 
 export function ConnectWallet() {
@@ -141,6 +142,10 @@ export function ConnectWallet() {
 
         return;
       }
+      case 'Development Accounts': {
+        setSelectedWallet('development');
+        return;
+      }
       default: {
         // eslint-disable-next-line no-console
         console.error('No such wallet exists.');
@@ -237,13 +242,7 @@ export function ConnectWallet() {
     }
     const source = currentSubstrateAccount?.meta.source;
 
-    if (source === 'polkadot-js') {
-      return wallets[1].icon;
-    }
-    if (source === 'talisman') {
-      return wallets[2].icon;
-    }
-    return undefined;
+    return wallets.find((_wallet) => _wallet.name === source)?.icon ?? 'wallet';
   }, [currentMetamaskAccountAddress, currentSubstrateAccount?.meta.source]);
 
   return (
@@ -307,7 +306,11 @@ export function ConnectWallet() {
           {selectedWallet ? (
             <MembersDropdown
               accounts={accounts?.filter(
-                (_account) => _account.meta.source === selectedWallet
+                (_account) =>
+                  _account.meta.source ===
+                  (selectedWallet === 'development'
+                    ? undefined
+                    : selectedWallet)
               )}
               handleOnClick={handleOnAccountClick}
               handleOnKeyDown={handleOnAccountKeyDown}

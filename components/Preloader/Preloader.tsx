@@ -12,7 +12,8 @@ import {
   setCurrentMetamaskAccountAtom,
   persistMetamaskAccountAtom,
   substrateAccountAddressAtom,
-  setCurrentSubstrateAccountAtom
+  setCurrentSubstrateAccountAtom,
+  disconnectAccountsAtom
 } from 'store/account';
 import { appConfig } from 'config';
 import { retrieveChainInfo } from 'utils/retrieveChainInfo';
@@ -31,6 +32,7 @@ export function Preloader() {
   const setApiConnected = useSetAtom(apiConnectedAtom);
   const setCurrentMetamaskAccount = useSetAtom(setCurrentMetamaskAccountAtom);
   const setCurrentSubstrateAccount = useSetAtom(setCurrentSubstrateAccountAtom);
+  const disconnectAccounts = useSetAtom(disconnectAccountsAtom);
 
   const loadCurrentAccount = useCallback(
     async (
@@ -38,20 +40,28 @@ export function Preloader() {
       _metamaskAccountAddress: string | null,
       _substrateAccountAddress: string | null
     ) => {
-      if (_metamaskAccountAddress) {
-        const { metamaskWallet } = await import('providers/metamaskWallet');
-        const signer = await metamaskWallet.connectWallet(
-          _keyring,
-          _metamaskAccountAddress
-        );
-        await setCurrentMetamaskAccount(signer);
-      }
-      if (_substrateAccountAddress) {
-        setCurrentSubstrateAccount(_keyring.getPair(_substrateAccountAddress));
+      try {
+        if (_metamaskAccountAddress) {
+          const { metamaskWallet } = await import('providers/metamaskWallet');
+          const signer = await metamaskWallet.connectWallet(
+            _keyring,
+            _metamaskAccountAddress
+          );
+          await setCurrentMetamaskAccount(signer);
+        }
+        if (_substrateAccountAddress) {
+          setCurrentSubstrateAccount(
+            _keyring.getPair(_substrateAccountAddress)
+          );
+        }
+      } catch (e) {
+        disconnectAccounts();
+        // eslint-disable-next-line no-console
+        console.error(e);
       }
     },
 
-    [setCurrentMetamaskAccount, setCurrentSubstrateAccount]
+    [disconnectAccounts, setCurrentMetamaskAccount, setCurrentSubstrateAccount]
   );
 
   const loadAccounts = useCallback(
