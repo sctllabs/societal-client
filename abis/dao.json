@@ -26,6 +26,11 @@
         "type": "address[]"
       },
       {
+        "internalType": "address[]",
+        "name": "technical_committee",
+        "type": "address[]"
+      },
+      {
         "internalType": "bytes",
         "name": "data",
         "type": "bytes"
