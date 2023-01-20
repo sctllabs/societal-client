@@ -17,6 +17,8 @@ export type AppConfig = {
   daoTreasuryContractAddress: string;
   daoCollectiveContractAddress: string;
   daoMembershipContractAddress: string;
+  tokenNetwork: string;
+  tokenApiKey: string;
 };
 
 const appName = process.env.NEXT_PUBLIC_APP_NAME;
@@ -32,6 +34,8 @@ const daoCollectiveContractAddress =
   process.env.NEXT_PUBLIC_DAO_COLLECTIVE_CONTRACT_ADDRESS;
 const daoMembershipContractAddress =
   process.env.NEXT_PUBLIC_DAO_MEMBERSHIP_CONTRACT_ADDRESS;
+const tokenNetwork = process.env.NEXT_PUBLIC_TOKEN_NETWORK;
+const tokenApiKey = process.env.NEXT_PUBLIC_TOKEN_API_KEY;
 
 assert(appName, 'APP_NAME was not provided.');
 assert(networkName, 'NETWORK_NAME was not provided.');
@@ -54,6 +58,8 @@ assert(
   daoMembershipContractAddress,
   'DAO_MEMBERSHIP_CONTRACT_ADDRESS was not provided.'
 );
+assert(tokenNetwork, 'TOKEN_NETWORK was not provided.');
+assert(tokenApiKey, 'TOKEN_API_KEY was not provided.');
 
 const chainId = parseInt(chainIdString, 10);
 
@@ -66,5 +72,7 @@ export const appConfig: AppConfig = {
   daoPrecompileContractAddress,
   daoTreasuryContractAddress,
   daoCollectiveContractAddress,
-  daoMembershipContractAddress
+  daoMembershipContractAddress,
+  tokenNetwork,
+  tokenApiKey
 };

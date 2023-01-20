@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react';
+import { ethers } from 'ethers';
+import erc20Abi from 'abis/erc20.abi.json';
 
 import { useAtomValue } from 'jotai';
 import { daosAtom } from 'store/dao';
@@ -13,6 +15,7 @@ import { Card } from 'components/ui-kit/Card';
 import { Chip } from 'components/ui-kit/Chip';
 
 import styles from './Token.module.scss';
+import { appConfig } from '../../config';
 
 export interface TokenProps {
   daoId: string;
@@ -25,6 +28,51 @@ export function Token({ daoId }: TokenProps) {
   const api = useAtomValue(apiAtom);
   const daos = useAtomValue(daosAtom);
 
+  const [tokenMetadataLoading, setTokenMetadataLoading] =
+    useState<boolean>(false);
+
+  useEffect(() => {
+    const currentDao = daos?.find((x) => x.id === daoId);
+    if (!currentDao) {
+      return;
+    }
+
+    if (!currentDao.dao.token.EthTokenAddress) {
+      return;
+    }
+
+    const provider = new ethers.providers.InfuraProvider(
+      appConfig.tokenNetwork,
+      appConfig.tokenApiKey
+    );
+
+    const contract = new ethers.Contract(
+      currentDao.dao.token.EthTokenAddress,
+      erc20Abi,
+      provider
+    );
+
+    (async () => {
+      try {
+        setTokenMetadataLoading(true);
+        const name = await contract.name();
+        const symbol = await contract.symbol();
+        const totalSupply = await contract.totalSupply();
+        const decimals = await contract.decimals();
+        setToken({
+          quantity: ethers.utils.formatUnits(totalSupply, decimals),
+          decimals,
+          symbol,
+          name
+        });
+        setTokenMetadataLoading(false);
+      } catch (e) {
+        // eslint-disable-next-line no-console
+        console.error(e);
+      }
+    })();
+  }, [daoId, daos]);
+
   useEffect(() => {
     if (!api) {
       return undefined;
@@ -36,13 +84,13 @@ export function Token({ daoId }: TokenProps) {
       return undefined;
     }
 
-    if (currentDao.dao.token.isEthTokenAddress) {
+    if (currentDao.dao.token.EthTokenAddress) {
       // TODO: handle ETH Token Address
 
       return undefined;
     }
 
-    const tokenId = currentDao.dao.token.asFungibleToken.toString();
+    const tokenId = currentDao.dao.token.FungibleToken;
 
     api
       .queryMulti<[Option<AssetBalance>, AssetMetadata]>(
@@ -73,19 +121,25 @@ export function Token({ daoId }: TokenProps) {
 
   return (
     <Card className={styles.card}>
-      <div className={styles.token}>
-        <Typography variant="caption2">{token?.symbol}</Typography>
-        <Chip variant="group" color="active" className={styles.chip}>
-          <Typography variant="title8">{TOKEN_TYPE}</Typography>
-        </Chip>
-      </div>
+      {tokenMetadataLoading ? (
+        <Typography variant="caption2">Loading...</Typography>
+      ) : (
+        <>
+          <div className={styles.token}>
+            <Typography variant="caption2">{token?.symbol}</Typography>
+            <Chip variant="group" color="active" className={styles.chip}>
+              <Typography variant="title8">{TOKEN_TYPE}</Typography>
+            </Chip>
+          </div>
 
-      <Typography variant="title1">
-        {token &&
-          Intl.NumberFormat('en-US', { minimumFractionDigits: 2 }).format(
-            parseFloat(token.quantity)
-          )}
-      </Typography>
+          <Typography variant="title1">
+            {token &&
+              Intl.NumberFormat('en-US', { minimumFractionDigits: 2 }).format(
+                parseFloat(token.quantity)
+              )}
+          </Typography>
+        </>
+      )}
     </Card>
   );
 }
