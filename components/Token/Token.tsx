@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { ethers } from 'ethers';
 import erc20Abi from 'abis/erc20.abi.json';
+import { appConfig } from 'config';
 
 import { useAtomValue } from 'jotai';
 import { daosAtom } from 'store/dao';
@@ -15,7 +16,6 @@ import { Card } from 'components/ui-kit/Card';
 import { Chip } from 'components/ui-kit/Chip';
 
 import styles from './Token.module.scss';
-import { appConfig } from '../../config';
 
 export interface TokenProps {
   daoId: string;
