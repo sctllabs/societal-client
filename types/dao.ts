@@ -112,7 +112,18 @@ export type ProposalMember = {
   who: string;
 };
 
-export type ProposalArgs = ProposalTransfer | ProposalMember;
+export type ProposalGovernanceTokenTransfer = {
+  dao_id: string;
+  amount: string;
+  beneficiary: {
+    Id: string;
+  };
+};
+
+export type ProposalArgs =
+  | ProposalTransfer
+  | ProposalMember
+  | ProposalGovernanceTokenTransfer;
 
 export type ProposalMeta = {
   hash: string;
@@ -130,4 +141,8 @@ export type TransferMeta = {
   bond: number;
 };
 
-export type ProposalType = 'addMember' | 'removeMember' | 'approveProposal';
+export type ProposalType =
+  | 'addMember'
+  | 'removeMember'
+  | 'approveProposal'
+  | 'transferToken';

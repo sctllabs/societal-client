@@ -72,6 +72,7 @@ type State = {
 
 export enum ProposalEnum {
   PROPOSE_TRANSFER = 'Propose Transfer',
+  PROPOSE_TRANSFER_GOVERNANCE_TOKEN = 'Propose Transfer Governance Token',
   PROPOSE_ADD_MEMBER = 'Propose Add Member',
   PROPOSE_REMOVE_MEMBER = 'Propose Remove Member'
 }
@@ -130,12 +131,16 @@ export function CreateProposal({ daoId }: CreateProposalProps) {
   }, [accounts, api, daoId]);
 
   const proposalCreatedHandler = useCallback(() => {
-    toast.success(
-      <Notification
-        title="Proposal created"
-        body="Proposal was created."
-        variant="success"
-      />
+    setTimeout(
+      () =>
+        toast.success(
+          <Notification
+            title="Proposal created"
+            body="Proposal was created."
+            variant="success"
+          />
+        ),
+      1000
     );
 
     router.push(`/daos/${daoId}`);
@@ -286,35 +291,31 @@ export function CreateProposal({ daoId }: CreateProposalProps) {
     if (!members) {
       return [];
     }
+
     switch (state.proposalType) {
       case ProposalEnum.PROPOSE_ADD_MEMBER: {
-        const _tx = api?.tx.daoCouncilMemberships.addMember(
-          daoId,
-          state.target
-        );
+        const _tx = api?.tx.daoCouncilMembers.addMember(daoId, state.target);
         return [daoId, members.length, _tx, LENGTH_BOUND];
       }
       case ProposalEnum.PROPOSE_REMOVE_MEMBER: {
-        const _tx = api?.tx.daoCouncilMemberships.removeMember(
+        const _tx = api?.tx.daoCouncilMembers.removeMember(daoId, state.target);
+        return [daoId, members.length, _tx, LENGTH_BOUND];
+      }
+      case ProposalEnum.PROPOSE_TRANSFER_GOVERNANCE_TOKEN: {
+        const _tx = api?.tx.dao.transferToken(
           daoId,
+          state.amount,
           state.target
         );
         return [daoId, members.length, _tx, LENGTH_BOUND];
       }
-
       default: {
         // eslint-disable-next-line no-console
         console.error('No such method exists');
         return [];
       }
     }
-  }, [
-    api?.tx.daoCouncilMemberships,
-    daoId,
-    members,
-    state.proposalType,
-    state.target
-  ]);
+  }, [api?.tx, daoId, members, state.amount, state.proposalType, state.target]);
 
   const disabled =
     !state.proposalType ||
@@ -402,8 +403,23 @@ export function CreateProposal({ daoId }: CreateProposalProps) {
           setProposedTreasuryId(nextTreasuryProposalId);
           break;
         }
+        case ProposalEnum.PROPOSE_TRANSFER_GOVERNANCE_TOKEN: {
+          const _tx = api?.tx.dao.transferToken(
+            parseInt(daoId, 10),
+            parseInt(state.amount, 10),
+            isEthereumAddress(state.target)
+              ? evmToAddress(state.target)
+              : state.target
+          );
+          const proposalCallData = _tx?.method.toHex();
+          await daoCollectiveContract
+            ?.connect(metamaskAccount)
+            .propose(daoId, members.length, proposalCallData);
+          proposalCreatedHandler();
+          break;
+        }
         case ProposalEnum.PROPOSE_ADD_MEMBER: {
-          const _tx = api?.tx.daoCouncilMemberships.addMember(
+          const _tx = api?.tx.daoCouncilMembers.addMember(
             daoId,
             isEthereumAddress(state.target)
               ? evmToAddress(state.target)
@@ -417,7 +433,7 @@ export function CreateProposal({ daoId }: CreateProposalProps) {
           break;
         }
         case ProposalEnum.PROPOSE_REMOVE_MEMBER: {
-          const _tx = api?.tx.daoCouncilMemberships.removeMember(
+          const _tx = api?.tx.daoCouncilMembers.removeMember(
             daoId,
             isEthereumAddress(state.target)
               ? evmToAddress(state.target)
@@ -504,7 +520,9 @@ export function CreateProposal({ daoId }: CreateProposalProps) {
           </div>
           {state.proposalType && (
             <div className={styles['proposal-input-container']}>
-              {state.proposalType === ProposalEnum.PROPOSE_TRANSFER && (
+              {(state.proposalType === ProposalEnum.PROPOSE_TRANSFER ||
+                state.proposalType ===
+                  ProposalEnum.PROPOSE_TRANSFER_GOVERNANCE_TOKEN) && (
                 <div className={styles['proposal-input-transfer']}>
                   <Input
                     name={InputName.AMOUNT}

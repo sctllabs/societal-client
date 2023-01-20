@@ -134,8 +134,10 @@ export function Proposals({ daoId }: ProposalsProps) {
     }
     let unsubscribe: any | null = null;
 
-    const _proposals = proposals.filter((x) => x.method === 'approveProposal');
-    const _input = _proposals.map((_proposal) => [
+    const _transferProposals = proposals.filter(
+      (x) => x.method === 'approveProposal'
+    );
+    const _input = _transferProposals.map((_proposal) => [
       _proposal.args.dao_id,
       (_proposal.args as ProposalTransfer).proposal_id
     ]);
@@ -148,7 +150,7 @@ export function Proposals({ daoId }: ProposalsProps) {
               x.value.isEmpty
                 ? null
                 : {
-                    hash: _proposals.find(
+                    hash: _transferProposals.find(
                       (_proposal) =>
                         (_proposal.args as ProposalTransfer).proposal_id ===
                         _input[index][1]

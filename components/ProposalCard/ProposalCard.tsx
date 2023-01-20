@@ -19,10 +19,12 @@ import {
 } from 'constants/transaction';
 
 import type {
+  ProposalGovernanceTokenTransfer,
   ProposalMember,
   ProposalMeta,
   ProposalType,
   TransferMeta,
+  TxCallback,
   VoteMeta
 } from 'types';
 
@@ -38,6 +40,7 @@ import styles from './ProposalCard.module.scss';
 
 export enum ProposalEnum {
   TRANSFER = 'Transfer',
+  TRANSFER_GOVERNANCE_TOKEN = 'Transfer Governance Token',
   ADD_MEMBER = 'Add Member',
   REMOVE_MEMBER = 'Remove Member'
 }
@@ -73,6 +76,12 @@ const getProposalSettings = (
       return {
         title: ProposalEnum.TRANSFER,
         icon: 'transfer'
+      };
+    }
+    case 'transferToken': {
+      return {
+        title: ProposalEnum.TRANSFER_GOVERNANCE_TOKEN,
+        icon: 'token'
       };
     }
     default: {
@@ -203,6 +212,36 @@ export function ProposalCard({ proposal, vote, transfer }: ProposalCardProps) {
     }
   };
 
+  const onFinishSuccess = () => {
+    toast.success(
+      <Notification
+        title="Proposal closed"
+        body="Proposal will be closed soon."
+        variant="success"
+      />
+    );
+  };
+
+  const onAyeVoteSuccess: TxCallback = () => {
+    toast.success(
+      <Notification
+        title="Vote created"
+        body="You've voted Aye for proposal."
+        variant="success"
+      />
+    );
+  };
+
+  const onNayVoteSuccess: TxCallback = () => {
+    toast.success(
+      <Notification
+        title="Vote created"
+        body="You've voted Nay for proposal."
+        variant="success"
+      />
+    );
+  };
+
   return (
     <Card className={styles['proposal-card']}>
       <div className={styles['proposal-title-container']}>
@@ -231,7 +270,7 @@ export function ProposalCard({ proposal, vote, transfer }: ProposalCardProps) {
       </div>
 
       <div className={styles['proposal-bottom-container']}>
-        {proposal.method === 'approveProposal' ? (
+        {proposal.method === 'approveProposal' && (
           <span className={styles['proposal-transfer-container']}>
             <span className={styles['proposal-transfer-info']}>
               <Typography variant="caption3">Amount</Typography>
@@ -246,7 +285,32 @@ export function ProposalCard({ proposal, vote, transfer }: ProposalCardProps) {
               </Typography>
             </span>
           </span>
-        ) : (
+        )}
+        {proposal.method === 'transferToken' && (
+          <span className={styles['proposal-transfer-container']}>
+            <span className={styles['proposal-transfer-info']}>
+              <Typography variant="caption3">Amount</Typography>
+              <Typography variant="title5">
+                {(proposal.args as ProposalGovernanceTokenTransfer).amount || 0}
+              </Typography>
+            </span>
+            <span className={styles['proposal-transfer-info']}>
+              <Typography variant="caption3">Target</Typography>
+              <Typography variant="title5">
+                {(accounts?.find(
+                  (_account) =>
+                    _account.address ===
+                    (proposal.args as ProposalGovernanceTokenTransfer)
+                      .beneficiary.Id
+                )?.meta.name as string) ??
+                  (proposal.args as ProposalGovernanceTokenTransfer).beneficiary
+                    .Id}
+              </Typography>
+            </span>
+          </span>
+        )}
+        {(proposal.method === 'addMember' ||
+          proposal.method === 'removeMember') && (
           <span className={styles['proposal-member-info']}>
             <Typography variant="caption3">Member</Typography>
             <span className={styles['proposal-member-address']}>
@@ -285,6 +349,7 @@ export function ProposalCard({ proposal, vote, transfer }: ProposalCardProps) {
                   false
                 ]}
                 className={styles['button-vote']}
+                onSuccess={onNayVoteSuccess}
               >
                 <Icon name="vote-no" />
               </TxButton>
@@ -317,6 +382,7 @@ export function ProposalCard({ proposal, vote, transfer }: ProposalCardProps) {
                 ]}
                 variant="ghost"
                 className={styles['button-vote']}
+                onSuccess={onAyeVoteSuccess}
               >
                 <Icon name="vote-yes" />
               </TxButton>
@@ -353,11 +419,11 @@ export function ProposalCard({ proposal, vote, transfer }: ProposalCardProps) {
                       ]}
                       variant="ghost"
                       className={styles['button-vote']}
+                      onSuccess={onFinishSuccess}
                     >
                       <Icon name="send" />
                     </TxButton>
                   )}
-
                   <Typography variant="caption2">Finish</Typography>
                 </span>
               </>
