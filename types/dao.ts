@@ -37,7 +37,7 @@ export type CreateDaoInput = {
 export interface DaoCodec extends Struct {
   readonly accountId: Bytes;
   readonly founder: Bytes;
-  readonly token: DaoTokenVariant;
+  readonly token: DaoTokenVariantCodec;
   readonly config: DaoConfig;
 }
 
@@ -69,7 +69,7 @@ export type DaoConfig = {
 };
 
 export type DaoInfo = {
-  token: any; //TODO: add casting to DaoTokenVariant
+  token: DaoTokenVariant;
   founder: string;
   accountId: string;
   config: DaoConfig;
@@ -87,14 +87,16 @@ export type DaoToken = {
   quantity: string;
 };
 
-export type DaoTokenVariant = DaoFungibleToken | DaoEthTokenAddress;
-
-export type DaoFungibleToken = {
-  tokenId: string;
+export type DaoTokenVariantCodec = {
+  asEthTokenAddress: Bytes;
+  asFungibleToken: u32;
+  isEthTokenAddress: boolean;
+  isFungibleToken: boolean;
 };
 
-export type DaoEthTokenAddress = {
-  tokenAddress: string;
+export type DaoTokenVariant = {
+  FungibleToken?: number;
+  EthTokenAddress?: string;
 };
 
 export type MemberMeta = {
@@ -112,7 +114,18 @@ export type ProposalMember = {
   who: string;
 };
 
-export type ProposalArgs = ProposalTransfer | ProposalMember;
+export type ProposalGovernanceTokenTransfer = {
+  dao_id: string;
+  amount: string;
+  beneficiary: {
+    Id: string;
+  };
+};
+
+export type ProposalArgs =
+  | ProposalTransfer
+  | ProposalMember
+  | ProposalGovernanceTokenTransfer;
 
 export type ProposalMeta = {
   hash: string;
@@ -130,4 +143,8 @@ export type TransferMeta = {
   bond: number;
 };
 
-export type ProposalType = 'addMember' | 'removeMember' | 'approveProposal';
+export type ProposalType =
+  | 'addMember'
+  | 'removeMember'
+  | 'approveProposal'
+  | 'transferToken';

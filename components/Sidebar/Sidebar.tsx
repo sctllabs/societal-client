@@ -9,6 +9,7 @@ import { currentAccountAtom } from 'store/account';
 
 import type { DaoCodec, DaoInfo } from 'types';
 import type { Option, StorageKey } from '@polkadot/types';
+import { hexToString } from '@polkadot/util';
 
 import { Icon } from 'components/ui-kit/Icon';
 import { Link } from 'components/Link';
@@ -37,7 +38,14 @@ export function Sidebar() {
               id: (id.toHuman() as string[])[0],
               dao: {
                 ...(dao.value.toHuman() as DaoInfo),
-                token: dao.value.token
+                token: {
+                  FungibleToken: dao.value.token.isFungibleToken
+                    ? dao.value.token.asFungibleToken.toNumber()
+                    : undefined,
+                  EthTokenAddress: dao.value.token.isEthTokenAddress
+                    ? hexToString(dao.value.token.asEthTokenAddress.toString())
+                    : undefined
+                }
               }
             }))
         )
