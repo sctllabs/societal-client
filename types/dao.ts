@@ -21,7 +21,8 @@ type CreateDaoTokenMetadata = {
 
 type CreateDaoToken = {
   token_id: number;
-  min_balance: string;
+  min_balance?: string;
+  initial_balance: string;
   metadata: CreateDaoTokenMetadata;
 };
 

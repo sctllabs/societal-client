@@ -63,12 +63,6 @@
         "internalType": "bytes32",
         "name": "proposalHash",
         "type": "bytes32"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint32",
-        "name": "threshold",
-        "type": "uint32"
       }
     ],
     "name": "Proposed",
@@ -248,11 +242,6 @@
       {
         "internalType": "uint32",
         "name": "dao_id",
-        "type": "uint32"
-      },
-      {
-        "internalType": "uint32",
-        "name": "threshold",
         "type": "uint32"
       },
       {
