@@ -302,7 +302,7 @@ export function CreateDAO() {
         ? MILLIS_IN_HOUR
         : MILLIS_IN_DAY);
 
-    const min_balance = quantity;
+    const initial_balance = quantity;
     const token_id = nextDaoId;
 
     const data: CreateDaoInput = {
@@ -318,7 +318,7 @@ export function CreateDAO() {
     if (state.tokenType === TokenType.FUNGIBLE_TOKEN) {
       data.token = {
         token_id,
-        min_balance,
+        initial_balance,
         metadata: {
           name: tokenName.trim(),
           symbol: tokenSymbol.trim(),

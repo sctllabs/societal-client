@@ -173,7 +173,7 @@ export function CreateProposal({ daoId }: CreateProposalProps) {
           const proposalCallData = _tx?.method.toHex();
           await daoCollectiveContract
             ?.connect(metamaskAccount)
-            .propose(daoId, members.length, proposalCallData);
+            .propose(daoId, proposalCallData);
 
           proposalCreatedHandler();
         }
@@ -295,11 +295,11 @@ export function CreateProposal({ daoId }: CreateProposalProps) {
     switch (state.proposalType) {
       case ProposalEnum.PROPOSE_ADD_MEMBER: {
         const _tx = api?.tx.daoCouncilMembers.addMember(daoId, state.target);
-        return [daoId, members.length, _tx, LENGTH_BOUND];
+        return [daoId, _tx, LENGTH_BOUND];
       }
       case ProposalEnum.PROPOSE_REMOVE_MEMBER: {
         const _tx = api?.tx.daoCouncilMembers.removeMember(daoId, state.target);
-        return [daoId, members.length, _tx, LENGTH_BOUND];
+        return [daoId, _tx, LENGTH_BOUND];
       }
       case ProposalEnum.PROPOSE_TRANSFER_GOVERNANCE_TOKEN: {
         const _tx = api?.tx.dao.transferToken(
@@ -307,7 +307,7 @@ export function CreateProposal({ daoId }: CreateProposalProps) {
           state.amount,
           state.target
         );
-        return [daoId, members.length, _tx, LENGTH_BOUND];
+        return [daoId, _tx, LENGTH_BOUND];
       }
       default: {
         // eslint-disable-next-line no-console
@@ -315,7 +315,7 @@ export function CreateProposal({ daoId }: CreateProposalProps) {
         return [];
       }
     }
-  }, [api?.tx, daoId, members, state.amount, state.proposalType, state.target]);
+  }, [api?.tx, daoId, state.amount, state.proposalType, state.target]);
 
   const disabled =
     !state.proposalType ||
@@ -341,7 +341,7 @@ export function CreateProposal({ daoId }: CreateProposalProps) {
     );
 
     const _proposeSpend = [daoId, parseInt(state.amount, 10), state.target];
-    const _approveProposal = [daoId, members.length, _tx, LENGTH_BOUND];
+    const _approveProposal = [daoId, _tx, LENGTH_BOUND];
 
     return api.tx.utility.batch([
       api.tx.daoTreasury.proposeSpend(..._proposeSpend),
@@ -414,7 +414,7 @@ export function CreateProposal({ daoId }: CreateProposalProps) {
           const proposalCallData = _tx?.method.toHex();
           await daoCollectiveContract
             ?.connect(metamaskAccount)
-            .propose(daoId, members.length, proposalCallData);
+            .propose(daoId, proposalCallData);
           proposalCreatedHandler();
           break;
         }
@@ -428,7 +428,7 @@ export function CreateProposal({ daoId }: CreateProposalProps) {
           const proposalCallData = _tx?.method.toHex();
           await daoCollectiveContract
             ?.connect(metamaskAccount)
-            .propose(daoId, members.length, proposalCallData);
+            .propose(daoId, proposalCallData);
           proposalCreatedHandler();
           break;
         }
@@ -442,7 +442,7 @@ export function CreateProposal({ daoId }: CreateProposalProps) {
           const proposalCallData = _tx?.method.toHex();
           await daoCollectiveContract
             ?.connect(metamaskAccount)
-            .propose(daoId, members.length, proposalCallData);
+            .propose(daoId, proposalCallData);
           proposalCreatedHandler();
           break;
         }
