@@ -13,7 +13,7 @@ import { useDaoCollectiveContract } from 'hooks/useDaoCollectiveContract';
 import { useDaoTreasuryContract } from 'hooks/useDaoTreasuryContract';
 
 import { useAtomValue } from 'jotai';
-import { apiAtom } from 'store/api';
+import { apiAtom, keyringAtom } from 'store/api';
 import {
   accountsAtom,
   metamaskAccountAtom,
@@ -27,6 +27,7 @@ import {
   evmToAddress,
   isEthereumAddress
 } from '@polkadot/util-crypto';
+import { keyringAddExternal } from 'utils/keyringAddExternal';
 
 import type { u32, Vec, Option } from '@polkadot/types';
 import type { AccountId } from '@polkadot/types/interfaces';
@@ -91,6 +92,7 @@ export function CreateProposal({ daoId }: CreateProposalProps) {
   const metamaskAccount = useAtomValue(metamaskAccountAtom);
   const substrateAccount = useAtomValue(substrateAccountAtom);
   const accounts = useAtomValue(accountsAtom);
+  const keyring = useAtomValue(keyringAtom);
 
   const daoTreasuryContract = useDaoTreasuryContract();
   const daoCollectiveContract = useDaoCollectiveContract();
@@ -315,7 +317,15 @@ export function CreateProposal({ daoId }: CreateProposalProps) {
         return [];
       }
     }
-  }, [api?.tx, daoId, state.amount, state.proposalType, state.target]);
+  }, [
+    api?.tx.dao,
+    api?.tx.daoCouncilMembers,
+    daoId,
+    members,
+    state.amount,
+    state.proposalType,
+    state.target
+  ]);
 
   const disabled =
     !state.proposalType ||
@@ -350,7 +360,6 @@ export function CreateProposal({ daoId }: CreateProposalProps) {
   }, [
     api,
     daoId,
-    members.length,
     nextTreasuryProposalId,
     state.amount,
     state.proposalType,
@@ -384,7 +393,7 @@ export function CreateProposal({ daoId }: CreateProposalProps) {
   }
 
   const handleProposeClick = async () => {
-    if (!metamaskAccount) {
+    if (!metamaskAccount || !keyring) {
       return;
     }
 
@@ -450,6 +459,9 @@ export function CreateProposal({ daoId }: CreateProposalProps) {
           // eslint-disable-next-line no-console
           console.error('No such case');
         }
+      }
+      if (isEthereumAddress(state.target)) {
+        keyringAddExternal(keyring, state.target);
       }
       toast.success(
         <Notification

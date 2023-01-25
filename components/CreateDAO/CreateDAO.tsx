@@ -12,7 +12,7 @@ import Link from 'next/link';
 import { toast } from 'react-toastify';
 
 import { useAtom, useAtomValue } from 'jotai';
-import { apiAtom } from 'store/api';
+import { apiAtom, keyringAtom } from 'store/api';
 import { createdDaoIdAtom, daosAtom } from 'store/dao';
 import {
   accountsAtom,
@@ -23,8 +23,8 @@ import {
 import { useDaoContract } from 'hooks/useDaoContract';
 import { ssToEvmAddress } from 'utils/ssToEvmAddress';
 
-import { evmToAddress } from '@polkadot/util-crypto';
-import { isHex, stringToHex } from '@polkadot/util';
+import { evmToAddress, isEthereumAddress } from '@polkadot/util-crypto';
+import { stringToHex } from '@polkadot/util';
 
 import type { u32, Option } from '@polkadot/types';
 import type { CreateDaoInput, DaoCodec } from 'types';
@@ -42,6 +42,7 @@ import { MembersDropdown } from 'components/MembersDropdown';
 import { TxButton } from 'components/TxButton';
 
 import styles from './CreateDAO.module.scss';
+import { keyringAddExternal } from '../../utils/keyringAddExternal';
 
 enum InputName {
   DAO_NAME = 'daoName',
@@ -103,6 +104,7 @@ export function CreateDAO() {
   const router = useRouter();
   const [nextDaoId, setNextDaoId] = useState<number>(0);
   const api = useAtomValue(apiAtom);
+  const keyring = useAtomValue(keyringAtom);
   const daos = useAtomValue(daosAtom);
   const accounts = useAtomValue(accountsAtom);
   const metamaskSigner = useAtomValue(metamaskAccountAtom);
@@ -281,7 +283,7 @@ export function CreateDAO() {
     !state.proposalPeriodType;
 
   const handleTransform = () => {
-    if (nextDaoId === null) {
+    if (nextDaoId === null || !keyring) {
       return [];
     }
 
@@ -347,7 +349,12 @@ export function CreateDAO() {
           return _address;
         }
 
-        return isHex(_address) ? _address.trim() : ssToEvmAddress(_address);
+        if (isEthereumAddress(_address)) {
+          keyringAddExternal(keyring, _address);
+          return _address.trim();
+        }
+
+        return ssToEvmAddress(_address);
       });
 
     return [_members, [], stringToHex(JSON.stringify(data).trim())];

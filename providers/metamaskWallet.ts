@@ -1,7 +1,7 @@
 import { ethers } from 'ethers';
 import { appConfig } from 'config';
 import type { Keyring } from '@polkadot/ui-keyring';
-import { evmToAddress } from '@polkadot/util-crypto';
+import { keyringAddExternal } from 'utils/keyringAddExternal';
 
 class MetamaskWallet {
   private readonly networkName: string;
@@ -65,13 +65,9 @@ class MetamaskWallet {
       []
     );
 
-    _metamaskAccounts.forEach((_metamaskAccount) => {
-      keyring.addExternal(evmToAddress(_metamaskAccount), {
-        isEthereum: true,
-        name: _metamaskAccount,
-        ethAddress: _metamaskAccount
-      });
-    });
+    _metamaskAccounts.forEach((_metamaskAccount) =>
+      keyringAddExternal(keyring, _metamaskAccount)
+    );
 
     return this.provider.getSigner(address);
   }
