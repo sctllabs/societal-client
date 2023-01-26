@@ -7,6 +7,7 @@ import { Typography } from 'components/ui-kit/Typography';
 import { Icon } from 'components/ui-kit/Icon';
 import { Link } from 'components/Link';
 import { Avatar } from 'components/ui-kit/Avatar';
+import { Button } from 'components/ui-kit/Button';
 
 import styles from './Subheader.module.scss';
 
@@ -21,13 +22,27 @@ export function Subheader() {
     return null;
   }
 
+  const handleOnClick = () => {
+    navigator.clipboard.writeText(currentDAO.dao.accountId);
+  };
+
   return (
     <div className={styles.root}>
       <div className={styles['left-container']}>
         <span className={styles.logo}>
           <Avatar value={currentDAO.dao.config.name} />
         </span>
-        <Typography variant="title2">{currentDAO.dao.config.name}</Typography>
+        <div className={styles['title-container']}>
+          <Typography variant="title2">{currentDAO.dao.config.name}</Typography>
+          <span className={styles['address-container']}>
+            <Typography variant="caption3">
+              {currentDAO.dao.accountId}
+            </Typography>
+            <Button variant="icon" size="xs" onClick={handleOnClick}>
+              <Icon name="copy" size="xs" />
+            </Button>
+          </span>
+        </div>
       </div>
       <div className={styles['right-container']}>
         {router.pathname.includes('create-proposal') ? null : (

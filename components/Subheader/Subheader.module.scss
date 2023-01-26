@@ -30,3 +30,15 @@
   justify-content: center;
   margin: 0.5rem 0.75rem;
 }
+
+.address-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.title-container {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+}
