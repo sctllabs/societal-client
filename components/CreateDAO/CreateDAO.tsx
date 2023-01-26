@@ -11,8 +11,9 @@ import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { toast } from 'react-toastify';
 
+import { appConfig } from 'config';
 import { useAtom, useAtomValue } from 'jotai';
-import { apiAtom } from 'store/api';
+import { apiAtom, keyringAtom } from 'store/api';
 import { createdDaoIdAtom, daosAtom } from 'store/dao';
 import {
   accountsAtom,
@@ -22,9 +23,10 @@ import {
 
 import { useDaoContract } from 'hooks/useDaoContract';
 import { ssToEvmAddress } from 'utils/ssToEvmAddress';
+import { keyringAddExternal } from 'utils/keyringAddExternal';
 
-import { evmToAddress } from '@polkadot/util-crypto';
-import { isHex, stringToHex } from '@polkadot/util';
+import { evmToAddress, isEthereumAddress } from '@polkadot/util-crypto';
+import { stringToHex } from '@polkadot/util';
 
 import type { u32, Option } from '@polkadot/types';
 import type { CreateDaoInput, DaoCodec } from 'types';
@@ -80,8 +82,8 @@ enum TokenType {
 }
 
 const PURPOSE_INPUT_MAX_LENGTH = 500;
-const MILLIS_IN_HOUR = 60 * 60 * 1000;
-const MILLIS_IN_DAY = 24 * 60 * 60 * 1000;
+const SECONDS_IN_HOUR = 60 * 60;
+const SECONDS_IN_DAYS = 24 * 60 * 60;
 
 type Role = 'Council';
 
@@ -103,6 +105,7 @@ export function CreateDAO() {
   const router = useRouter();
   const [nextDaoId, setNextDaoId] = useState<number>(0);
   const api = useAtomValue(apiAtom);
+  const keyring = useAtomValue(keyringAtom);
   const daos = useAtomValue(daosAtom);
   const accounts = useAtomValue(accountsAtom);
   const metamaskSigner = useAtomValue(metamaskAccountAtom);
@@ -281,7 +284,7 @@ export function CreateDAO() {
     !state.proposalPeriodType;
 
   const handleTransform = () => {
-    if (nextDaoId === null) {
+    if (nextDaoId === null || !keyring) {
       return [];
     }
 
@@ -297,10 +300,11 @@ export function CreateDAO() {
     } = state;
 
     const proposal_period =
-      parseInt(proposalPeriod, 10) *
-      (proposalPeriodType === ProposalPeriod.HOURS
-        ? MILLIS_IN_HOUR
-        : MILLIS_IN_DAY);
+      (parseInt(proposalPeriod, 10) *
+        (proposalPeriodType === ProposalPeriod.HOURS
+          ? SECONDS_IN_HOUR
+          : SECONDS_IN_DAYS)) /
+      appConfig.expectedBlockTimeInSeconds;
 
     const initial_balance = quantity;
     const token_id = nextDaoId;
@@ -347,7 +351,12 @@ export function CreateDAO() {
           return _address;
         }
 
-        return isHex(_address) ? _address.trim() : ssToEvmAddress(_address);
+        if (isEthereumAddress(_address)) {
+          keyringAddExternal(keyring, _address);
+          return _address.trim();
+        }
+
+        return ssToEvmAddress(_address);
       });
 
     return [_members, [], stringToHex(JSON.stringify(data).trim())];
