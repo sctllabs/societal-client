@@ -11,6 +11,7 @@ import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { toast } from 'react-toastify';
 
+import { appConfig } from 'config';
 import { useAtom, useAtomValue } from 'jotai';
 import { apiAtom, keyringAtom } from 'store/api';
 import { createdDaoIdAtom, daosAtom } from 'store/dao';
@@ -22,6 +23,7 @@ import {
 
 import { useDaoContract } from 'hooks/useDaoContract';
 import { ssToEvmAddress } from 'utils/ssToEvmAddress';
+import { keyringAddExternal } from 'utils/keyringAddExternal';
 
 import { evmToAddress, isEthereumAddress } from '@polkadot/util-crypto';
 import { stringToHex } from '@polkadot/util';
@@ -42,7 +44,6 @@ import { MembersDropdown } from 'components/MembersDropdown';
 import { TxButton } from 'components/TxButton';
 
 import styles from './CreateDAO.module.scss';
-import { keyringAddExternal } from '../../utils/keyringAddExternal';
 
 enum InputName {
   DAO_NAME = 'daoName',
@@ -81,8 +82,8 @@ enum TokenType {
 }
 
 const PURPOSE_INPUT_MAX_LENGTH = 500;
-const MILLIS_IN_HOUR = 60 * 60 * 1000;
-const MILLIS_IN_DAY = 24 * 60 * 60 * 1000;
+const SECONDS_IN_HOUR = 60 * 60;
+const SECONDS_IN_DAYS = 24 * 60 * 60;
 
 type Role = 'Council';
 
@@ -299,10 +300,11 @@ export function CreateDAO() {
     } = state;
 
     const proposal_period =
-      parseInt(proposalPeriod, 10) *
-      (proposalPeriodType === ProposalPeriod.HOURS
-        ? MILLIS_IN_HOUR
-        : MILLIS_IN_DAY);
+      (parseInt(proposalPeriod, 10) *
+        (proposalPeriodType === ProposalPeriod.HOURS
+          ? SECONDS_IN_HOUR
+          : SECONDS_IN_DAYS)) /
+      appConfig.expectedBlockTimeInSeconds;
 
     const initial_balance = quantity;
     const token_id = nextDaoId;

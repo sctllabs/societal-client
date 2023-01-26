@@ -12,8 +12,9 @@ import type {
   VoteCodec,
   VoteMeta
 } from 'types';
-import type { Option, Vec } from '@polkadot/types';
+import type { Option, Vec, u32 } from '@polkadot/types';
 import type { H256 } from '@polkadot/types/interfaces';
+import { appConfig } from 'config';
 
 import { Card } from 'components/ui-kit/Card';
 import { Typography } from 'components/ui-kit/Typography';
@@ -31,6 +32,20 @@ export function Proposals({ daoId }: ProposalsProps) {
   const [proposals, setProposals] = useState<ProposalMeta[] | null>(null);
   const [votes, setVotes] = useState<VoteMeta[] | null>(null);
   const [transfers, setTransfers] = useState<TransferMeta[] | null>(null);
+  const [currentBlock, setCurrentBlock] = useState<number | null>(null);
+
+  useEffect(() => {
+    (async () => {
+      const _currentBlock = (
+        (await api?.query.system.number()) as u32 | undefined
+      )?.toNumber();
+
+      if (!_currentBlock) {
+        return;
+      }
+      setCurrentBlock(_currentBlock);
+    })();
+  }, [api?.query.system]);
 
   useEffect(() => {
     let unsubscribe: any | null = null;
@@ -89,7 +104,7 @@ export function Proposals({ daoId }: ProposalsProps) {
   }, [api, daoId, proposalsHashes]);
 
   useEffect(() => {
-    if (!proposalsHashes) {
+    if (!proposalsHashes || !currentBlock) {
       return undefined;
     }
     let unsubscribe: any | null = null;
@@ -108,7 +123,10 @@ export function Proposals({ daoId }: ProposalsProps) {
                     nays: x.value.nays.map((nay) => nay.toString()),
                     threshold: x.value.threshold.toNumber(),
                     index: x.value.index.toNumber(),
-                    end: x.value.end.toNumber() * 1000 * 3,
+                    end:
+                      (x.value.end.toNumber() - currentBlock) *
+                      1000 *
+                      appConfig.expectedBlockTimeInSeconds,
                     hash: proposalsHashes[index]
                   }
             )
