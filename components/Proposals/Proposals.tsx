@@ -144,7 +144,7 @@ export function Proposals({ daoId }: ProposalsProps) {
         unsubscribe();
       }
     };
-  }, [api, daoId, proposalsHashes]);
+  }, [api, currentBlock, daoId, proposalsHashes]);
 
   useEffect(() => {
     if (!proposals) {
