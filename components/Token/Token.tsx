@@ -85,8 +85,6 @@ export function Token({ daoId }: TokenProps) {
     }
 
     if (currentDao.dao.token.EthTokenAddress) {
-      // TODO: handle ETH Token Address
-
       return undefined;
     }
 

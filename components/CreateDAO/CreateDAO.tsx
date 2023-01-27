@@ -56,7 +56,8 @@ enum InputName {
   TOKEN_TYPE = 'tokenType',
   PROPOSAL_PERIOD = 'proposalPeriod',
   TOKEN_ADDRESS = 'tokenAddress',
-  PROPOSAL_PERIOD_TYPE = 'proposalPeriodType'
+  PROPOSAL_PERIOD_TYPE = 'proposalPeriodType',
+  MIN_BALANCE = 'minBalance'
 }
 
 enum InputLabel {
@@ -68,7 +69,8 @@ enum InputLabel {
   TOKEN_NAME = 'Token Name',
   TOKEN_SYMBOL = 'Token Symbol',
   TOKEN_ADDRESS = 'ETH Token Address',
-  PROPOSAL_PERIOD = 'Proposal Period'
+  PROPOSAL_PERIOD = 'Proposal Period',
+  MIN_BALANCE = 'Min Balance of Tokens'
 }
 
 enum ProposalPeriod {
@@ -91,6 +93,7 @@ type State = {
   daoName: string;
   purpose: string;
   quantity: string;
+  minBalance: string;
   role: Role;
   addresses: string[];
   tokenName: string;
@@ -121,6 +124,7 @@ export function CreateDAO() {
     daoName: '',
     purpose: '',
     quantity: '',
+    minBalance: '',
     role: 'Council',
     addresses: [''],
     tokenName: '',
@@ -296,7 +300,8 @@ export function CreateDAO() {
       tokenName,
       tokenSymbol,
       addresses,
-      quantity
+      quantity,
+      minBalance
     } = state;
 
     const proposal_period =
@@ -307,6 +312,7 @@ export function CreateDAO() {
       appConfig.expectedBlockTimeInSeconds;
 
     const initial_balance = quantity;
+    const min_balance = minBalance;
     const token_id = nextDaoId;
 
     const data: CreateDaoInput = {
@@ -323,6 +329,7 @@ export function CreateDAO() {
       data.token = {
         token_id,
         initial_balance,
+        min_balance,
         metadata: {
           name: tokenName.trim(),
           symbol: tokenSymbol.trim(),
@@ -567,23 +574,67 @@ export function CreateDAO() {
           </RadioGroup>
         </div>
         {state.tokenType === TokenType.FUNGIBLE_TOKEN ? (
-          <div className={styles['quantity-of-tokens']}>
-            <Typography variant="h3">Select the Quantity of Tokens</Typography>
-            <Typography variant="body1">
-              Specify the number of tokens, the maximum amount is 1 billion.
-            </Typography>
+          <>
+            <div className={styles['quantity-of-tokens']}>
+              <Typography variant="h3">Min Balance of Tokens</Typography>
+              <Typography variant="body1">
+                Specify the number of tokens that account must have
+              </Typography>
 
-            <div className={styles['quantity-of-tokens-inputs']}>
-              <Input
-                name={InputName.QUANTITY}
-                label={InputLabel.QUANTITY}
-                value={state.quantity}
-                onChange={onInputChange}
-                type="tel"
-                required
-              />
+              <div className={styles['quantity-of-tokens-inputs']}>
+                <Input
+                  name={InputName.MIN_BALANCE}
+                  label={InputLabel.MIN_BALANCE}
+                  value={state.minBalance}
+                  onChange={onInputChange}
+                  type="tel"
+                  required
+                />
+              </div>
             </div>
-          </div>
+            <div className={styles['quantity-of-tokens']}>
+              <Typography variant="h3">
+                Select the Quantity of Tokens
+              </Typography>
+              <Typography variant="body1">
+                Specify the number of tokens, the maximum amount is 1 billion.
+              </Typography>
+
+              <div className={styles['quantity-of-tokens-inputs']}>
+                <Input
+                  name={InputName.QUANTITY}
+                  label={InputLabel.QUANTITY}
+                  value={state.quantity}
+                  onChange={onInputChange}
+                  type="tel"
+                  required
+                />
+              </div>
+            </div>
+            <div className={styles['token-info']}>
+              <Typography variant="h3">Select Token Info</Typography>
+              <Typography variant="body1">
+                Choose a name and symbol for the Governance token.
+              </Typography>
+
+              <div className={styles['token-info-inputs']}>
+                <Input
+                  name={InputName.TOKEN_NAME}
+                  label={InputLabel.TOKEN_NAME}
+                  value={state.tokenName}
+                  onChange={onInputChange}
+                  required
+                />
+                <Input
+                  name={InputName.TOKEN_SYMBOL}
+                  label={InputLabel.TOKEN_SYMBOL}
+                  value={state.tokenSymbol}
+                  onChange={onInputChange}
+                  required
+                />
+              </div>
+            </div>
+          </>
         ) : (
           <div className={styles['quantity-of-tokens']}>
             <Typography variant="h3">ETH Token Address</Typography>
@@ -594,32 +645,6 @@ export function CreateDAO() {
                 name={InputName.TOKEN_ADDRESS}
                 label={InputLabel.TOKEN_ADDRESS}
                 value={state.tokenAddress}
-                onChange={onInputChange}
-                required
-              />
-            </div>
-          </div>
-        )}
-
-        {state.tokenType === TokenType.FUNGIBLE_TOKEN && (
-          <div className={styles['token-info']}>
-            <Typography variant="h3">Select Token Info</Typography>
-            <Typography variant="body1">
-              Choose a name and symbol for the Governance token.
-            </Typography>
-
-            <div className={styles['token-info-inputs']}>
-              <Input
-                name={InputName.TOKEN_NAME}
-                label={InputLabel.TOKEN_NAME}
-                value={state.tokenName}
-                onChange={onInputChange}
-                required
-              />
-              <Input
-                name={InputName.TOKEN_SYMBOL}
-                label={InputLabel.TOKEN_SYMBOL}
-                value={state.tokenSymbol}
                 onChange={onInputChange}
                 required
               />
