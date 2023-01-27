@@ -1,5 +1,5 @@
-import type { Struct, u32, Bytes } from '@polkadot/types';
-import type { TreasuryProposal, Votes } from '@polkadot/types/interfaces';
+import type { Struct, u32, u128, Bytes } from '@polkadot/types';
+import type { Votes } from '@polkadot/types/interfaces';
 
 type DaoPolicyProportionType = 'AtLeast' | 'MoreThan';
 
@@ -42,17 +42,15 @@ export interface DaoCodec extends Struct {
   readonly config: DaoConfig;
 }
 
+export type ProposalArgsCodec = [u32, u128, Bytes];
+
 export interface ProposalCodec extends Struct {
-  readonly method: ProposalType;
+  readonly method: ProposalMethod;
   readonly section: Bytes;
-  readonly args: ProposalArgs;
+  readonly args: ProposalArgsCodec;
 }
 
 export interface VoteCodec extends Votes {}
-
-export interface TransferCodec extends TreasuryProposal {
-  daoId: string;
-}
 
 export type VoteMeta = {
   ayes: string[];
@@ -105,47 +103,30 @@ export type MemberMeta = {
   name: string;
 };
 
-export type ProposalTransfer = {
-  dao_id: string;
-  proposal_id: string;
-};
+export interface BaseProposal {
+  dao_id: number;
+}
 
-export type ProposalMember = {
-  dao_id: string;
+export interface ProposalTransfer extends BaseProposal {
+  amount: bigint;
+  beneficiary: string;
+}
+
+export interface ProposalMember extends BaseProposal {
   who: string;
-};
+}
 
-export type ProposalGovernanceTokenTransfer = {
-  dao_id: string;
-  amount: string;
-  beneficiary: {
-    Id: string;
-  };
-};
-
-export type ProposalArgs =
-  | ProposalTransfer
-  | ProposalMember
-  | ProposalGovernanceTokenTransfer;
+export type ProposalArgs = ProposalTransfer | ProposalMember;
 
 export type ProposalMeta = {
   hash: string;
-  method: ProposalType;
+  method: ProposalMethod;
   section: string;
   args: ProposalArgs;
 };
 
-export type TransferMeta = {
-  hash: string;
-  daoId: string;
-  proposer: string;
-  value: number;
-  beneficiary: string;
-  bond: number;
-};
-
-export type ProposalType =
+export type ProposalMethod =
   | 'addMember'
   | 'removeMember'
-  | 'approveProposal'
+  | 'spend'
   | 'transferToken';

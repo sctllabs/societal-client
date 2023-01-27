@@ -19,11 +19,10 @@ import {
 } from 'constants/transaction';
 
 import type {
-  ProposalGovernanceTokenTransfer,
   ProposalMember,
   ProposalMeta,
-  ProposalType,
-  TransferMeta,
+  ProposalMethod,
+  ProposalTransfer,
   TxCallback,
   VoteMeta
 } from 'types';
@@ -53,11 +52,10 @@ type ProposalSettings = {
 export interface ProposalCardProps {
   proposal: ProposalMeta;
   vote?: VoteMeta;
-  transfer?: TransferMeta;
 }
 
 const getProposalSettings = (
-  proposalMethod: ProposalType
+  proposalMethod: ProposalMethod
 ): ProposalSettings => {
   switch (proposalMethod) {
     case 'addMember': {
@@ -72,7 +70,7 @@ const getProposalSettings = (
         icon: 'user-delete'
       };
     }
-    case 'approveProposal': {
+    case 'spend': {
       return {
         title: ProposalEnum.TRANSFER,
         icon: 'transfer'
@@ -93,7 +91,7 @@ const getProposalSettings = (
   }
 };
 
-export function ProposalCard({ proposal, vote, transfer }: ProposalCardProps) {
+export function ProposalCard({ proposal, vote }: ProposalCardProps) {
   const api = useAtomValue(apiAtom);
   const substrateAccount = useAtomValue(substrateAccountAtom);
   const metamaskAccount = useAtomValue(metamaskAccountAtom);
@@ -249,16 +247,6 @@ export function ProposalCard({ proposal, vote, transfer }: ProposalCardProps) {
         <span className={styles['proposal-title-items']}>
           <span className={styles['proposal-title-item']}>
             <Typography variant="title4">{title}</Typography>
-            {transfer && (
-              <Typography variant="caption2">
-                by
-                {
-                  accounts?.find(
-                    (_account) => _account.address === transfer.proposer
-                  )?.meta.name as string
-                }
-              </Typography>
-            )}
           </span>
           {vote && (
             <span className={styles['proposal-title-item-countdown']}>
@@ -270,28 +258,15 @@ export function ProposalCard({ proposal, vote, transfer }: ProposalCardProps) {
       </div>
 
       <div className={styles['proposal-bottom-container']}>
-        {proposal.method === 'approveProposal' && (
-          <span className={styles['proposal-transfer-container']}>
-            <span className={styles['proposal-transfer-info']}>
-              <Typography variant="caption3">Amount</Typography>
-              <Typography variant="title5">{transfer?.value || 0}</Typography>
-            </span>
-            <span className={styles['proposal-transfer-info']}>
-              <Typography variant="caption3">Target</Typography>
-              <Typography variant="title5">
-                {(accounts?.find(
-                  (_account) => _account.address === transfer?.beneficiary
-                )?.meta.name as string) ?? transfer?.beneficiary}
-              </Typography>
-            </span>
-          </span>
-        )}
-        {proposal.method === 'transferToken' && (
+        {(proposal.method === 'transferToken' ||
+          proposal.method === 'spend') && (
           <span className={styles['proposal-transfer-container']}>
             <span className={styles['proposal-transfer-info']}>
               <Typography variant="caption3">Amount</Typography>
               <Typography variant="title5">
-                {(proposal.args as ProposalGovernanceTokenTransfer).amount || 0}
+                {new Intl.NumberFormat('en-US', {
+                  minimumFractionDigits: 2
+                }).format((proposal.args as ProposalTransfer).amount)}
               </Typography>
             </span>
             <span className={styles['proposal-transfer-info']}>
@@ -300,11 +275,9 @@ export function ProposalCard({ proposal, vote, transfer }: ProposalCardProps) {
                 {(accounts?.find(
                   (_account) =>
                     _account.address ===
-                    (proposal.args as ProposalGovernanceTokenTransfer)
-                      .beneficiary.Id
+                    (proposal.args as ProposalTransfer).beneficiary
                 )?.meta.name as string) ??
-                  (proposal.args as ProposalGovernanceTokenTransfer).beneficiary
-                    .Id}
+                  (proposal.args as ProposalTransfer).beneficiary}
               </Typography>
             </span>
           </span>
