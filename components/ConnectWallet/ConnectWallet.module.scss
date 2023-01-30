@@ -11,6 +11,11 @@
   color: #{colors.$grayscale-55};
 }
 
+.dropdown-content {
+
+  gap: 8px;
+}
+
 .logo {
   align-items: center;
   display: flex;
@@ -27,51 +32,54 @@
   padding: 0.5rem;
 }
 
-.card {
-  min-width: 15rem;
-}
-
-.wallets-card {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  min-width: 25rem;
-}
-
 .wallets {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
 }
 
-.hr {
+.wallets-content {
+  padding: 1rem 0;
+}
+
+.trigger {
   width: 100%;
-  height: 0.0625rem;
-  background-color: #{colors.$grayscale-95};
-  border: none;
+  justify-content: space-between;
 }
 
 .wallet-button {
-  gap: 1rem;
-  padding: 0 1.5rem;
   align-items: center;
+  gap: 1rem;
   justify-content: flex-start;
+  padding: 0 1.5rem;
 
-   > * {
+  > * {
     pointer-events: none;
   }
 }
 
 .disconnect-button {
-  padding: 0;
+  display: flex;
+  align-items: center;
   gap: 0.5rem;
-  justify-content: flex-start;
-}
+  justify-content: space-between;
+  cursor: pointer;
+  width: 100%;
+  padding: 0 8px;
+  height: 100%;
 
-.disconnect-title {
   color: #{colors.$red-2};
+
+  &:hover {
+    color: #{colors.$red-1};
+    background-color: #{colors.$grayscale-100};
+  }
 }
 
 .disconnect-icon {
-  color: #{colors.$red-2};
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 24px;
+  height: 24px;
 }

@@ -15,6 +15,7 @@ import arrowUp from './arrow-up.svg';
 import calendar from './calendar.svg';
 import chain from './chain.svg';
 import chat from './chat.svg';
+import circle from './circle.svg';
 import close from './close.svg';
 import code from './code.svg';
 import copy from './copy.svg';
@@ -120,6 +121,7 @@ const icons = {
   calendar,
   chain,
   chat,
+  circle,
   close,
   code,
   copy,

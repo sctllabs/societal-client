@@ -2,7 +2,6 @@ import {
   useState,
   KeyboardEventHandler,
   MouseEventHandler,
-  useCallback,
   useEffect,
   useMemo
 } from 'react';
@@ -20,15 +19,30 @@ import { keyringAtom } from 'store/api';
 
 import { WalletMeta, WalletType } from 'types';
 
-import { Dropdown } from 'components/ui-kit/Dropdown';
-import { Card } from 'components/ui-kit/Card';
 import { Typography } from 'components/ui-kit/Typography';
 import { Button } from 'components/ui-kit/Button';
 import { Icon } from 'components/ui-kit/Icon';
 import { Notification } from 'components/ui-kit/Notifications';
-import { Modal } from 'components/ui-kit/Modal';
-import { Input } from 'components/ui-kit/Input';
-import { MembersDropdown } from 'components/MembersDropdown';
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogTrigger
+} from 'components/ui-kit/Dialog';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from 'components/ui-kit/Select';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger
+} from 'components/ui-kit/DropdownMenu';
 
 import styles from './ConnectWallet.module.scss';
 
@@ -40,7 +54,6 @@ const wallets: WalletMeta[] = [
 ];
 
 export function ConnectWallet() {
-  const [openModal, setOpenModal] = useState<boolean>(false);
   const [selectedWallet, setSelectedWallet] = useState<WalletType | null>(null);
   const [selectedAccountAddress, setSelectedAccountAddress] =
     useState<string>('');
@@ -67,7 +80,6 @@ export function ConnectWallet() {
       setSubstrateAccount(foundAccount);
       setSelectedAccountAddress('');
       setSelectedWallet(null);
-      setOpenModal(false);
     }
   }, [keyring, selectedAccountAddress, setSubstrateAccount]);
 
@@ -97,7 +109,6 @@ export function ConnectWallet() {
         try {
           const signer = await metamaskWallet.connectWallet(keyring);
           await setMetamaskAccount(signer);
-          setOpenModal(false);
         } catch (e) {
           toast.error(
             <Notification
@@ -202,39 +213,7 @@ export function ConnectWallet() {
       currentSubstrateAccount.address;
   }
 
-  const handleOpenModal = () => {
-    setOpenModal(true);
-  };
-
-  const handleCloseModal = () => {
-    setSelectedWallet(null);
-    setOpenModal(false);
-  };
-
   const accounts = keyring?.getPairs();
-
-  const handleAccountChoose = (target: HTMLUListElement) => {
-    const _selectedWalletAddress = target.getAttribute('data-address');
-    if (!_selectedWalletAddress) {
-      return;
-    }
-
-    setSelectedAccountAddress(_selectedWalletAddress);
-  };
-
-  const handleOnAccountClick: MouseEventHandler<HTMLUListElement> = useCallback(
-    (e) => handleAccountChoose(e.target as HTMLUListElement),
-    []
-  );
-
-  const handleOnAccountKeyDown: KeyboardEventHandler<HTMLUListElement> =
-    useCallback((e) => {
-      if (e.key !== ' ' && e.key !== 'Enter') {
-        return;
-      }
-
-      handleAccountChoose(e.target as HTMLUListElement);
-    }, []);
 
   const walletIcon = useMemo(() => {
     if (currentMetamaskAccountAddress) {
@@ -245,87 +224,86 @@ export function ConnectWallet() {
     return wallets.find((_wallet) => _wallet.name === source)?.icon ?? 'wallet';
   }, [currentMetamaskAccountAddress, currentSubstrateAccount?.meta.source]);
 
-  return (
-    <>
-      {currentMetamaskAccountAddress || currentSubstrateAccount ? (
-        <Dropdown
-          className={styles.dropdown}
-          dropdownItems={
-            <Card dropdown className={styles.card}>
-              <span className={styles['dropdown-title']}>
-                <Typography
-                  variant="body2"
-                  className={styles['dropdown-title-text']}
-                >
-                  {visualAddress ?? 'Please select a wallet to continue'}
-                </Typography>
-                {visualAddress && (
-                  <Button variant="icon" size="xs" onClick={handleCopyAddress}>
-                    <Icon name="copy" size="xs" />
-                  </Button>
-                )}
-              </span>
+  const handleOnOpenChange = (open: boolean) => {
+    if (!open) {
+      setSelectedWallet(null);
+    }
+  };
 
-              <Button
-                variant="text"
-                fullWidth
-                className={styles['disconnect-button']}
-                onClick={handleDisconnect}
-              >
-                <Icon name="logout" className={styles['disconnect-icon']} />
-                <Typography
-                  variant="title4"
-                  className={styles['disconnect-title']}
-                >
-                  Disconnect
-                </Typography>
+  const onAccountValueChange = (_account: string) => {
+    setSelectedAccountAddress(_account);
+  };
+
+  return currentMetamaskAccountAddress || currentSubstrateAccount ? (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="outlined" className={styles.button}>
+          {walletIcon && <Icon name={walletIcon} />}
+          {visualAddress}
+        </Button>
+      </DropdownMenuTrigger>
+
+      <DropdownMenuContent className={styles['dropdown-content']}>
+        <DropdownMenuLabel asChild>
+          <span className={styles['dropdown-title']}>
+            <Typography
+              variant="body2"
+              className={styles['dropdown-title-text']}
+            >
+              {visualAddress ?? 'Please select a wallet to continue'}
+            </Typography>
+            {visualAddress && (
+              <Button variant="icon" size="xs" onClick={handleCopyAddress}>
+                <Icon name="copy" size="xs" />
               </Button>
-            </Card>
-          }
-        >
-          <Button variant="outlined" className={styles.button}>
-            {walletIcon && <Icon name={walletIcon} />}
-            {visualAddress}
-          </Button>
-        </Dropdown>
-      ) : (
-        <Button
-          variant="filled"
-          className={styles.button}
-          onClick={handleOpenModal}
-        >
+            )}
+          </span>
+        </DropdownMenuLabel>
+        <DropdownMenuItem onSelect={handleDisconnect}>
+          <span className={styles['disconnect-button']}>
+            <Typography variant="title4">Disconnect</Typography>
+            <span className={styles['disconnect-icon']}>
+              <Icon name="logout" size="xs" />
+            </span>
+          </span>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  ) : (
+    <Dialog onOpenChange={handleOnOpenChange}>
+      <DialogTrigger asChild>
+        <Button variant="filled" className={styles.button}>
           Connect Wallet
         </Button>
-      )}
-
-      <Modal open={openModal} closeable onClose={handleCloseModal}>
-        <Card className={styles['wallets-card']}>
-          <Typography variant="title4">Connect wallet</Typography>
-          <hr className={styles.hr} />
-
+      </DialogTrigger>
+      <DialogContent>
+        <DialogTitle asChild>
+          <Typography variant="title1">Connect wallet</Typography>
+        </DialogTitle>
+        <div className={styles['wallets-content']}>
           {selectedWallet ? (
-            <MembersDropdown
-              accounts={accounts?.filter(
-                (_account) =>
-                  _account.meta.source ===
-                  (selectedWallet === 'development'
-                    ? undefined
-                    : selectedWallet)
-              )}
-              handleOnClick={handleOnAccountClick}
-              handleOnKeyDown={handleOnAccountKeyDown}
-            >
-              <Input
-                readOnly
-                label="Choose an account"
-                value={
-                  (accounts?.find(
-                    (_account) => _account.address === selectedAccountAddress
-                  )?.meta.name as string) ?? selectedAccountAddress
-                }
-                required
-              />
-            </MembersDropdown>
+            <Select onValueChange={onAccountValueChange}>
+              <SelectTrigger className={styles.trigger}>
+                <SelectValue placeholder="Choose an account" />
+              </SelectTrigger>
+              <SelectContent>
+                {accounts
+                  ?.filter(
+                    (_account) =>
+                      _account.meta.source ===
+                      (selectedWallet === 'development'
+                        ? undefined
+                        : selectedWallet)
+                  )
+                  .map((_account) => (
+                    <SelectItem value={_account.address} key={_account.address}>
+                      <Typography variant="button2">
+                        {_account.meta.name as string}
+                      </Typography>
+                    </SelectItem>
+                  ))}
+              </SelectContent>
+            </Select>
           ) : (
             <ul
               className={styles.wallets}
@@ -348,18 +326,8 @@ export function ConnectWallet() {
               ))}
             </ul>
           )}
-
-          <hr className={styles.hr} />
-          <Button
-            variant="outlined"
-            color="destructive"
-            fullWidth
-            onClick={handleCloseModal}
-          >
-            Cancel
-          </Button>
-        </Card>
-      </Modal>
-    </>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }

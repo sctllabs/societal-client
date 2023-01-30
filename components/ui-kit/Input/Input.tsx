@@ -7,6 +7,7 @@ import {
   useState
 } from 'react';
 import clsx from 'clsx';
+import * as Label from '@radix-ui/react-label';
 
 import styles from './Input.module.scss';
 
@@ -104,7 +105,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
         ref={inputRef}
       />
       {label && (
-        <label
+        <Label.Root
           className={clsx(styles.label, styles[`label-${variant}`], {
             [styles['start-adornment']]: !!startAdornment,
             [styles.error]: error,
@@ -113,7 +114,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
           htmlFor={id}
         >
           {label}
-        </label>
+        </Label.Root>
       )}
       {hint && (
         <span className={clsx(styles.hint, styles[`hint-${hintPosition}`])}>

@@ -20,6 +20,12 @@
   padding: 1rem;
 }
 
+.proposal-dropdown-content-span {
+  align-items: center;
+  display: flex;
+  gap: 0.5rem;
+}
+
 .proposal-dropdown-radio-group {
   display: flex;
   flex-direction: column;
