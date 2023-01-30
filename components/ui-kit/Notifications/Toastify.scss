@@ -1,6 +1,6 @@
 .Toastify__toast {
-  padding: 1.375rem 2.5rem 1rem 1.25rem;
   border-radius: 0.5rem;
+  padding: 1.375rem 2.5rem 1rem 1.25rem;
 }
 
 .Toastify__toast-body {
@@ -9,8 +9,8 @@
 }
 
 .Toastify__toast-container {
-  pointer-events: none;
   max-width: 25rem;
+  pointer-events: none;
   width: auto;
 }
 

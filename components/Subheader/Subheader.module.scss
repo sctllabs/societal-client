@@ -32,13 +32,13 @@
 }
 
 .address-container {
+  align-items: center;
   display: flex;
   justify-content: center;
-  align-items: center;
 }
 
 .title-container {
   display: flex;
-  justify-content: center;
   flex-direction: column;
+  justify-content: center;
 }

@@ -31,15 +31,15 @@ import { stringToHex } from '@polkadot/util';
 import type { u32, Option } from '@polkadot/types';
 import type { CreateDaoInput, DaoCodec } from 'types';
 
+import * as Label from '@radix-ui/react-label';
 import { Typography } from 'components/ui-kit/Typography';
 import { Button } from 'components/ui-kit/Button';
 import { Input } from 'components/ui-kit/Input';
 import { Icon } from 'components/ui-kit/Icon';
 import { Dropdown } from 'components/ui-kit/Dropdown';
 import { Card } from 'components/ui-kit/Card';
-import { RadioGroup } from 'components/ui-kit/Radio/RadioGroup';
-import { Radio } from 'components/ui-kit/Radio/Radio';
 import { Notification } from 'components/ui-kit/Notifications';
+import { RadioGroup, RadioGroupItem } from 'components/ui-kit/Radio';
 import { MembersDropdown } from 'components/MembersDropdown';
 import { TxButton } from 'components/TxButton';
 
@@ -432,6 +432,15 @@ export function CreateDAO() {
     setProposedDaoId(nextDaoId);
   };
 
+  const onTokenTypeValueChange = (tokenType: TokenType) =>
+    setState((prevState) => ({ ...prevState, tokenType }));
+
+  const onProposalPeriodTypeChange = (proposalPeriodType: ProposalPeriod) =>
+    setState((prevState) => ({
+      ...prevState,
+      proposalPeriodType
+    }));
+
   return (
     <div className={styles.container}>
       <Link href="/" className={styles['cancel-button']}>
@@ -558,11 +567,16 @@ export function CreateDAO() {
 
           <RadioGroup
             name={InputName.TOKEN_TYPE}
-            onChange={onInputChange}
+            onValueChange={onTokenTypeValueChange}
             defaultValue={TokenType.FUNGIBLE_TOKEN}
           >
             {Object.values(TokenType).map((_tokenType) => (
-              <Radio label={_tokenType} value={_tokenType} key={_tokenType} />
+              <div key={_tokenType} className={styles['dropdown-content-span']}>
+                <RadioGroupItem value={_tokenType} id={_tokenType} />
+                <Label.Root htmlFor={_tokenType}>
+                  <Typography variant="body2">{_tokenType}</Typography>
+                </Label.Root>
+              </div>
             ))}
           </RadioGroup>
         </div>
@@ -648,17 +662,27 @@ export function CreateDAO() {
                       <RadioGroup
                         value={state.proposalPeriodType}
                         className={styles['dropdown-radio-group']}
-                        onChange={onInputChange}
+                        onValueChange={onProposalPeriodTypeChange}
                         name={InputName.PROPOSAL_PERIOD_TYPE}
                       >
-                        {Object.values(ProposalPeriod).map((x) => (
-                          <div
-                            key={x}
-                            className={styles['dropdown-content-span']}
-                          >
-                            <Radio label={x} value={x} />
-                          </div>
-                        ))}
+                        {Object.values(ProposalPeriod).map(
+                          (_proposalPeriodType) => (
+                            <div
+                              key={_proposalPeriodType}
+                              className={styles['dropdown-content-span']}
+                            >
+                              <RadioGroupItem
+                                value={_proposalPeriodType}
+                                id={_proposalPeriodType}
+                              />
+                              <Label.Root htmlFor={_proposalPeriodType}>
+                                <Typography variant="body2">
+                                  {_proposalPeriodType}
+                                </Typography>
+                              </Label.Root>
+                            </div>
+                          )
+                        )}
                       </RadioGroup>
                     </Card>
                   }

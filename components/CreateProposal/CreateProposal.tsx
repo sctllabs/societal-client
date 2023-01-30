@@ -27,17 +27,17 @@ import type { Vec } from '@polkadot/types';
 import type { AccountId } from '@polkadot/types/interfaces';
 import type { KeyringPair } from '@polkadot/keyring/types';
 
+import * as Label from '@radix-ui/react-label';
 import { Card } from 'components/ui-kit/Card';
 import { Icon } from 'components/ui-kit/Icon';
-import { RadioGroup } from 'components/ui-kit/Radio/RadioGroup';
 import { Button } from 'components/ui-kit/Button';
 import { Dropdown } from 'components/ui-kit/Dropdown';
-import { Radio } from 'components/ui-kit/Radio/Radio';
 import { Typography } from 'components/ui-kit/Typography';
 import { Input } from 'components/ui-kit/Input';
 import { MembersDropdown } from 'components/MembersDropdown';
 import { TxButton } from 'components/TxButton';
 import { Notification } from 'components/ui-kit/Notifications';
+import { RadioGroup, RadioGroupItem } from 'components/ui-kit/Radio';
 
 import styles from './CreateProposal.module.scss';
 
@@ -373,6 +373,10 @@ export function CreateProposal({ daoId }: CreateProposalProps) {
     }
   };
 
+  const onProposalTypeValueChange = (proposalType: ProposalEnum) => {
+    setState((prevState) => ({ ...prevState, proposalType }));
+  };
+
   return (
     <div className={styles.container}>
       <div className={styles.content}>
@@ -388,7 +392,7 @@ export function CreateProposal({ daoId }: CreateProposalProps) {
                   <RadioGroup
                     value={state.proposalType}
                     className={styles['proposal-dropdown-radio-group']}
-                    onChange={onInputChange}
+                    onValueChange={onProposalTypeValueChange}
                     name={InputName.PROPOSAL_TYPE}
                   >
                     {Object.values(ProposalEnum)
@@ -398,12 +402,15 @@ export function CreateProposal({ daoId }: CreateProposalProps) {
                           _proposalType !==
                             ProposalEnum.PROPOSE_TRANSFER_GOVERNANCE_TOKEN
                       )
-                      .map((_proposalType) => (
+                      .map((x) => (
                         <div
-                          key={_proposalType}
+                          key={x}
                           className={styles['proposal-dropdown-content-span']}
                         >
-                          <Radio label={_proposalType} value={_proposalType} />
+                          <RadioGroupItem value={x} id={x} />
+                          <Label.Root htmlFor={x}>
+                            <Typography variant="body2">{x}</Typography>
+                          </Label.Root>
                         </div>
                       ))}
                   </RadioGroup>

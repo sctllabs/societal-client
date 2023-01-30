@@ -1,52 +1,23 @@
-import React, { forwardRef, InputHTMLAttributes } from 'react';
+import React, { forwardRef } from 'react';
 import clsx from 'clsx';
-import { useControlled } from 'hooks/useControlled';
+import * as CheckboxPrimitive from '@radix-ui/react-checkbox';
+import { Icon } from 'components/ui-kit/Icon';
 
 import styles from './Checkbox.module.scss';
 
-export interface CheckboxProps extends InputHTMLAttributes<HTMLInputElement> {}
-
-export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
-  function Checkbox(
-    {
-      checked: checkedProp,
-      className,
-      onChange,
-      color,
-      defaultChecked,
-      ...otherProps
-    },
-    ref
-  ) {
-    const [checked, setCheckedState] = useControlled({
-      controlled: checkedProp,
-      default: Boolean(defaultChecked),
-      name: 'CheckboxBase',
-      state: 'checked'
-    });
-
-    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-      if (event.nativeEvent.defaultPrevented) {
-        return;
-      }
-
-      setCheckedState(event.target.checked);
-
-      if (onChange) {
-        onChange(event);
-      }
-    };
-
-    return (
-      <input
-        className={clsx(styles.root, className)}
-        checked={checked}
-        onChange={handleInputChange}
-        {...otherProps}
-        type="checkbox"
-        aria-checked={checked}
-        ref={ref}
-      />
-    );
-  }
-);
+export const Checkbox = forwardRef<
+  React.ElementRef<typeof CheckboxPrimitive.Root>,
+  React.ComponentPropsWithoutRef<typeof CheckboxPrimitive.Root>
+>(function Checkbox({ className, ...props }, ref) {
+  return (
+    <CheckboxPrimitive.Root
+      ref={ref}
+      className={clsx(styles.root, className)}
+      {...props}
+    >
+      <CheckboxPrimitive.Indicator asChild>
+        <Icon name="tick" size="xs" color="white" />
+      </CheckboxPrimitive.Indicator>
+    </CheckboxPrimitive.Root>
+  );
+});

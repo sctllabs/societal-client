@@ -5,7 +5,7 @@
   --switch-color-border: transparent;
   --switch-color: #{colors.$grayscale-100};
   --switch-color-checked: #{colors.$purple-3};
-  appearance: none;
+
   background-color: var(--switch-color-bg);
   border: 0.0625rem solid var(--switch-color-border);
   border-radius: 3.125rem;
@@ -18,35 +18,29 @@
   user-select: none;
   width: 2.5rem;
 
-  &::before {
-    background-color: var(--switch-color);
-    border-radius: 50%;
-    content: '';
-    cursor: pointer;
-    height: 1.125rem;
-    left: 0.125rem;
-    position: absolute;
-    top: calc(50% - 0.5625rem);
-    transition: all 0.3s;
-    width: 1.125rem;
-  }
-
   &:disabled {
     cursor: not-allowed;
     opacity: 0.3;
-
-    &::before {
-      cursor: not-allowed;
-    }
   }
 
-  &:checked::before {
-    background-color: var(--switch-color-checked);
-    left: calc(100% - 1.25rem);
-  }
-
-  &:checked {
+  &[data-state='checked'] {
     --switch-color-border: #{colors.$purple-3};
     --switch-color-bg: transparent;
+  }
+}
+
+.thumb {
+  background-color: var(--switch-color);
+  border-radius: 50%;
+  display: block;
+  height: 1.125rem;
+  transform: translateX(-4px);
+  transition: transform 100ms;
+  width: 1.125rem;
+  will-change: transform;
+
+  &[data-state='checked'] {
+    background-color: var(--switch-color-checked);
+    transform: translateX(12px);
   }
 }
