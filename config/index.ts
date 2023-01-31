@@ -17,6 +17,8 @@ export type AppConfig = {
   daoTreasuryContractAddress: string;
   daoCollectiveContractAddress: string;
   daoMembershipContractAddress: string;
+  daoDemocracyContractAddress: string;
+  daoEthGovernanceContractAddress: string;
   tokenNetwork: string;
   tokenApiKey: string;
   expectedBlockTimeInSeconds: number;
@@ -35,6 +37,10 @@ const daoCollectiveContractAddress =
   process.env.NEXT_PUBLIC_DAO_COLLECTIVE_CONTRACT_ADDRESS;
 const daoMembershipContractAddress =
   process.env.NEXT_PUBLIC_DAO_MEMBERSHIP_CONTRACT_ADDRESS;
+const daoDemocracyContractAddress =
+  process.env.NEXT_PUBLIC_DAO_DEMOCRACY_CONTRACT_ADDRESS;
+const daoEthGovernanceContractAddress =
+  process.env.NEXT_PUBLIC_DAO_ETH_GOVERNANCE_CONTRACT_ADDRESS;
 const tokenNetwork = process.env.NEXT_PUBLIC_TOKEN_NETWORK;
 const tokenApiKey = process.env.NEXT_PUBLIC_TOKEN_API_KEY;
 const expectedBlockTimeInSecondsString =
@@ -61,6 +67,14 @@ assert(
   daoMembershipContractAddress,
   'DAO_MEMBERSHIP_CONTRACT_ADDRESS was not provided.'
 );
+assert(
+  daoDemocracyContractAddress,
+  'DAO_DEMOCRACY_CONTRACT_ADDRESS was not provided.'
+);
+assert(
+  daoEthGovernanceContractAddress,
+  'DAO_ETH_GOVERNANCE_CONTRACT_ADDRESS was not provided.'
+);
 assert(tokenNetwork, 'TOKEN_NETWORK was not provided.');
 assert(tokenApiKey, 'TOKEN_API_KEY was not provided.');
 assert(
@@ -84,6 +98,8 @@ export const appConfig: AppConfig = {
   daoTreasuryContractAddress,
   daoCollectiveContractAddress,
   daoMembershipContractAddress,
+  daoDemocracyContractAddress,
+  daoEthGovernanceContractAddress,
   tokenNetwork,
   tokenApiKey,
   expectedBlockTimeInSeconds
