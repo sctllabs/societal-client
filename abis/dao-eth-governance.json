@@ -196,13 +196,13 @@
         "type": "uint32"
       },
       {
-        "internalType": "uint32",
-        "name": "threshold",
-        "type": "uint32"
+        "internalType": "bytes",
+        "name": "proposal",
+        "type": "bytes"
       },
       {
         "internalType": "bytes",
-        "name": "proposal",
+        "name": "account_id",
         "type": "bytes"
       }
     ],
@@ -243,6 +243,11 @@
         "internalType": "uint128",
         "name": "balance",
         "type": "uint128"
+      },
+      {
+        "internalType": "bytes",
+        "name": "account_id",
+        "type": "bytes"
       }
     ],
     "name": "vote",
