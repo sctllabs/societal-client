@@ -319,6 +319,34 @@
         "internalType": "uint32",
         "name": "dao_id",
         "type": "uint32"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "proposalHash",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "uint256",
+        "name": "value",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bytes",
+        "name": "meta",
+        "type": "bytes"
+      }
+    ],
+    "name": "propose",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint32",
+        "name": "dao_id",
+        "type": "uint32"
       }
     ],
     "name": "publicPropCount",
