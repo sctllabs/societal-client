@@ -223,7 +223,7 @@ export function CreateProposal({ daoId }: CreateProposalProps) {
         return [daoId, _tx, LENGTH_BOUND];
       }
       case ProposalEnum.PROPOSE_TRANSFER_GOVERNANCE_TOKEN: {
-        const _tx = api?.tx.dao.transferToken(
+        const _tx = api?.tx.daoTreasury.transferToken(
           daoId,
           state.amount,
           state.target
@@ -302,7 +302,7 @@ export function CreateProposal({ daoId }: CreateProposalProps) {
           break;
         }
         case ProposalEnum.PROPOSE_TRANSFER_GOVERNANCE_TOKEN: {
-          const _tx = api?.tx.dao.transferToken(
+          const _tx = api?.tx.daoTreasury.transferToken(
             parseInt(daoId, 10),
             parseInt(state.amount, 10),
             isEthereumAddress(state.target)
@@ -395,24 +395,17 @@ export function CreateProposal({ daoId }: CreateProposalProps) {
                     onValueChange={onProposalTypeValueChange}
                     name={InputName.PROPOSAL_TYPE}
                   >
-                    {Object.values(ProposalEnum)
-                      .filter(
-                        (_proposalType) =>
-                          !metamaskAccount ||
-                          _proposalType !==
-                            ProposalEnum.PROPOSE_TRANSFER_GOVERNANCE_TOKEN
-                      )
-                      .map((x) => (
-                        <div
-                          key={x}
-                          className={styles['proposal-dropdown-content-span']}
-                        >
-                          <RadioGroupItem value={x} id={x} />
-                          <Label.Root htmlFor={x}>
-                            <Typography variant="body2">{x}</Typography>
-                          </Label.Root>
-                        </div>
-                      ))}
+                    {Object.values(ProposalEnum).map((x) => (
+                      <div
+                        key={x}
+                        className={styles['proposal-dropdown-content-span']}
+                      >
+                        <RadioGroupItem value={x} id={x} />
+                        <Label.Root htmlFor={x}>
+                          <Typography variant="body2">{x}</Typography>
+                        </Label.Root>
+                      </div>
+                    ))}
                   </RadioGroup>
                 </Card>
               }
