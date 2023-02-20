@@ -1,4 +1,4 @@
-import { useCountdown } from 'hooks';
+import { useCountdown } from 'hooks/useCountdown';
 import { Typography, TypographyVariants } from 'components/ui-kit/Typography';
 
 interface CountdownProps {

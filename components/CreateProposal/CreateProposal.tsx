@@ -8,27 +8,36 @@ import {
   useState
 } from 'react';
 import { useRouter } from 'next/router';
+import { toast } from 'react-toastify';
+import { useDaoCollectiveContract } from 'hooks/useDaoCollectiveContract';
 
 import { useAtomValue } from 'jotai';
-import { apiAtom } from 'store/api';
-import { accountsAtom, currentAccountAtom } from 'store/account';
+import { apiAtom, keyringAtom } from 'store/api';
+import {
+  accountsAtom,
+  metamaskAccountAtom,
+  substrateAccountAtom
+} from 'store/account';
 
 import { LENGTH_BOUND } from 'constants/transaction';
+import { evmToAddress, isEthereumAddress } from '@polkadot/util-crypto';
+import { keyringAddExternal } from 'utils/keyringAddExternal';
 
-import type { u32, Vec } from '@polkadot/types';
+import type { Vec } from '@polkadot/types';
 import type { AccountId } from '@polkadot/types/interfaces';
 import type { KeyringPair } from '@polkadot/keyring/types';
 
+import * as Label from '@radix-ui/react-label';
 import { Card } from 'components/ui-kit/Card';
 import { Icon } from 'components/ui-kit/Icon';
-import { RadioGroup } from 'components/ui-kit/Radio/RadioGroup';
 import { Button } from 'components/ui-kit/Button';
 import { Dropdown } from 'components/ui-kit/Dropdown';
-import { Radio } from 'components/ui-kit/Radio/Radio';
 import { Typography } from 'components/ui-kit/Typography';
 import { Input } from 'components/ui-kit/Input';
-import { TxButton } from 'components/TxButton';
 import { MembersDropdown } from 'components/MembersDropdown';
+import { TxButton } from 'components/TxButton';
+import { Notification } from 'components/ui-kit/Notifications';
+import { RadioGroup, RadioGroupItem } from 'components/ui-kit/Radio';
 
 import styles from './CreateProposal.module.scss';
 
@@ -39,8 +48,7 @@ export interface CreateProposalProps {
 enum InputName {
   PROPOSAL_TYPE = 'proposalType',
   AMOUNT = 'amount',
-  TARGET = 'target',
-  MEMBER = 'member'
+  TARGET = 'target'
 }
 
 enum InputLabel {
@@ -58,6 +66,7 @@ type State = {
 
 export enum ProposalEnum {
   PROPOSE_TRANSFER = 'Propose Transfer',
+  PROPOSE_TRANSFER_GOVERNANCE_TOKEN = 'Propose Transfer Governance Token',
   PROPOSE_ADD_MEMBER = 'Propose Add Member',
   PROPOSE_REMOVE_MEMBER = 'Propose Remove Member'
 }
@@ -70,12 +79,15 @@ const INITIAL_STATE: State = {
 
 export function CreateProposal({ daoId }: CreateProposalProps) {
   const router = useRouter();
+
   const [members, setMembers] = useState<KeyringPair[]>([]);
   const api = useAtomValue(apiAtom);
-  const currentAccount = useAtomValue(currentAccountAtom);
+  const metamaskAccount = useAtomValue(metamaskAccountAtom);
+  const substrateAccount = useAtomValue(substrateAccountAtom);
   const accounts = useAtomValue(accountsAtom);
+  const keyring = useAtomValue(keyringAtom);
 
-  const [nextProposalId, setNextProposalId] = useState<number | null>(null);
+  const daoCollectiveContract = useDaoCollectiveContract();
 
   const [state, setState] = useState<State>(INITIAL_STATE);
 
@@ -105,23 +117,21 @@ export function CreateProposal({ daoId }: CreateProposalProps) {
     };
   }, [accounts, api, daoId]);
 
-  useEffect(() => {
-    let unsubscribe: any | null = null;
+  const proposalCreatedHandler = useCallback(() => {
+    setTimeout(
+      () =>
+        toast.success(
+          <Notification
+            title="Proposal created"
+            body="Proposal was created."
+            variant="success"
+          />
+        ),
+      1000
+    );
 
-    api?.query.daoTreasury
-      .proposalCount<u32>(daoId, (x: u32) => setNextProposalId(x.toNumber()))
-      .then((unsub) => {
-        unsubscribe = unsub;
-      })
-      // eslint-disable-next-line no-console
-      .catch(console.error);
-
-    return () => {
-      if (unsubscribe) {
-        unsubscribe();
-      }
-    };
-  });
+    router.push(`/daos/${daoId}`);
+  }, [daoId, router]);
 
   const onInputChange: ChangeEventHandler = (e) => {
     const target = e.target as HTMLInputElement;
@@ -194,22 +204,32 @@ export function CreateProposal({ daoId }: CreateProposalProps) {
     if (!members) {
       return [];
     }
+
     switch (state.proposalType) {
       case ProposalEnum.PROPOSE_ADD_MEMBER: {
-        const _tx = api?.tx.daoCouncilMemberships.addMember(
-          daoId,
-          state.target
-        );
-        return [daoId, members.length, _tx, LENGTH_BOUND];
+        const _tx = api?.tx.daoCouncilMembers.addMember(daoId, state.target);
+        return [daoId, _tx, LENGTH_BOUND];
       }
       case ProposalEnum.PROPOSE_REMOVE_MEMBER: {
-        const _tx = api?.tx.daoCouncilMemberships.removeMember(
+        const _tx = api?.tx.daoCouncilMembers.removeMember(daoId, state.target);
+        return [daoId, _tx, LENGTH_BOUND];
+      }
+      case ProposalEnum.PROPOSE_TRANSFER: {
+        const _tx = api?.tx.daoTreasury.spend(
           daoId,
+          state.amount,
           state.target
         );
-        return [daoId, members.length, _tx, LENGTH_BOUND];
+        return [daoId, _tx, LENGTH_BOUND];
       }
-
+      case ProposalEnum.PROPOSE_TRANSFER_GOVERNANCE_TOKEN: {
+        const _tx = api?.tx.dao.transferToken(
+          daoId,
+          state.amount,
+          state.target
+        );
+        return [daoId, _tx, LENGTH_BOUND];
+      }
       default: {
         // eslint-disable-next-line no-console
         console.error('No such method exists');
@@ -217,52 +237,27 @@ export function CreateProposal({ daoId }: CreateProposalProps) {
       }
     }
   }, [
-    api?.tx.daoCouncilMemberships,
+    api?.tx.dao,
+    api?.tx.daoCouncilMembers,
+    api?.tx.daoTreasury,
     daoId,
     members,
+    state.amount,
     state.proposalType,
     state.target
   ]);
 
   const disabled =
     !state.proposalType ||
-    (state.proposalType === ProposalEnum.PROPOSE_TRANSFER &&
+    ((state.proposalType === ProposalEnum.PROPOSE_TRANSFER ||
+      state.proposalType === ProposalEnum.PROPOSE_TRANSFER_GOVERNANCE_TOKEN) &&
       (!state.amount || !state.target)) ||
     ((state.proposalType === ProposalEnum.PROPOSE_ADD_MEMBER ||
       state.proposalType === ProposalEnum.PROPOSE_REMOVE_MEMBER) &&
       !state.target);
 
-  const extrinsic = useMemo(() => {
-    if (
-      !api ||
-      state.proposalType !== ProposalEnum.PROPOSE_TRANSFER ||
-      !state.amount ||
-      !state.target
-    ) {
-      return null;
-    }
-
-    const _tx = api?.tx.daoTreasury.approveProposal(daoId, nextProposalId);
-
-    const _proposeTransfer = [daoId, parseInt(state.amount, 10), state.target];
-    const _approveProposal = [daoId, members.length, _tx, LENGTH_BOUND];
-
-    return api.tx.utility.batch([
-      api.tx.daoTreasury.proposeSpend(..._proposeTransfer),
-      api.tx.daoCouncil.propose(..._approveProposal)
-    ]);
-  }, [
-    api,
-    daoId,
-    members.length,
-    nextProposalId,
-    state.amount,
-    state.proposalType,
-    state.target
-  ]);
-
   const onSuccess = () => {
-    router.push(`/daos/${daoId}`);
+    proposalCreatedHandler();
   };
 
   let _accounts: KeyringPair[] | undefined;
@@ -286,6 +281,102 @@ export function CreateProposal({ daoId }: CreateProposalProps) {
     }
   }
 
+  const handleProposeClick = async () => {
+    if (!metamaskAccount || !keyring) {
+      return;
+    }
+
+    try {
+      switch (state.proposalType) {
+        case ProposalEnum.PROPOSE_TRANSFER: {
+          const _tx = api?.tx.daoTreasury.spend(
+            daoId,
+            state.amount,
+            state.target
+          );
+          const proposalCallData = _tx?.method.toHex();
+          await daoCollectiveContract
+            ?.connect(metamaskAccount)
+            .propose(daoId, proposalCallData);
+          proposalCreatedHandler();
+          break;
+        }
+        case ProposalEnum.PROPOSE_TRANSFER_GOVERNANCE_TOKEN: {
+          const _tx = api?.tx.dao.transferToken(
+            parseInt(daoId, 10),
+            parseInt(state.amount, 10),
+            isEthereumAddress(state.target)
+              ? evmToAddress(state.target)
+              : state.target
+          );
+          const proposalCallData = _tx?.method.toHex();
+          await daoCollectiveContract
+            ?.connect(metamaskAccount)
+            .propose(daoId, proposalCallData);
+          proposalCreatedHandler();
+          break;
+        }
+        case ProposalEnum.PROPOSE_ADD_MEMBER: {
+          const _tx = api?.tx.daoCouncilMembers.addMember(
+            daoId,
+            isEthereumAddress(state.target)
+              ? evmToAddress(state.target)
+              : state.target
+          );
+          const proposalCallData = _tx?.method.toHex();
+          await daoCollectiveContract
+            ?.connect(metamaskAccount)
+            .propose(daoId, proposalCallData);
+          proposalCreatedHandler();
+          break;
+        }
+        case ProposalEnum.PROPOSE_REMOVE_MEMBER: {
+          const _tx = api?.tx.daoCouncilMembers.removeMember(
+            daoId,
+            isEthereumAddress(state.target)
+              ? evmToAddress(state.target)
+              : state.target
+          );
+          const proposalCallData = _tx?.method.toHex();
+          await daoCollectiveContract
+            ?.connect(metamaskAccount)
+            .propose(daoId, proposalCallData);
+          proposalCreatedHandler();
+          break;
+        }
+        default: {
+          // eslint-disable-next-line no-console
+          console.error('No such case');
+        }
+      }
+      if (isEthereumAddress(state.target)) {
+        keyringAddExternal(keyring, state.target);
+      }
+      toast.success(
+        <Notification
+          title="Transaction created"
+          body="Proposal will be created soon."
+          variant="success"
+        />
+      );
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error(e);
+
+      toast.error(
+        <Notification
+          title="Transaction declined"
+          body="Transaction was declined."
+          variant="error"
+        />
+      );
+    }
+  };
+
+  const onProposalTypeValueChange = (proposalType: ProposalEnum) => {
+    setState((prevState) => ({ ...prevState, proposalType }));
+  };
+
   return (
     <div className={styles.container}>
       <div className={styles.content}>
@@ -301,17 +392,27 @@ export function CreateProposal({ daoId }: CreateProposalProps) {
                   <RadioGroup
                     value={state.proposalType}
                     className={styles['proposal-dropdown-radio-group']}
-                    onChange={onInputChange}
+                    onValueChange={onProposalTypeValueChange}
                     name={InputName.PROPOSAL_TYPE}
                   >
-                    {Object.values(ProposalEnum).map((x) => (
-                      <div
-                        key={x}
-                        className={styles['proposal-dropdown-content-span']}
-                      >
-                        <Radio label={x} value={x} />
-                      </div>
-                    ))}
+                    {Object.values(ProposalEnum)
+                      .filter(
+                        (_proposalType) =>
+                          !metamaskAccount ||
+                          _proposalType !==
+                            ProposalEnum.PROPOSE_TRANSFER_GOVERNANCE_TOKEN
+                      )
+                      .map((x) => (
+                        <div
+                          key={x}
+                          className={styles['proposal-dropdown-content-span']}
+                        >
+                          <RadioGroupItem value={x} id={x} />
+                          <Label.Root htmlFor={x}>
+                            <Typography variant="body2">{x}</Typography>
+                          </Label.Root>
+                        </div>
+                      ))}
                   </RadioGroup>
                 </Card>
               }
@@ -334,7 +435,9 @@ export function CreateProposal({ daoId }: CreateProposalProps) {
           </div>
           {state.proposalType && (
             <div className={styles['proposal-input-container']}>
-              {state.proposalType === ProposalEnum.PROPOSE_TRANSFER && (
+              {(state.proposalType === ProposalEnum.PROPOSE_TRANSFER ||
+                state.proposalType ===
+                  ProposalEnum.PROPOSE_TRANSFER_GOVERNANCE_TOKEN) && (
                 <div className={styles['proposal-input-transfer']}>
                   <Input
                     name={InputName.AMOUNT}
@@ -351,13 +454,13 @@ export function CreateProposal({ daoId }: CreateProposalProps) {
                     handleOnKeyDown={handleOnKeyDown}
                   >
                     <Input
-                      readOnly
+                      onChange={onInputChange}
                       name={InputName.TARGET}
                       label={InputLabel.TARGET}
                       value={
                         (accounts?.find(
                           (_account) => _account.address === state.target
-                        )?.meta.name as string) ?? ''
+                        )?.meta.name as string) ?? state.target
                       }
                       required
                     />
@@ -373,13 +476,13 @@ export function CreateProposal({ daoId }: CreateProposalProps) {
                     handleOnKeyDown={handleOnKeyDown}
                   >
                     <Input
-                      readOnly
-                      name={InputName.MEMBER}
+                      onChange={onInputChange}
+                      name={InputName.TARGET}
                       label={InputLabel.MEMBER}
                       value={
                         (accounts?.find(
                           (_account) => _account.address === state.target
-                        )?.meta.name as string) ?? ''
+                        )?.meta.name as string) ?? state.target
                       }
                       required
                     />
@@ -396,16 +499,22 @@ export function CreateProposal({ daoId }: CreateProposalProps) {
             >
               Cancel
             </Button>
-            <TxButton
-              extrinsic={extrinsic}
-              accountId={currentAccount?.address}
-              params={handleTransform}
-              disabled={disabled}
-              tx={api?.tx.daoCouncil.propose}
-              onSuccess={onSuccess}
-            >
-              Propose
-            </TxButton>
+
+            {metamaskAccount ? (
+              <Button onClick={handleProposeClick} disabled={disabled}>
+                Propose
+              </Button>
+            ) : (
+              <TxButton
+                accountId={substrateAccount?.address}
+                params={handleTransform}
+                disabled={disabled}
+                tx={api?.tx.daoCouncil.propose}
+                onSuccess={onSuccess}
+              >
+                Propose
+              </TxButton>
+            )}
           </div>
         </Card>
       </div>

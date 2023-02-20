@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useRef } from 'react';
-import { appConfig } from 'config';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import {
   apiAtom,
@@ -10,55 +9,74 @@ import {
   socketAtom
 } from 'store/api';
 import {
-  currentAccountAddressAtom,
-  setCurrentAccountAtom
+  setCurrentMetamaskAccountAtom,
+  persistMetamaskAccountAtom,
+  substrateAccountAddressAtom,
+  setCurrentSubstrateAccountAtom,
+  disconnectAccountsAtom
 } from 'store/account';
-import { retrieveChainInfo } from 'utils';
+import { appConfig } from 'config';
+import { retrieveChainInfo } from 'utils/retrieveChainInfo';
 import type { ApiPromise } from '@polkadot/api';
 import type { Keyring } from '@polkadot/ui-keyring';
 
 export function Preloader() {
   const connectRef = useRef<boolean>(false);
-
   const [api, setApi] = useAtom(apiAtom);
   const [keyring, setKeyring] = useAtom(keyringAtom);
-  const currentAccountAddress = useAtomValue(currentAccountAddressAtom);
+  const persistMetamaskAccount = useAtomValue(persistMetamaskAccountAtom);
+  const persistSubstrateAccount = useAtomValue(substrateAccountAddressAtom);
   const socket = useAtomValue(socketAtom);
   const setApiError = useSetAtom(apiErrorAtom);
   const setJsonRPC = useSetAtom(jsonrpcAtom);
   const setApiConnected = useSetAtom(apiConnectedAtom);
-  const setCurrentAccount = useSetAtom(setCurrentAccountAtom);
+  const setCurrentMetamaskAccount = useSetAtom(setCurrentMetamaskAccountAtom);
+  const setCurrentSubstrateAccount = useSetAtom(setCurrentSubstrateAccountAtom);
+  const disconnectAccounts = useSetAtom(disconnectAccountsAtom);
 
   const loadCurrentAccount = useCallback(
-    (_keyring: Keyring, _currentAccountAddress: string) =>
-      setCurrentAccount(_keyring.getPair(_currentAccountAddress)),
-    [setCurrentAccount]
+    async (
+      _keyring: Keyring,
+      _metamaskAccountAddress: string | null,
+      _substrateAccountAddress: string | null
+    ) => {
+      try {
+        if (_metamaskAccountAddress) {
+          const { metamaskWallet } = await import('providers/metamaskWallet');
+          const signer = await metamaskWallet.connectWallet(
+            _keyring,
+            _metamaskAccountAddress
+          );
+          await setCurrentMetamaskAccount(signer);
+        }
+        if (_substrateAccountAddress) {
+          setCurrentSubstrateAccount(
+            _keyring.getPair(_substrateAccountAddress)
+          );
+        }
+      } catch (e) {
+        disconnectAccounts();
+        // eslint-disable-next-line no-console
+        console.error(e);
+      }
+    },
+
+    [disconnectAccounts, setCurrentMetamaskAccount, setCurrentSubstrateAccount]
   );
 
   const loadAccounts = useCallback(
     async (_api: ApiPromise) => {
-      const { web3Enable, web3Accounts } = await import(
-        '@polkadot/extension-dapp'
-      );
       const { isTestChain } = await import('@polkadot/util');
       const { keyring: uikeyring } = await import('@polkadot/ui-keyring');
 
       try {
-        await web3Enable(appConfig.appName);
-        let allAccounts = await web3Accounts();
-
-        allAccounts = allAccounts.map(({ address, meta }) => ({
-          address,
-          meta: { ...meta, name: `${meta.name} (${meta.source})` }
-        }));
-
         const { systemChain, systemChainType } = await retrieveChainInfo(_api);
         const isDevelopment =
           systemChainType.isDevelopment ||
           systemChainType.isLocal ||
           isTestChain(systemChain);
 
-        uikeyring.loadAll({ isDevelopment }, allAccounts);
+        uikeyring.loadAll({ isDevelopment });
 
         setKeyring(uikeyring);
       } catch (e) {
@@ -87,12 +105,21 @@ export function Preloader() {
   }, [setApi, setApiConnected, setApiError, setJsonRPC, socket]);
 
   useEffect(() => {
-    if (!keyring || !currentAccountAddress) {
+    if (!keyring) {
       return;
     }
 
-    loadCurrentAccount(keyring, currentAccountAddress);
-  }, [currentAccountAddress, keyring, loadCurrentAccount]);
+    loadCurrentAccount(
+      keyring,
+      persistMetamaskAccount,
+      persistSubstrateAccount
+    );
+  }, [
+    persistMetamaskAccount,
+    keyring,
+    loadCurrentAccount,
+    persistSubstrateAccount
+  ]);
 
   useEffect(() => {
     if (!api || keyring) {

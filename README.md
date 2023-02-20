@@ -13,7 +13,11 @@ yarn install
 
 ### Configure app .env
 
-Copy `.env.local.sample` to `.env.local`
+Copy `.env.example` to `.env`
+
+```bash
+cp .env.example .env
+```
 
 ### Development
 
@@ -46,3 +50,16 @@ npm run start
 # or
 yarn start
 ```
+
+### Run in Docker
+
+First, install [Docker](https://docs.docker.com/get-docker/) and
+[Docker Compose](https://docs.docker.com/compose/install/).
+
+Then run the following command to start both the node and client web application.
+
+```bash
+./docker_run.sh
+```
+
+You can use either the `latest` tag or specific one in the docker-compose configuration.

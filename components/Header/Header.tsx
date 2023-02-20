@@ -1,4 +1,4 @@
-import { Account } from 'components/Account';
+import { ConnectWallet } from 'components/ConnectWallet';
 import { Search } from 'components/Search';
 import { Subheader } from 'components/Subheader';
 
@@ -12,7 +12,7 @@ export function Header() {
           <Search />
         </div>
         <div className={styles.rightContainer}>
-          <Account />
+          <ConnectWallet />
         </div>
       </div>
       <Subheader />

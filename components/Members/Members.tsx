@@ -77,7 +77,7 @@ export function Members({ daoId }: MembersProps) {
               <Button
                 variant="icon"
                 size="xs"
-                data-address={x}
+                data-address={x.address}
                 onClick={handleOnClick}
               >
                 <Icon name="copy" size="xs" />

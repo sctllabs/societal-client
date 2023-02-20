@@ -5,14 +5,14 @@ import {
   queueTransactionAtom
 } from 'store/queue';
 import { apiAtom, keyringAtom } from 'store/api';
-import { currentAccountAtom } from 'store/account';
+import { substrateAccountAtom } from 'store/account';
 
 import type { AddressProxy, QueueTx, QueueTxMessageSetStatus } from 'types';
 
 export function Queue() {
   const api = useAtomValue(apiAtom);
   const keyring = useAtomValue(keyringAtom);
-  const currentAccount = useAtomValue(currentAccountAtom);
+  const currentAccount = useAtomValue(substrateAccountAtom);
   const queueTransaction = useAtomValue(queueTransactionAtom);
   const queueSetTransactionStatus = useSetAtom(queueSetTransactionStatusAtom);
 

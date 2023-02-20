@@ -1,24 +1,56 @@
-import type { Struct, u32, Bytes } from '@polkadot/types';
-import type { TreasuryProposal, Votes } from '@polkadot/types/interfaces';
+import type { Struct, u32, u128, Bytes } from '@polkadot/types';
+import type { Votes } from '@polkadot/types/interfaces';
+
+type DaoPolicyProportionType = 'AtLeast' | 'MoreThan';
+
+type DaoPolicyProportion = {
+  type: DaoPolicyProportionType;
+  proportion: number[];
+};
+
+type CreateDaoPolicy = {
+  proposal_period: number;
+  approve_origin: DaoPolicyProportion;
+};
+
+type CreateDaoTokenMetadata = {
+  name: string;
+  symbol: string;
+  decimals: number;
+};
+
+type CreateDaoToken = {
+  token_id: number;
+  min_balance?: string;
+  initial_balance: string;
+  metadata: CreateDaoTokenMetadata;
+};
+
+export type CreateDaoInput = {
+  name: string;
+  purpose: string;
+  metadata: string;
+  policy: CreateDaoPolicy;
+  token?: CreateDaoToken;
+  token_address?: string;
+};
 
 export interface DaoCodec extends Struct {
   readonly accountId: Bytes;
-  readonly found: Bytes;
-  readonly tokenId: u32;
+  readonly founder: Bytes;
+  readonly token: DaoTokenVariantCodec;
   readonly config: DaoConfig;
 }
 
+export type ProposalArgsCodec = [u32, u128, Bytes];
+
 export interface ProposalCodec extends Struct {
-  readonly method: ProposalType;
+  readonly method: ProposalMethod;
   readonly section: Bytes;
-  readonly args: ProposalArgs;
+  readonly args: ProposalArgsCodec;
 }
 
 export interface VoteCodec extends Votes {}
-
-export interface TransferCodec extends TreasuryProposal {
-  daoId: string;
-}
 
 export type VoteMeta = {
   ayes: string[];
@@ -36,7 +68,7 @@ export type DaoConfig = {
 };
 
 export type DaoInfo = {
-  tokenId: string;
+  token: DaoTokenVariant;
   founder: string;
   accountId: string;
   config: DaoConfig;
@@ -54,37 +86,47 @@ export type DaoToken = {
   quantity: string;
 };
 
+export type DaoTokenVariantCodec = {
+  asEthTokenAddress: Bytes;
+  asFungibleToken: u32;
+  isEthTokenAddress: boolean;
+  isFungibleToken: boolean;
+};
+
+export type DaoTokenVariant = {
+  FungibleToken?: number;
+  EthTokenAddress?: string;
+};
+
 export type MemberMeta = {
   address: string;
   name: string;
 };
 
-export type ProposalTransfer = {
-  dao_id: string;
-  proposal_id: string;
-};
+export interface BaseProposal {
+  dao_id: number;
+}
 
-export type ProposalMember = {
-  dao_id: string;
+export interface ProposalTransfer extends BaseProposal {
+  amount: bigint;
+  beneficiary: string;
+}
+
+export interface ProposalMember extends BaseProposal {
   who: string;
-};
+}
 
 export type ProposalArgs = ProposalTransfer | ProposalMember;
 
 export type ProposalMeta = {
   hash: string;
-  method: ProposalType;
+  method: ProposalMethod;
   section: string;
   args: ProposalArgs;
 };
 
-export type TransferMeta = {
-  hash: string;
-  daoId: string;
-  proposer: string;
-  value: number;
-  beneficiary: string;
-  bond: number;
-};
-
-export type ProposalType = 'addMember' | 'removeMember' | 'approveProposal';
+export type ProposalMethod =
+  | 'addMember'
+  | 'removeMember'
+  | 'spend'
+  | 'transferToken';

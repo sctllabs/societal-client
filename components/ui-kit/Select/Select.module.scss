@@ -1,0 +1,81 @@
+@use "styles/colors";
+
+.trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 8px;
+  height: 40px;
+  gap: 4px;
+  background-color: white;
+  border: 1px solid #{colors.$purple-2};
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.content {
+  overflow: hidden;
+  background-color: #{colors.$grayscale-100};
+  z-index: 50;
+  border-radius: 8px;
+  filter: drop-shadow(0px 0px 32px rgba(102, 78, 200, 0.1));
+}
+
+.viewport {
+  padding: 4px;
+}
+
+.item {
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  height: 40px;
+  padding: 0 35px 0 25px;
+  position: relative;
+  user-select: none;
+  cursor: pointer;
+
+  &[data-disabled] {
+    opacity: 0.3;
+    pointer-events: none;
+  }
+
+  &[data-highlighted] {
+    outline: none;
+    background-color: #{colors.$purple-3};
+    color: #{colors.$grayscale-100}
+  }
+}
+
+.label {
+  padding: 0 25px;
+}
+
+.separator {
+  height: 1px;
+  background-color: #{colors.$grayscale-95};
+  margin: 4px;
+}
+
+.indicator {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  left: 4px;
+  width: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.scroll-button {
+  margin-top: 4px;
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 20px;
+  background-color: white;
+  color: #{colors.$purple-2};
+  cursor: default;
+}
