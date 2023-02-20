@@ -6,7 +6,6 @@ import {
   substrateAccountAddressAtom,
   substrateAccountAtom
 } from './account';
-import { daosAtom } from './dao';
 
 export const statesLoadingAtom = atom((_get) => {
   const _apiConnected = _get(apiConnectedAtom);
@@ -14,12 +13,10 @@ export const statesLoadingAtom = atom((_get) => {
   const _substrateAccountAddress = _get(substrateAccountAddressAtom);
   const _metamaskAccountAddress = _get(persistMetamaskAccountAtom);
   const _metamaskAccount = _get(metamaskAccountAtom);
-  const _daos = _get(daosAtom);
 
   return (
     !_apiConnected ||
     (!!_metamaskAccountAddress && !_metamaskAccount) ||
-    (!!_substrateAccountAddress && !_substrateAccount) ||
-    !_daos
+    (!!_substrateAccountAddress && !_substrateAccount)
   );
 });

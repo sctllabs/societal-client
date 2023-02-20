@@ -1,6 +1,48 @@
 import type { Struct, u32, u128, Bytes } from '@polkadot/types';
 import type { Votes } from '@polkadot/types/interfaces';
 
+export type DaoQuery = {
+  __typename: 'Dao';
+  id: string;
+  name: string;
+  purpose: string;
+  metadata: string;
+  council: string[];
+  account: {
+    __typename: 'Account';
+    id: string;
+  };
+  founder: {
+    __typename: 'Account';
+    id: string;
+  };
+  fungibleToken: {
+    __typename: 'FungibleToken';
+    id: string;
+    name: string;
+    symbol: string;
+    decimals: number;
+  };
+  ethTokenAddress?: string;
+  policy: {
+    __typename: 'Policy';
+    id: string;
+  };
+};
+
+export type QueryDaoById = {
+  daoById: DaoQuery;
+};
+
+export type SubscribeDao = {
+  daos: SubscriptionDao[];
+};
+
+export type SubscriptionDao = {
+  id: string;
+  name: string;
+};
+
 type DaoPolicyProportionType = 'AtLeast' | 'MoreThan';
 
 type DaoPolicyProportion = {
@@ -98,31 +140,53 @@ export type DaoTokenVariant = {
   EthTokenAddress?: string;
 };
 
-export type MemberMeta = {
-  address: string;
-  name: string;
+export enum ProposalType {
+  AddMember = 'AddMember',
+  RemoveMember = 'RemoveMember',
+  Spend = 'Spend',
+  TransferToken = 'TransferToken'
+}
+
+export type AddMemberProposal = {
+  __typename: ProposalType.AddMember;
+  who: string;
 };
 
-export interface BaseProposal {
-  dao_id: number;
-}
+export type RemoveMemberProposal = {
+  __typename: ProposalType.RemoveMember;
+  who: string;
+};
 
-export interface ProposalTransfer extends BaseProposal {
+export type SpendProposal = {
+  __typename: ProposalType.Spend;
+  beneficiary: string;
+  amount: bigint;
+};
+
+export type TransferProposal = {
+  __typename: ProposalType.TransferToken;
   amount: bigint;
   beneficiary: string;
-}
+};
 
-export interface ProposalMember extends BaseProposal {
-  who: string;
-}
+export type SubscribeProposalsByDaoId = {
+  proposals: ProposalMeta[];
+};
 
-export type ProposalArgs = ProposalTransfer | ProposalMember;
+export type ProposalKind =
+  | AddMemberProposal
+  | RemoveMemberProposal
+  | SpendProposal
+  | TransferProposal;
 
 export type ProposalMeta = {
+  id: string;
   hash: string;
-  method: ProposalMethod;
-  section: string;
-  args: ProposalArgs;
+  kind: ProposalKind;
+  dao: {
+    id: string;
+  };
+  __typename: 'Proposal';
 };
 
 export type ProposalMethod =

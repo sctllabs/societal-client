@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router';
 
 import { useAtomValue } from 'jotai';
-import { daosAtom } from 'store/dao';
+import { currentDaoAtom } from 'store/dao';
 
 import { Typography } from 'components/ui-kit/Typography';
 import { Icon } from 'components/ui-kit/Icon';
@@ -14,30 +14,26 @@ import styles from './Subheader.module.scss';
 export function Subheader() {
   const router = useRouter();
   const { id: daoId } = router.query;
+  const currentDao = useAtomValue(currentDaoAtom);
 
-  const daos = useAtomValue(daosAtom);
-  const currentDAO = daos?.find((x) => x.id === daoId);
-
-  if (!daoId || !currentDAO) {
+  if (!daoId || !currentDao) {
     return null;
   }
 
   const handleOnClick = () => {
-    navigator.clipboard.writeText(currentDAO.dao.accountId);
+    navigator.clipboard.writeText(currentDao.account.id);
   };
 
   return (
     <div className={styles.root}>
       <div className={styles['left-container']}>
         <span className={styles.logo}>
-          <Avatar value={currentDAO.dao.config.name} />
+          <Avatar value={currentDao.name} />
         </span>
         <div className={styles['title-container']}>
-          <Typography variant="title2">{currentDAO.dao.config.name}</Typography>
+          <Typography variant="title2">{currentDao.name}</Typography>
           <span className={styles['address-container']}>
-            <Typography variant="caption3">
-              {currentDAO.dao.accountId}
-            </Typography>
+            <Typography variant="caption3">{currentDao.account.id}</Typography>
             <Button variant="icon" size="xs" onClick={handleOnClick}>
               <Icon name="copy" size="xs" />
             </Button>

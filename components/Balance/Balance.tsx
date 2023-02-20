@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import { useAtomValue } from 'jotai';
-import { daosAtom } from 'store/dao';
+import { currentDaoAtom } from 'store/dao';
 import { apiAtom } from 'store/api';
 
 import type { AccountInfo } from '@polkadot/types/interfaces';
@@ -11,28 +11,23 @@ import { Typography } from 'components/ui-kit/Typography';
 
 import styles from './Balance.module.scss';
 
-export interface BalanceProps {
-  daoId: string;
-}
-
 const CURRENCY = '$SCTL';
 
-export function Balance({ daoId }: BalanceProps) {
+export function Balance() {
   const [balance, setBalance] = useState<string | null>(null);
   const api = useAtomValue(apiAtom);
-  const daos = useAtomValue(daosAtom);
+
+  const currentDao = useAtomValue(currentDaoAtom);
 
   useEffect(() => {
     let unsubscribe: any | null = null;
-
-    const currentDao = daos?.find((x) => x.id === daoId);
 
     if (!currentDao) {
       return undefined;
     }
 
     api?.query.system
-      .account(currentDao.dao.accountId, ({ data: { free } }: AccountInfo) =>
+      .account(currentDao.account.id, ({ data: { free } }: AccountInfo) =>
         setBalance(free.toString())
       )
       .then((unsub) => {
@@ -46,7 +41,7 @@ export function Balance({ daoId }: BalanceProps) {
         unsubscribe();
       }
     };
-  }, [api, daoId, daos]);
+  }, [api, currentDao]);
 
   return (
     <Card className={styles.card}>

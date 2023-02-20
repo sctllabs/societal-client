@@ -19,10 +19,12 @@ import {
 } from 'constants/transaction';
 
 import type {
-  ProposalMember,
+  AddMemberProposal,
+  ProposalKind,
   ProposalMeta,
-  ProposalMethod,
-  ProposalTransfer,
+  RemoveMemberProposal,
+  SpendProposal,
+  TransferProposal,
   TxCallback,
   VoteMeta
 } from 'types';
@@ -54,29 +56,27 @@ export interface ProposalCardProps {
   vote?: VoteMeta;
 }
 
-const getProposalSettings = (
-  proposalMethod: ProposalMethod
-): ProposalSettings => {
-  switch (proposalMethod) {
-    case 'addMember': {
+const getProposalSettings = (proposalKind: ProposalKind): ProposalSettings => {
+  switch (proposalKind.__typename) {
+    case 'AddMember': {
       return {
         title: ProposalEnum.ADD_MEMBER,
         icon: 'user-add'
       };
     }
-    case 'removeMember': {
+    case 'RemoveMember': {
       return {
         title: ProposalEnum.REMOVE_MEMBER,
         icon: 'user-delete'
       };
     }
-    case 'spend': {
+    case 'Spend': {
       return {
         title: ProposalEnum.TRANSFER,
         icon: 'transfer'
       };
     }
-    case 'transferToken': {
+    case 'TransferToken': {
       return {
         title: ProposalEnum.TRANSFER_GOVERNANCE_TOKEN,
         icon: 'token'
@@ -96,7 +96,7 @@ export function ProposalCard({ proposal, vote }: ProposalCardProps) {
   const substrateAccount = useAtomValue(substrateAccountAtom);
   const metamaskAccount = useAtomValue(metamaskAccountAtom);
   const accounts = useAtomValue(accountsAtom);
-  const { title, icon } = getProposalSettings(proposal.method);
+  const { title, icon } = getProposalSettings(proposal.kind);
   const daoCollectiveContract = useDaoCollectiveContract();
 
   const proposalWeightBound = useMemo(() => {
@@ -122,7 +122,7 @@ export function ProposalCard({ proposal, vote }: ProposalCardProps) {
     try {
       await daoCollectiveContract
         ?.connect(metamaskAccount)
-        .vote(proposal.args.dao_id, proposal.hash, vote.index, true);
+        .vote(proposal.dao.id, proposal.hash, vote.index, true);
       toast.success(
         <Notification
           title="Vote created"
@@ -152,7 +152,7 @@ export function ProposalCard({ proposal, vote }: ProposalCardProps) {
     try {
       await daoCollectiveContract
         ?.connect(metamaskAccount)
-        .vote(proposal.args.dao_id, proposal.hash, vote.index, false);
+        .vote(proposal.dao.id, proposal.hash, vote.index, false);
       toast.success(
         <Notification
           title="Vote created"
@@ -182,13 +182,7 @@ export function ProposalCard({ proposal, vote }: ProposalCardProps) {
     try {
       await daoCollectiveContract
         ?.connect(metamaskAccount)
-        .close(
-          proposal.args.dao_id,
-          proposal.hash,
-          vote.index,
-          100000000000,
-          10000
-        );
+        .close(proposal.dao.id, proposal.hash, vote.index, 100000000000, 10000);
       toast.success(
         <Notification
           title="Proposal closed"
@@ -258,15 +252,15 @@ export function ProposalCard({ proposal, vote }: ProposalCardProps) {
       </div>
 
       <div className={styles['proposal-bottom-container']}>
-        {(proposal.method === 'transferToken' ||
-          proposal.method === 'spend') && (
+        {(proposal.kind.__typename === 'TransferToken' ||
+          proposal.kind.__typename === 'Spend') && (
           <span className={styles['proposal-transfer-container']}>
             <span className={styles['proposal-transfer-info']}>
               <Typography variant="caption3">Amount</Typography>
               <Typography variant="title5">
                 {new Intl.NumberFormat('en-US', {
                   minimumFractionDigits: 2
-                }).format((proposal.args as ProposalTransfer).amount)}
+                }).format(proposal.kind.amount)}
               </Typography>
             </span>
             <span className={styles['proposal-transfer-info']}>
@@ -275,15 +269,15 @@ export function ProposalCard({ proposal, vote }: ProposalCardProps) {
                 {(accounts?.find(
                   (_account) =>
                     _account.address ===
-                    (proposal.args as ProposalTransfer).beneficiary
-                )?.meta.name as string) ??
-                  (proposal.args as ProposalTransfer).beneficiary}
+                    (proposal.kind as SpendProposal | TransferProposal)
+                      .beneficiary
+                )?.meta.name as string) ?? proposal.kind.beneficiary}
               </Typography>
             </span>
           </span>
         )}
-        {(proposal.method === 'addMember' ||
-          proposal.method === 'removeMember') && (
+        {(proposal.kind.__typename === 'AddMember' ||
+          proposal.kind.__typename === 'RemoveMember') && (
           <span className={styles['proposal-member-info']}>
             <Typography variant="caption3">Member</Typography>
             <span className={styles['proposal-member-address']}>
@@ -291,9 +285,10 @@ export function ProposalCard({ proposal, vote }: ProposalCardProps) {
               <Typography variant="title5">
                 {(accounts?.find(
                   (_account) =>
-                    _account.address === (proposal.args as ProposalMember).who
-                )?.meta.name as string) ??
-                  (proposal.args as ProposalMember).who}
+                    _account.address ===
+                    (proposal.kind as AddMemberProposal | RemoveMemberProposal)
+                      .who
+                )?.meta.name as string) ?? proposal.kind.who}
               </Typography>
             </span>
           </span>
@@ -315,12 +310,7 @@ export function ProposalCard({ proposal, vote }: ProposalCardProps) {
                 accountId={substrateAccount?.address}
                 tx={api?.tx.daoCouncil.vote}
                 variant="ghost"
-                params={[
-                  proposal.args.dao_id,
-                  proposal.hash,
-                  vote?.index,
-                  false
-                ]}
+                params={[proposal.dao.id, proposal.hash, vote?.index, false]}
                 className={styles['button-vote']}
                 onSuccess={onNayVoteSuccess}
               >
@@ -347,12 +337,7 @@ export function ProposalCard({ proposal, vote }: ProposalCardProps) {
                 disabled={!vote}
                 accountId={substrateAccount?.address}
                 tx={api?.tx.daoCouncil.vote}
-                params={[
-                  proposal.args.dao_id,
-                  proposal.hash,
-                  vote?.index,
-                  true
-                ]}
+                params={[proposal.dao.id, proposal.hash, vote?.index, true]}
                 variant="ghost"
                 className={styles['button-vote']}
                 onSuccess={onAyeVoteSuccess}
@@ -384,7 +369,7 @@ export function ProposalCard({ proposal, vote }: ProposalCardProps) {
                       accountId={substrateAccount?.address}
                       tx={api?.tx.daoCouncil.close}
                       params={[
-                        proposal.args.dao_id,
+                        proposal.dao.id,
                         proposal.hash,
                         vote.index,
                         proposalWeightBound,

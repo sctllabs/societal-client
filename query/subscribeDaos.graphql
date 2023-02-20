@@ -1,0 +1,6 @@
+subscription DaosSubscription {
+  daos {
+    id
+    name
+  }
+}

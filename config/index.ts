@@ -22,6 +22,7 @@ export type AppConfig = {
   tokenNetwork: string;
   tokenApiKey: string;
   expectedBlockTimeInSeconds: number;
+  apiUri: string;
 };
 
 const appName = process.env.NEXT_PUBLIC_APP_NAME;
@@ -45,6 +46,7 @@ const tokenNetwork = process.env.NEXT_PUBLIC_TOKEN_NETWORK;
 const tokenApiKey = process.env.NEXT_PUBLIC_TOKEN_API_KEY;
 const expectedBlockTimeInSecondsString =
   process.env.NEXT_PUBLIC_EXPECTED_BLOCK_TIME_IN_SECONDS;
+const apiUri = process.env.NEXT_PUBLIC_API_URI;
 
 assert(appName, 'APP_NAME was not provided.');
 assert(networkName, 'NETWORK_NAME was not provided.');
@@ -81,6 +83,7 @@ assert(
   expectedBlockTimeInSecondsString,
   'EXPECTED_BLOCK_TIME_IN_SECONDS was not provided.'
 );
+assert(apiUri, 'API_URI was not provided.');
 
 const chainId = parseInt(chainIdString, 10);
 const expectedBlockTimeInSeconds = parseInt(
@@ -102,5 +105,6 @@ export const appConfig: AppConfig = {
   daoEthGovernanceContractAddress,
   tokenNetwork,
   tokenApiKey,
-  expectedBlockTimeInSeconds
+  expectedBlockTimeInSeconds,
+  apiUri
 };

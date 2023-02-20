@@ -1,0 +1,22 @@
+subscription SubsribeProposalsByDaoId($daoId: String!) {
+  proposals(where: { dao: { id_eq: $daoId } }) {
+    id
+    hash
+    dao {
+      id
+    }
+    kind {
+      __typename
+      ... on AddMember {
+        who
+      }
+      ... on RemoveMember {
+        who
+      }
+      ... on Spend {
+        beneficiary
+        amount
+      }
+    }
+  }
+}
