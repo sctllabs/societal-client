@@ -1,8 +1,11 @@
-subscription SubsribeProposalsByDaoId($daoId: String!) {
+subscription SubscribeProposalsByDaoId($daoId: String!) {
   proposals(where: { dao: { id_eq: $daoId } }) {
     id
     hash
     index
+    status
+    blockNum
+    voteThreshold
     dao {
       id
     }

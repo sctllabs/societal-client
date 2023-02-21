@@ -7,6 +7,11 @@ import {
   metamaskAccountAtom,
   substrateAccountAtom
 } from 'store/account';
+import { currentDaoAtom } from 'store/dao';
+import { appConfig } from 'config';
+
+import { useSubscription } from '@apollo/client';
+import SUBSCRIBE_VOTES_BY_PROPOSAL_ID from 'query/subscribeVotesByProposalId.graphql';
 
 import { useDaoCollectiveContract } from 'hooks/useDaoCollectiveContract';
 
@@ -24,9 +29,9 @@ import type {
   ProposalMeta,
   RemoveMemberProposal,
   SpendProposal,
+  SubscribeVotesByProposalId,
   TransferProposal,
-  TxCallback,
-  VoteMeta
+  TxCallback
 } from 'types';
 
 import { Button } from 'components/ui-kit/Button';
@@ -53,7 +58,7 @@ type ProposalSettings = {
 
 export interface ProposalCardProps {
   proposal: ProposalMeta;
-  vote?: VoteMeta;
+  currentBlock: number | null;
 }
 
 const getProposalSettings = (proposalKind: ProposalKind): ProposalSettings => {
@@ -91,13 +96,21 @@ const getProposalSettings = (proposalKind: ProposalKind): ProposalSettings => {
   }
 };
 
-export function ProposalCard({ proposal, vote }: ProposalCardProps) {
+export function ProposalCard({ proposal, currentBlock }: ProposalCardProps) {
   const api = useAtomValue(apiAtom);
   const substrateAccount = useAtomValue(substrateAccountAtom);
   const metamaskAccount = useAtomValue(metamaskAccountAtom);
   const accounts = useAtomValue(accountsAtom);
   const { title, icon } = getProposalSettings(proposal.kind);
   const daoCollectiveContract = useDaoCollectiveContract();
+  const currentDao = useAtomValue(currentDaoAtom);
+
+  const { data } = useSubscription<SubscribeVotesByProposalId>(
+    SUBSCRIBE_VOTES_BY_PROPOSAL_ID,
+    {
+      variables: { proposalId: proposal.id }
+    }
+  );
 
   const proposalWeightBound = useMemo(() => {
     const proposalWeightBoundArg = api?.tx.daoCouncil.close.meta.args.find(
@@ -115,14 +128,14 @@ export function ProposalCard({ proposal, vote }: ProposalCardProps) {
   }, [api?.tx.daoCouncil.close.meta.args]);
 
   const handleVoteYes = async () => {
-    if (!metamaskAccount || !vote) {
+    if (!metamaskAccount) {
       return;
     }
 
     try {
       await daoCollectiveContract
         ?.connect(metamaskAccount)
-        .vote(proposal.dao.id, proposal.hash, vote.index, true);
+        .vote(proposal.dao.id, proposal.hash, proposal.index, true);
       toast.success(
         <Notification
           title="Vote created"
@@ -145,14 +158,14 @@ export function ProposalCard({ proposal, vote }: ProposalCardProps) {
   };
 
   const handleVoteNo = async () => {
-    if (!metamaskAccount || !vote) {
+    if (!metamaskAccount) {
       return;
     }
 
     try {
       await daoCollectiveContract
         ?.connect(metamaskAccount)
-        .vote(proposal.dao.id, proposal.hash, vote.index, false);
+        .vote(proposal.dao.id, proposal.hash, proposal.index, false);
       toast.success(
         <Notification
           title="Vote created"
@@ -175,14 +188,20 @@ export function ProposalCard({ proposal, vote }: ProposalCardProps) {
   };
 
   const handleProposalFinish = async () => {
-    if (!metamaskAccount || !vote) {
+    if (!metamaskAccount) {
       return;
     }
 
     try {
       await daoCollectiveContract
         ?.connect(metamaskAccount)
-        .close(proposal.dao.id, proposal.hash, vote.index, 100000000000, 10000);
+        .close(
+          proposal.dao.id,
+          proposal.hash,
+          proposal.index,
+          100000000000,
+          10000
+        );
       toast.success(
         <Notification
           title="Proposal closed"
@@ -234,6 +253,12 @@ export function ProposalCard({ proposal, vote }: ProposalCardProps) {
     );
   };
 
+  const disabled = proposal.status !== 'Open';
+  const ayes = data?.voteHistories.filter((_vote) => _vote.approvedVote).length;
+  const nays = data?.voteHistories.filter(
+    (_vote) => !_vote.approvedVote
+  ).length;
+
   return (
     <Card className={styles['proposal-card']}>
       <div className={styles['proposal-title-container']}>
@@ -242,9 +267,18 @@ export function ProposalCard({ proposal, vote }: ProposalCardProps) {
           <span className={styles['proposal-title-item']}>
             <Typography variant="title4">{title}</Typography>
           </span>
-          {vote && (
+          {currentDao && currentBlock && (
             <span className={styles['proposal-title-item-countdown']}>
-              <Countdown end={vote.end} typography="value5" />
+              <Countdown
+                end={
+                  (proposal.blockNum +
+                    currentDao.policy.proposalPeriod -
+                    currentBlock) *
+                  1000 *
+                  appConfig.expectedBlockTimeInSeconds
+                }
+                typography="value5"
+              />
               <Typography variant="caption2">left</Typography>
             </span>
           )}
@@ -298,7 +332,7 @@ export function ProposalCard({ proposal, vote }: ProposalCardProps) {
             {metamaskAccount ? (
               <Button
                 variant="ghost"
-                disabled={!vote}
+                disabled={disabled}
                 className={styles['button-vote']}
                 onClick={handleVoteNo}
               >
@@ -306,11 +340,11 @@ export function ProposalCard({ proposal, vote }: ProposalCardProps) {
               </Button>
             ) : (
               <TxButton
-                disabled={!vote}
+                disabled={disabled}
                 accountId={substrateAccount?.address}
                 tx={api?.tx.daoCouncil.vote}
                 variant="ghost"
-                params={[proposal.dao.id, proposal.hash, vote?.index, false]}
+                params={[proposal.dao.id, proposal.hash, proposal.index, false]}
                 className={styles['button-vote']}
                 onSuccess={onNayVoteSuccess}
               >
@@ -318,7 +352,7 @@ export function ProposalCard({ proposal, vote }: ProposalCardProps) {
               </TxButton>
             )}
 
-            <Typography variant="caption2">{vote?.nays.length || 0}</Typography>
+            <Typography variant="caption2">{nays || 0}</Typography>
           </span>
 
           <div className={styles['vertical-break']} />
@@ -326,7 +360,7 @@ export function ProposalCard({ proposal, vote }: ProposalCardProps) {
             {metamaskAccount ? (
               <Button
                 variant="ghost"
-                disabled={!vote}
+                disabled={disabled}
                 className={styles['button-vote']}
                 onClick={handleVoteYes}
               >
@@ -334,10 +368,10 @@ export function ProposalCard({ proposal, vote }: ProposalCardProps) {
               </Button>
             ) : (
               <TxButton
-                disabled={!vote}
+                disabled={disabled}
                 accountId={substrateAccount?.address}
                 tx={api?.tx.daoCouncil.vote}
-                params={[proposal.dao.id, proposal.hash, vote?.index, true]}
+                params={[proposal.dao.id, proposal.hash, proposal.index, true]}
                 variant="ghost"
                 className={styles['button-vote']}
                 onSuccess={onAyeVoteSuccess}
@@ -346,17 +380,19 @@ export function ProposalCard({ proposal, vote }: ProposalCardProps) {
               </TxButton>
             )}
 
-            <Typography variant="caption2">{vote?.ayes.length || 0}</Typography>
+            <Typography variant="caption2">{ayes || 0}</Typography>
           </span>
-          {vote &&
-            (vote.ayes.length >= vote.threshold ||
-              vote.nays.length >= vote.threshold) && (
+          {!disabled &&
+            ayes !== undefined &&
+            nays !== undefined &&
+            (ayes >= proposal.voteThreshold ||
+              nays >= proposal.voteThreshold) && (
               <>
                 <div className={styles['vertical-break']} />
                 <span className={styles['proposal-vote-button-container']}>
                   {metamaskAccount ? (
                     <Button
-                      disabled={!vote}
+                      disabled={disabled}
                       variant="ghost"
                       className={styles['button-vote']}
                       onClick={handleProposalFinish}
@@ -365,13 +401,13 @@ export function ProposalCard({ proposal, vote }: ProposalCardProps) {
                     </Button>
                   ) : (
                     <TxButton
-                      disabled={!vote}
+                      disabled={disabled}
                       accountId={substrateAccount?.address}
                       tx={api?.tx.daoCouncil.close}
                       params={[
                         proposal.dao.id,
                         proposal.hash,
-                        vote.index,
+                        proposal.index,
                         proposalWeightBound,
                         LENGTH_BOUND
                       ]}

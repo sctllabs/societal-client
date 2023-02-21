@@ -1,5 +1,4 @@
-import type { Struct, u32, u128, Bytes } from '@polkadot/types';
-import type { Votes } from '@polkadot/types/interfaces';
+import type { Struct, u32, Bytes } from '@polkadot/types';
 
 export type DaoQuery = {
   __typename: 'Dao';
@@ -27,6 +26,7 @@ export type DaoQuery = {
   policy: {
     __typename: 'Policy';
     id: string;
+    proposalPeriod: number;
   };
 };
 
@@ -84,23 +84,16 @@ export interface DaoCodec extends Struct {
   readonly config: DaoConfig;
 }
 
-export type ProposalArgsCodec = [u32, u128, Bytes];
-
-export interface ProposalCodec extends Struct {
-  readonly method: ProposalMethod;
-  readonly section: Bytes;
-  readonly args: ProposalArgsCodec;
-}
-
-export interface VoteCodec extends Votes {}
-
 export type VoteMeta = {
-  ayes: string[];
-  nays: string[];
-  threshold: number;
-  index: number;
-  end: number;
-  hash: string;
+  id: string;
+  approvedVote: boolean;
+  votedNo: number;
+  votedYes: number;
+  councillor: {
+    id: string;
+    __typename: 'Account';
+  };
+  __typename: 'VoteHistory';
 };
 
 export type DaoConfig = {
@@ -169,6 +162,10 @@ export type TransferProposal = {
   beneficiary: string;
 };
 
+export type SubscribeVotesByProposalId = {
+  voteHistories: VoteMeta[];
+};
+
 export type SubscribeProposalsByDaoId = {
   proposals: ProposalMeta[];
 };
@@ -179,19 +176,23 @@ export type ProposalKind =
   | SpendProposal
   | TransferProposal;
 
+export type ProposalStatus =
+  | 'Open'
+  | 'Approved'
+  | 'Disapproved'
+  | 'Executed'
+  | 'Closed';
+
 export type ProposalMeta = {
   id: string;
   hash: string;
   kind: ProposalKind;
   index: string;
+  status: ProposalStatus;
+  blockNum: number;
+  voteThreshold: number;
   dao: {
     id: string;
   };
   __typename: 'Proposal';
 };
-
-export type ProposalMethod =
-  | 'addMember'
-  | 'removeMember'
-  | 'spend'
-  | 'transferToken';

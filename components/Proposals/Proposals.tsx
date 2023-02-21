@@ -1,16 +1,14 @@
 import { useEffect, useState } from 'react';
 
-import { appConfig } from 'config';
 import { useAtomValue } from 'jotai';
 import { currentDaoAtom } from 'store/dao';
 import { apiAtom } from 'store/api';
-import { isNull } from 'utils/filters';
 
 import { useSubscription } from '@apollo/client';
 import SUBSCRIBE_PROPOSAL_BY_DAO_ID from 'query/subscribeProposalsByDaoId.graphql';
 
-import type { SubscribeProposalsByDaoId, VoteCodec, VoteMeta } from 'types';
-import type { Option, u32 } from '@polkadot/types';
+import type { SubscribeProposalsByDaoId } from 'types';
+import type { u32 } from '@polkadot/types';
 
 import { Card } from 'components/ui-kit/Card';
 import { Typography } from 'components/ui-kit/Typography';
@@ -21,7 +19,6 @@ import styles from './Proposals.module.scss';
 export function Proposals() {
   const api = useAtomValue(apiAtom);
   const currentDao = useAtomValue(currentDaoAtom);
-  const [votes, setVotes] = useState<VoteMeta[] | null>(null);
   const [currentBlock, setCurrentBlock] = useState<number | null>(null);
 
   const { data } = useSubscription<SubscribeProposalsByDaoId>(
@@ -44,52 +41,6 @@ export function Proposals() {
     })();
   }, [api?.query.system]);
 
-  useEffect(() => {
-    if (!currentDao || !data || !currentBlock) {
-      return undefined;
-    }
-    let unsubscribe: any | null = null;
-
-    const _input = data.proposals.map((_proposal) => [
-      currentDao.id,
-      _proposal.hash
-    ]);
-
-    api?.query.daoCouncil.voting
-      .multi<Option<VoteCodec>>(_input, (_votes) =>
-        setVotes(
-          _votes
-            .map((_vote, index) =>
-              _vote.value.isEmpty
-                ? null
-                : {
-                    ayes: _vote.value.ayes.map((aye) => aye.toString()),
-                    nays: _vote.value.nays.map((nay) => nay.toString()),
-                    threshold: _vote.value.threshold.toNumber(),
-                    index: _vote.value.index.toNumber(),
-                    end:
-                      (_vote.value.end.toNumber() - currentBlock) *
-                      1000 *
-                      appConfig.expectedBlockTimeInSeconds,
-                    hash: data.proposals[index].hash
-                  }
-            )
-            .filter(isNull)
-        )
-      )
-      .then((unsub) => {
-        unsubscribe = unsub;
-      })
-      // eslint-disable-next-line no-console
-      .catch(console.error);
-
-    return () => {
-      if (unsubscribe) {
-        unsubscribe();
-      }
-    };
-  }, [api, currentBlock, currentDao, data]);
-
   return (
     <>
       <Card className={styles['proposals-title-card']}>
@@ -100,7 +51,7 @@ export function Proposals() {
           <ProposalCard
             key={proposal.hash}
             proposal={proposal}
-            vote={votes?.find((x) => x.hash === proposal.hash)}
+            currentBlock={currentBlock}
           />
         ))
       ) : (
