@@ -3,7 +3,7 @@ import { Balance } from './Balance';
 
 describe('Balance', () => {
   it('Should render component', () => {
-    const { container } = render(<Balance daoId="" key="" />);
+    const { container } = render(<Balance />);
 
     expect(container).toMatchSnapshot();
   });

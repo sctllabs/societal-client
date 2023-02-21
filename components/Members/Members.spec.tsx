@@ -3,7 +3,7 @@ import { Members } from './Members';
 
 describe('Members', () => {
   it('Should render component', () => {
-    const { container } = render(<Members daoId="" />);
+    const { container } = render(<Members />);
 
     expect(container).toMatchSnapshot();
   });

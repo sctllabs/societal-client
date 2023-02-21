@@ -1,25 +1,19 @@
 import { useAtomValue } from 'jotai';
-import { daosAtom } from 'store/dao';
+import { currentDaoAtom } from 'store/dao';
 
 import { Card } from 'components/ui-kit/Card';
 import { Typography } from 'components/ui-kit/Typography';
 
 import styles from './About.module.scss';
 
-interface AboutProps {
-  daoId: string;
-}
-
-export function About({ daoId }: AboutProps) {
-  const daos = useAtomValue(daosAtom);
-
-  const currentDao = daos?.find((x) => x.id === daoId);
+export function About() {
+  const currentDao = useAtomValue(currentDaoAtom);
 
   if (!currentDao) {
     return null;
   }
 
-  const { purpose } = currentDao.dao.config;
+  const { purpose } = currentDao;
 
   return (
     <Card className={styles.card}>

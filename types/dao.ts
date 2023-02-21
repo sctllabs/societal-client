@@ -1,5 +1,47 @@
-import type { Struct, u32, u128, Bytes } from '@polkadot/types';
-import type { Votes } from '@polkadot/types/interfaces';
+import type { Struct, u32, Bytes } from '@polkadot/types';
+
+export type DaoQuery = {
+  __typename: 'Dao';
+  id: string;
+  name: string;
+  purpose: string;
+  metadata: string;
+  council: string[];
+  account: {
+    __typename: 'Account';
+    id: string;
+  };
+  founder: {
+    __typename: 'Account';
+    id: string;
+  };
+  fungibleToken: {
+    __typename: 'FungibleToken';
+    id: string;
+    name: string;
+    symbol: string;
+    decimals: number;
+  };
+  ethTokenAddress?: string;
+  policy: {
+    __typename: 'Policy';
+    id: string;
+    proposalPeriod: number;
+  };
+};
+
+export type QueryDaoById = {
+  daoById: DaoQuery;
+};
+
+export type SubscribeDao = {
+  daos: SubscriptionDao[];
+};
+
+export type SubscriptionDao = {
+  id: string;
+  name: string;
+};
 
 type DaoPolicyProportionType = 'AtLeast' | 'MoreThan';
 
@@ -42,23 +84,16 @@ export interface DaoCodec extends Struct {
   readonly config: DaoConfig;
 }
 
-export type ProposalArgsCodec = [u32, u128, Bytes];
-
-export interface ProposalCodec extends Struct {
-  readonly method: ProposalMethod;
-  readonly section: Bytes;
-  readonly args: ProposalArgsCodec;
-}
-
-export interface VoteCodec extends Votes {}
-
 export type VoteMeta = {
-  ayes: string[];
-  nays: string[];
-  threshold: number;
-  index: number;
-  end: number;
-  hash: string;
+  id: string;
+  approvedVote: boolean;
+  votedNo: number;
+  votedYes: number;
+  councillor: {
+    id: string;
+    __typename: 'Account';
+  };
+  __typename: 'VoteHistory';
 };
 
 export type DaoConfig = {
@@ -98,35 +133,66 @@ export type DaoTokenVariant = {
   EthTokenAddress?: string;
 };
 
-export type MemberMeta = {
-  address: string;
-  name: string;
-};
-
-export interface BaseProposal {
-  dao_id: number;
+export enum ProposalType {
+  AddMember = 'AddMember',
+  RemoveMember = 'RemoveMember',
+  Spend = 'Spend',
+  TransferToken = 'TransferToken'
 }
 
-export interface ProposalTransfer extends BaseProposal {
+export type AddMemberProposal = {
+  __typename: ProposalType.AddMember;
+  who: string;
+};
+
+export type RemoveMemberProposal = {
+  __typename: ProposalType.RemoveMember;
+  who: string;
+};
+
+export type SpendProposal = {
+  __typename: ProposalType.Spend;
+  beneficiary: string;
+  amount: bigint;
+};
+
+export type TransferProposal = {
+  __typename: ProposalType.TransferToken;
   amount: bigint;
   beneficiary: string;
-}
-
-export interface ProposalMember extends BaseProposal {
-  who: string;
-}
-
-export type ProposalArgs = ProposalTransfer | ProposalMember;
-
-export type ProposalMeta = {
-  hash: string;
-  method: ProposalMethod;
-  section: string;
-  args: ProposalArgs;
 };
 
-export type ProposalMethod =
-  | 'addMember'
-  | 'removeMember'
-  | 'spend'
-  | 'transferToken';
+export type SubscribeVotesByProposalId = {
+  voteHistories: VoteMeta[];
+};
+
+export type SubscribeProposalsByDaoId = {
+  proposals: ProposalMeta[];
+};
+
+export type ProposalKind =
+  | AddMemberProposal
+  | RemoveMemberProposal
+  | SpendProposal
+  | TransferProposal;
+
+export type ProposalStatus =
+  | 'Open'
+  | 'Approved'
+  | 'Disapproved'
+  | 'Executed'
+  | 'Closed';
+
+export type ProposalMeta = {
+  id: string;
+  hash: string;
+  kind: ProposalKind;
+  index: string;
+  status: ProposalStatus;
+  blockNum: number;
+  voteThreshold: number;
+  dao: {
+    id: string;
+  };
+  __typename: 'Proposal';
+};

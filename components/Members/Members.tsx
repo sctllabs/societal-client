@@ -1,11 +1,6 @@
-import { MouseEventHandler, useEffect, useState } from 'react';
+import { MouseEventHandler } from 'react';
 import { useAtomValue } from 'jotai';
-import { apiAtom } from 'store/api';
-import { accountsAtom } from 'store/account';
-
-import type { MemberMeta } from 'types';
-import type { Vec } from '@polkadot/types';
-import type { AccountId } from '@polkadot/types/interfaces';
+import { currentDaoAtom } from 'store/dao';
 
 import { Card } from 'components/ui-kit/Card';
 import { Typography } from 'components/ui-kit/Typography';
@@ -15,42 +10,8 @@ import { Chip } from 'components/ui-kit/Chip';
 
 import styles from './Members.module.scss';
 
-export interface MembersProps {
-  daoId: string;
-}
-
-export function Members({ daoId }: MembersProps) {
-  const [members, setMembers] = useState<MemberMeta[]>([]);
-  const api = useAtomValue(apiAtom);
-  const accounts = useAtomValue(accountsAtom);
-
-  useEffect(() => {
-    let unsubscribe: any | null = null;
-
-    api?.query.daoCouncil
-      .members(daoId, (_members: Vec<AccountId>) =>
-        setMembers(
-          _members.map((_member) => ({
-            address: _member.toString(),
-            name:
-              accounts
-                ?.find((account) => account.address === _member.toString())
-                ?.meta?.name?.toString() || ''
-          }))
-        )
-      )
-      .then((unsub) => {
-        unsubscribe = unsub;
-      })
-      // eslint-disable-next-line no-console
-      .catch(console.error);
-
-    return () => {
-      if (unsubscribe) {
-        unsubscribe();
-      }
-    };
-  }, [accounts, api, daoId]);
+export function Members() {
+  const currentDao = useAtomValue(currentDaoAtom);
 
   const handleOnClick: MouseEventHandler<HTMLButtonElement> = (e) => {
     const address = (e.target as HTMLButtonElement).getAttribute(
@@ -70,14 +31,14 @@ export function Members({ daoId }: MembersProps) {
       </span>
 
       <ul className={styles.members}>
-        {members.map((x) => (
-          <li className={styles.member} key={x.address}>
+        {currentDao?.council.map((councilAddress) => (
+          <li className={styles.member} key={councilAddress}>
             <span className={styles['member-title']}>
-              <Typography variant="title5">{x.name || x.address}</Typography>
+              <Typography variant="title5">{councilAddress}</Typography>
               <Button
                 variant="icon"
                 size="xs"
-                data-address={x.address}
+                data-address={councilAddress}
                 onClick={handleOnClick}
               >
                 <Icon name="copy" size="xs" />

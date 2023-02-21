@@ -2,68 +2,38 @@ import { useEffect } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 
-import { useAtom, useAtomValue } from 'jotai';
-import { apiAtom } from 'store/api';
-import { createdDaoIdAtom, daosAtom } from 'store/dao';
+import { useAtomValue, useSetAtom } from 'jotai';
 import { currentAccountAtom } from 'store/account';
+import { daosAtom } from 'store/dao';
 
-import type { DaoCodec, DaoInfo } from 'types';
-import type { Option, StorageKey } from '@polkadot/types';
-import { hexToString } from '@polkadot/util';
+import { useSubscription } from '@apollo/client';
+import SUBSCRIBE_DAO from 'query/subscribeDaos.graphql';
 
 import { Icon } from 'components/ui-kit/Icon';
 import { Link } from 'components/Link';
 import { Avatar } from 'components/ui-kit/Avatar';
 
+import type { SubscribeDao } from 'types';
+
 import styles from './Sidebar.module.scss';
 
 export function Sidebar() {
   const router = useRouter();
-  const api = useAtomValue(apiAtom);
   const currentAccount = useAtomValue(currentAccountAtom);
-  const createdDaoId = useAtomValue(createdDaoIdAtom);
-  const [daos, setDaos] = useAtom(daosAtom);
+  const setDaos = useSetAtom(daosAtom);
+
+  const { data, loading } = useSubscription<SubscribeDao>(SUBSCRIBE_DAO);
 
   const daoId = router.query.id as string;
 
   useEffect(() => {
-    let unsubscribe: any | null = null;
+    if (!data) {
+      return;
+    }
+    setDaos(data.daos);
+  }, [data, setDaos]);
 
-    api?.query.dao.daos
-      .entries((_daos: [StorageKey, Option<DaoCodec>][]) =>
-        setDaos(
-          _daos
-            .filter((x) => !x[1].value.isEmpty)
-            .map(([id, dao]) => ({
-              id: (id.toHuman() as string[])[0],
-              dao: {
-                ...(dao.value.toHuman() as DaoInfo),
-                token: {
-                  FungibleToken: dao.value.token.isFungibleToken
-                    ? dao.value.token.asFungibleToken.toNumber()
-                    : undefined,
-                  EthTokenAddress: dao.value.token.isEthTokenAddress
-                    ? hexToString(dao.value.token.asEthTokenAddress.toString())
-                    : undefined
-                }
-              }
-            }))
-        )
-      )
-      .then((unsub) => {
-        unsubscribe = unsub;
-      })
-      // eslint-disable-next-line no-console
-      .catch(console.error);
-
-    return () => {
-      if (unsubscribe) {
-        unsubscribe();
-      }
-    };
-  }, [api, setDaos, createdDaoId]);
-
-  if (!currentAccount) {
+  if (!currentAccount || loading) {
     return null;
   }
 
@@ -78,11 +48,15 @@ export function Sidebar() {
       </span>
 
       <ul className={styles['center-container']}>
-        {daos?.map((x) => (
-          <li key={x.id}>
-            <Link href={`/daos/${x.id}`} active={daoId === x.id} variant="nav">
+        {data?.daos.map((dao) => (
+          <li key={dao.id}>
+            <Link
+              href={`/daos/${dao.id}`}
+              active={daoId === dao.id}
+              variant="nav"
+            >
               <span className={styles['button-logo']}>
-                <Avatar value={x.dao.config.name} />
+                <Avatar value={dao.name} />
               </span>
             </Link>
           </li>

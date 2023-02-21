@@ -4,10 +4,10 @@ import erc20Abi from 'abis/erc20.abi.json';
 import { appConfig } from 'config';
 
 import { useAtomValue } from 'jotai';
-import { daosAtom } from 'store/dao';
+import { currentDaoAtom, daosAtom } from 'store/dao';
 import { apiAtom } from 'store/api';
 
-import type { AssetBalance, AssetMetadata } from '@polkadot/types/interfaces';
+import type { AssetBalance } from '@polkadot/types/interfaces';
 import type { Option } from '@polkadot/types';
 import type { DaoToken } from 'types';
 
@@ -17,27 +17,23 @@ import { Chip } from 'components/ui-kit/Chip';
 
 import styles from './Token.module.scss';
 
-export interface TokenProps {
-  daoId: string;
-}
-
 const TOKEN_TYPE = 'Governance token';
 
-export function Token({ daoId }: TokenProps) {
+export function Token() {
   const [token, setToken] = useState<DaoToken | null>(null);
   const api = useAtomValue(apiAtom);
   const daos = useAtomValue(daosAtom);
+  const currentDao = useAtomValue(currentDaoAtom);
 
   const [tokenMetadataLoading, setTokenMetadataLoading] =
     useState<boolean>(false);
 
   useEffect(() => {
-    const currentDao = daos?.find((x) => x.id === daoId);
     if (!currentDao) {
       return;
     }
 
-    if (!currentDao.dao.token.EthTokenAddress) {
+    if (!currentDao.ethTokenAddress) {
       return;
     }
 
@@ -47,7 +43,7 @@ export function Token({ daoId }: TokenProps) {
     );
 
     const contract = new ethers.Contract(
-      currentDao.dao.token.EthTokenAddress,
+      currentDao.ethTokenAddress,
       erc20Abi,
       provider
     );
@@ -71,7 +67,7 @@ export function Token({ daoId }: TokenProps) {
         console.error(e);
       }
     })();
-  }, [daoId, daos]);
+  }, [currentDao, daos]);
 
   useEffect(() => {
     if (!api) {
@@ -79,45 +75,34 @@ export function Token({ daoId }: TokenProps) {
     }
     let unsubscribe: any | null = null;
 
-    const currentDao = daos?.find((x) => x.id === daoId);
-    if (!currentDao) {
+    if (!currentDao || !currentDao.fungibleToken) {
       return undefined;
     }
 
-    if (currentDao.dao.token.EthTokenAddress) {
-      // TODO: handle ETH Token Address
+    const tokenId = currentDao.fungibleToken.id;
 
-      return undefined;
-    }
-
-    const tokenId = currentDao.dao.token.FungibleToken;
-
-    api
-      .queryMulti<[Option<AssetBalance>, AssetMetadata]>(
-        [
-          [api.query.assets.account, [tokenId, currentDao.dao.accountId]],
-          [api.query.assets.metadata, tokenId]
-        ],
-        ([_assetBalance, _assetMetadata]) =>
+    api.query.assets
+      .account(
+        tokenId,
+        currentDao.account.id,
+        (_assetBalance: Option<AssetBalance>) =>
           setToken({
             quantity: _assetBalance.value.balance.toString(),
-            name: _assetMetadata.name.toHuman() as string,
-            symbol: _assetMetadata.symbol.toHuman() as string,
-            decimals: _assetMetadata.decimals.toNumber()
+            name: currentDao.fungibleToken.name,
+            symbol: currentDao.fungibleToken.symbol,
+            decimals: currentDao.fungibleToken.decimals
           })
       )
       .then((unsub) => {
         unsubscribe = unsub;
-      })
-      // eslint-disable-next-line no-console
-      .catch(console.error);
+      });
 
     return () => {
       if (unsubscribe) {
         unsubscribe();
       }
     };
-  }, [api, daoId, daos]);
+  }, [api, currentDao, daos]);
 
   return (
     <Card className={styles.card}>

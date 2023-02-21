@@ -1,0 +1,28 @@
+subscription SubscribeDaoById($id: String!) {
+  daoById(id: $id) {
+    id
+    name
+    purpose
+    metadata
+    council
+    policy {
+      proposalPeriod
+    }
+    account {
+      id
+    }
+    founder {
+      id
+    }
+    fungibleToken {
+      id
+      name
+      symbol
+      decimals
+    }
+    ethTokenAddress
+    policy {
+      id
+    }
+  }
+}

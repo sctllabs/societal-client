@@ -12,9 +12,9 @@ import Link from 'next/link';
 import { toast } from 'react-toastify';
 
 import { appConfig } from 'config';
-import { useAtom, useAtomValue } from 'jotai';
+import { useAtomValue } from 'jotai';
 import { apiAtom, keyringAtom } from 'store/api';
-import { createdDaoIdAtom, daosAtom } from 'store/dao';
+import { daosAtom } from 'store/dao';
 import {
   accountsAtom,
   metamaskAccountAtom,
@@ -111,7 +111,7 @@ export function CreateDAO() {
   const metamaskSigner = useAtomValue(metamaskAccountAtom);
   const substrateAccount = useAtomValue(substrateAccountAtom);
 
-  const [createdDaoId, setCreatedDaoId] = useAtom(createdDaoIdAtom);
+  const [createdDaoId, setCreatedDaoId] = useState<number | null>(null);
   const [proposedDaoId, setProposedDaoId] = useState<number | null>(null);
   const daoCreatedRef = useRef<boolean>(false);
 
@@ -430,6 +430,13 @@ export function CreateDAO() {
   const handleOnSuccess = async () => {
     daoCreatedRef.current = true;
     setProposedDaoId(nextDaoId);
+    toast.success(
+      <Notification
+        title="Transaction created"
+        body="DAO will be created soon."
+        variant="success"
+      />
+    );
   };
 
   const onTokenTypeValueChange = (tokenType: TokenType) =>

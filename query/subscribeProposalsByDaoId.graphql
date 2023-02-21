@@ -1,0 +1,30 @@
+subscription SubscribeProposalsByDaoId($daoId: String!) {
+  proposals(where: { dao: { id_eq: $daoId } }) {
+    id
+    hash
+    index
+    status
+    blockNum
+    voteThreshold
+    dao {
+      id
+    }
+    kind {
+      __typename
+      ... on AddMember {
+        who
+      }
+      ... on RemoveMember {
+        who
+      }
+      ... on Spend {
+        beneficiary
+        amount
+      }
+      ... on TransferToken {
+        beneficiary
+        amount
+      }
+    }
+  }
+}

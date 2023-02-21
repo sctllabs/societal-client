@@ -1,10 +1,11 @@
+import Head from 'next/head';
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
-import Head from 'next/head';
-
-import { useAtomValue } from 'jotai';
-import { daosAtom } from 'store/dao';
-import { currentAccountAtom } from 'store/account';
+import { useSetAtom } from 'jotai';
+import { currentDaoAtom } from 'store/dao';
+import { useSubscription } from '@apollo/client';
+import SUBSCRIBE_DAO_BY_ID from 'query/subscribeDaoById.graphql';
+import type { QueryDaoById } from 'types';
 
 import { Balance } from 'components/Balance';
 import { Token } from 'components/Token';
@@ -13,16 +14,14 @@ import { Proposals } from 'components/Proposals';
 import { Members } from 'components/Members';
 
 import styles from 'styles/pages/DAOs.module.scss';
-import { statesLoadingAtom } from 'store/loader';
 
 export default function Dao() {
-  const daos = useAtomValue(daosAtom);
-  const currentAccount = useAtomValue(currentAccountAtom);
-  const loading = useAtomValue(statesLoadingAtom);
   const router = useRouter();
+  const setCurrentDao = useSetAtom(currentDaoAtom);
 
-  const currentDao = daos?.find((x) => x.id === router.query.id);
-  const daoId = router.query.id as string;
+  const { data, loading } = useSubscription<QueryDaoById>(SUBSCRIBE_DAO_BY_ID, {
+    variables: { id: router.query.id }
+  });
 
   useEffect(() => {
     if (router.query.id && typeof router.query.id !== 'string') {
@@ -32,35 +31,41 @@ export default function Dao() {
     if (loading) {
       return;
     }
-    if (!currentAccount) {
-      router.push('/');
-      return;
-    }
-    if (!daos) {
-      return;
-    }
-    if (!currentDao) {
+    if (!data) {
       router.push('/404');
     }
-  }, [currentAccount, currentDao, daos, loading, router]);
+  }, [data, loading, router]);
+
+  useEffect(() => {
+    if (!data) {
+      return;
+    }
+
+    setCurrentDao(data.daoById);
+  }, [data, setCurrentDao]);
+
+  if (loading) {
+    // TODO @asanzyb create a loader
+    return null;
+  }
 
   return (
     <>
       <Head>
-        <title>{currentDao?.dao.config.name}</title>
+        <title>{data?.daoById.name}</title>
       </Head>
 
       <div className={styles.container}>
         <div className={styles['left-container']}>
-          <Balance daoId={daoId} />
-          <Token daoId={daoId} />
-          <About daoId={daoId} />
+          <Balance />
+          <Token />
+          <About />
         </div>
         <div className={styles['center-container']}>
-          <Proposals daoId={daoId} />
+          <Proposals />
         </div>
         <div className={styles['right-container']}>
-          <Members daoId={daoId} />
+          <Members />
         </div>
       </div>
     </>

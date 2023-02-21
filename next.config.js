@@ -9,9 +9,15 @@ const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
   sassOptions: {
-    includePaths: [path.join(__dirname, 'styles')],
+    includePaths: [path.join(__dirname, 'styles')]
   },
   webpack: (config, context) => {
+    config.module.rules.push({
+      test: /\.(graphql|gql)$/,
+      exclude: /node_modules/,
+      loader: 'graphql-tag/loader'
+    });
+
     config.module.rules.push({
       test: /\.svg$/i,
       include: path.join(__dirname, 'icons'),
