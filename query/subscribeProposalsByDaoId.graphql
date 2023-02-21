@@ -21,6 +21,10 @@ subscription SubscribeProposalsByDaoId($daoId: String!) {
         beneficiary
         amount
       }
+      ... on TransferToken {
+        beneficiary
+        amount
+      }
     }
   }
 }
