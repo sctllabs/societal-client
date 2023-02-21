@@ -3,7 +3,7 @@ import { About } from './About';
 
 describe('About', () => {
   it('Should render component', () => {
-    const { container } = render(<About daoId="" />);
+    const { container } = render(<About />);
 
     expect(container).toMatchSnapshot();
   });

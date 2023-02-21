@@ -3,7 +3,7 @@ import { Token } from './Token';
 
 describe('Token', () => {
   it('Should render component', () => {
-    const { container } = render(<Token daoId="" />);
+    const { container } = render(<Token />);
 
     expect(container).toMatchSnapshot();
   });
