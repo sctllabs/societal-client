@@ -11,7 +11,7 @@
     "prebuild": "npm run generate-assets",
     "stylelint": "stylelint --quiet --fix \"**/*.(scss|sass)\"",
     "test": "jest --silent",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@apollo/client": "^3.7.9",
