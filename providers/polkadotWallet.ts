@@ -5,7 +5,7 @@ import type {
 } from '@polkadot/extension-inject/types';
 import { decodeAddress, encodeAddress } from '@polkadot/util-crypto';
 import type { Keyring } from '@polkadot/ui-keyring';
-import { WalletType } from 'types';
+import { WalletSource } from 'types';
 
 class PolkadotWallet {
   private readonly appName: string;
@@ -31,7 +31,7 @@ class PolkadotWallet {
     }));
   }
 
-  async connectWallet(keyring: Keyring, _wallet: WalletType) {
+  async connectWallet(keyring: Keyring, _wallet: WalletSource) {
     const injectedWindow = window as Window & InjectedWindow;
     if (!injectedWindow || !injectedWindow.injectedWeb3) {
       throw new Error(`Web3 is not detected.`);

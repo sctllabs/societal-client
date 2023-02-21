@@ -1,8 +1,10 @@
+import Image from 'next/image';
 import { KeyboardEventHandler, MouseEventHandler, ReactElement } from 'react';
+
+import { wallets } from 'constants/wallets';
 
 import { Dropdown } from 'components/ui-kit/Dropdown';
 import { Button } from 'components/ui-kit/Button';
-import { Icon, IconNamesType } from 'components/ui-kit/Icon';
 import { Card } from 'components/ui-kit/Card';
 import { Typography } from 'components/ui-kit/Typography';
 import { KeyringPair } from '@polkadot/keyring/types';
@@ -40,22 +42,11 @@ export function MembersDropdown({
             role="presentation"
           >
             {accounts.map((_account) => {
-              let icon: IconNamesType;
-              const { source } = _account.meta;
-
-              switch (source) {
-                case 'polkadot-js': {
-                  icon = 'polkadot';
-                  break;
-                }
-                case 'talisman': {
-                  icon = 'talisman';
-                  break;
-                }
-                default: {
-                  icon = 'user-profile';
-                }
-              }
+              const currentWallet =
+                wallets.find(
+                  (_wallet) => _wallet.source === _account.meta.source
+                ) ??
+                wallets.find((_wallet) => _wallet.source === 'development')!;
 
               return (
                 <li key={_account.address}>
@@ -68,7 +59,12 @@ export function MembersDropdown({
                     data-index={index}
                   >
                     <span className={styles['member-dropdown-button-span']}>
-                      <Icon name={icon} size="sm" />
+                      <Image
+                        src={currentWallet.icon}
+                        alt={currentWallet.name}
+                        width={24}
+                        height={24}
+                      />
                       <Typography variant="title4">
                         {_account.meta.name as string}
                       </Typography>
