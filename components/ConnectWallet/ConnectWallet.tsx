@@ -2,10 +2,10 @@ import {
   useState,
   KeyboardEventHandler,
   MouseEventHandler,
-  useEffect,
-  useMemo
+  useEffect
 } from 'react';
 import { toast } from 'react-toastify';
+import Image from 'next/image';
 
 import { useAtomValue, useSetAtom } from 'jotai';
 import {
@@ -16,8 +16,9 @@ import {
   disconnectAccountsAtom
 } from 'store/account';
 import { keyringAtom } from 'store/api';
+import { wallets } from 'constants/wallets';
 
-import { WalletMeta, WalletType } from 'types';
+import type { WalletMeta, WalletName, WalletSource } from 'types';
 
 import { Typography } from 'components/ui-kit/Typography';
 import { Button } from 'components/ui-kit/Button';
@@ -46,15 +47,10 @@ import {
 
 import styles from './ConnectWallet.module.scss';
 
-const wallets: WalletMeta[] = [
-  { name: 'MetaMask', icon: 'metamask' },
-  { name: 'Polkadot.js', icon: 'polkadot' },
-  { name: 'Talisman', icon: 'talisman' },
-  { name: 'Development Accounts', icon: 'wallet' }
-];
-
 export function ConnectWallet() {
-  const [selectedWallet, setSelectedWallet] = useState<WalletType | null>(null);
+  const [selectedWallet, setSelectedWallet] = useState<WalletSource | null>(
+    null
+  );
   const [selectedAccountAddress, setSelectedAccountAddress] =
     useState<string>('');
 
@@ -87,7 +83,7 @@ export function ConnectWallet() {
     disconnectAccounts();
   };
 
-  const handleWalletConnect = async (targetText: string) => {
+  const handleWalletConnect = async (targetText: WalletName) => {
     if (!keyring) {
       return;
     }
@@ -150,6 +146,22 @@ export function ConnectWallet() {
             />
           );
         }
+        return;
+      }
+      case 'Subwallet': {
+        try {
+          const { polkadotWallet } = await import('providers/polkadotWallet');
+          await polkadotWallet.connectWallet(keyring, 'subwallet-js');
+          setSelectedWallet('subwallet-js');
+        } catch (e) {
+          toast.error(
+            <Notification
+              title="Error"
+              body={(e as Error).message}
+              variant="error"
+            />
+          );
+        }
 
         return;
       }
@@ -172,7 +184,7 @@ export function ConnectWallet() {
     if (!targetWallet) {
       return;
     }
-    handleWalletConnect(targetWallet);
+    handleWalletConnect(targetWallet as WalletName);
   };
 
   const handleKeyDown: KeyboardEventHandler<HTMLUListElement> = (e) => {
@@ -187,7 +199,7 @@ export function ConnectWallet() {
       return;
     }
 
-    handleWalletConnect(targetWallet);
+    handleWalletConnect(targetWallet as WalletName);
   };
 
   const handleCopyAddress = () => {
@@ -215,15 +227,6 @@ export function ConnectWallet() {
 
   const accounts = keyring?.getPairs();
 
-  const walletIcon = useMemo(() => {
-    if (currentMetamaskAccountAddress) {
-      return wallets[0].icon;
-    }
-    const source = currentSubstrateAccount?.meta.source;
-
-    return wallets.find((_wallet) => _wallet.name === source)?.icon ?? 'wallet';
-  }, [currentMetamaskAccountAddress, currentSubstrateAccount?.meta.source]);
-
   const handleOnOpenChange = (open: boolean) => {
     if (!open) {
       setSelectedWallet(null);
@@ -234,11 +237,30 @@ export function ConnectWallet() {
     setSelectedAccountAddress(_account);
   };
 
+  let currentWallet: WalletMeta | undefined;
+  if (currentSubstrateAccount) {
+    currentWallet = wallets.find(
+      (_wallet) =>
+        _wallet.source ===
+        (currentSubstrateAccount?.meta.source ?? 'development')
+    );
+  }
+  if (currentMetamaskAccountAddress) {
+    currentWallet = wallets.find((_wallet) => _wallet.name === 'MetaMask');
+  }
+
   return currentMetamaskAccountAddress || currentSubstrateAccount ? (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="outlined" className={styles.button}>
-          {walletIcon && <Icon name={walletIcon} />}
+          {currentWallet && (
+            <Image
+              src={currentWallet.icon}
+              alt={currentWallet.name}
+              width={24}
+              height={24}
+            />
+          )}
           {visualAddress}
         </Button>
       </DropdownMenuTrigger>
@@ -319,7 +341,12 @@ export function ConnectWallet() {
                     className={styles['wallet-button']}
                     data-wallet={_wallet.name}
                   >
-                    <Icon name={_wallet.icon} />
+                    <Image
+                      src={_wallet.icon}
+                      alt={_wallet.name}
+                      width={24}
+                      height={24}
+                    />
                     <Typography variant="title4">{_wallet.name}</Typography>
                   </Button>
                 </li>
