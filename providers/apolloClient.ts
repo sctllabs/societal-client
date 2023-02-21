@@ -6,7 +6,7 @@ import { appConfig } from 'config';
 
 function getLink() {
   const httpLink = new HttpLink({
-    uri: appConfig.apiUri
+    uri: appConfig.httpApiUri
   });
 
   if (typeof window === 'undefined') {
@@ -15,7 +15,7 @@ function getLink() {
 
   const wsLink = new GraphQLWsLink(
     createClient({
-      url: appConfig.apiUri.replace('http', 'ws')
+      url: appConfig.wsApiUri
     })
   );
 

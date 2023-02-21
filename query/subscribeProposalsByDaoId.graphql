@@ -2,6 +2,7 @@ subscription SubsribeProposalsByDaoId($daoId: String!) {
   proposals(where: { dao: { id_eq: $daoId } }) {
     id
     hash
+    index
     dao {
       id
     }

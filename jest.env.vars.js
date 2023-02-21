@@ -19,3 +19,5 @@ process.env.NEXT_PUBLIC_DAO_ETH_GOVERNANCE_CONTRACT_ADDRESS =
 process.env.NEXT_PUBLIC_TOKEN_NETWORK = 'goerli';
 process.env.NEXT_PUBLIC_TOKEN_API_KEY = '9aa3d95b3bc440fa88ea12eaa4456161';
 process.env.NEXT_PUBLIC_EXPECTED_BLOCK_TIME_IN_SECONDS = '3';
+NEXT_PUBLIC_HTTP_API_URI = 'http://localhost:4350/graphql';
+NEXT_PUBLIC_WS_API_URI = 'ws://localhost:4350/graphql';

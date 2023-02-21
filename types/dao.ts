@@ -183,6 +183,7 @@ export type ProposalMeta = {
   id: string;
   hash: string;
   kind: ProposalKind;
+  index: string;
   dao: {
     id: string;
   };
