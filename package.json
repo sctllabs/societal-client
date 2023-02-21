@@ -8,12 +8,10 @@
     "start": "next start",
     "lint": "next lint",
     "generate-assets": "node scripts/generateIcons.mjs",
-    "prebuild": "npm run generate-assets && npm run compile",
+    "prebuild": "npm run generate-assets",
     "stylelint": "stylelint --quiet --fix \"**/*.(scss|sass)\"",
     "test": "jest --silent",
     "typecheck": "tsc --noEmit",
-    "compile": "graphql-codegen",
-    "watch": "graphql-codegen -w"
   },
   "dependencies": {
     "@apollo/client": "^3.7.9",
