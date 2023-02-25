@@ -6,10 +6,6 @@
   --radio-selected: #{colors.$purple-3};
   --radio-active: #{colors.$purple-3};
   --radio-hover: #{colors.$purple-4};
-
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
 }
 
 .item {

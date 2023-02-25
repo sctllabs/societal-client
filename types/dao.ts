@@ -53,6 +53,7 @@ type DaoPolicyProportion = {
 type CreateDaoPolicy = {
   proposal_period: number;
   approve_origin: DaoPolicyProportion;
+  governance: DaoGovernance;
 };
 
 type CreateDaoTokenMetadata = {
@@ -66,6 +67,18 @@ type CreateDaoToken = {
   min_balance?: string;
   initial_balance: string;
   metadata: CreateDaoTokenMetadata;
+};
+
+type DaoGovernance = {
+  GovernanceV1: {
+    enactment_period: number;
+    launch_period: number;
+    voting_period: number;
+    vote_locking_period: number;
+    fast_track_voting_period: number;
+    cooloff_period: number;
+    minimum_deposit: number;
+  };
 };
 
 export type CreateDaoInput = {

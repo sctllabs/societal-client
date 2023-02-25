@@ -1,17 +1,8 @@
-import {
-  useCallback,
-  useEffect,
-  useState,
-  ChangeEventHandler,
-  MouseEventHandler,
-  KeyboardEventHandler,
-  useRef
-} from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { toast } from 'react-toastify';
 
-import { appConfig } from 'config';
 import { useAtomValue } from 'jotai';
 import { apiAtom, keyringAtom } from 'store/api';
 import { daosAtom } from 'store/dao';
@@ -24,86 +15,76 @@ import {
 import { useDaoContract } from 'hooks/useDaoContract';
 import { ssToEvmAddress } from 'utils/ssToEvmAddress';
 import { keyringAddExternal } from 'utils/keyringAddExternal';
+import { convertTimeToBlock } from 'utils/convertTimeToBlock';
 
 import { evmToAddress, isEthereumAddress } from '@polkadot/util-crypto';
 import { stringToHex } from '@polkadot/util';
 
-import type { u32, Option } from '@polkadot/types';
+import type { Option, u32 } from '@polkadot/types';
 import type { CreateDaoInput, DaoCodec } from 'types';
 
-import * as Label from '@radix-ui/react-label';
 import { Typography } from 'components/ui-kit/Typography';
 import { Button } from 'components/ui-kit/Button';
-import { Input } from 'components/ui-kit/Input';
-import { Icon } from 'components/ui-kit/Icon';
-import { Dropdown } from 'components/ui-kit/Dropdown';
-import { Card } from 'components/ui-kit/Card';
 import { Notification } from 'components/ui-kit/Notifications';
-import { RadioGroup, RadioGroupItem } from 'components/ui-kit/Radio';
-import { MembersDropdown } from 'components/MembersDropdown';
 import { TxButton } from 'components/TxButton';
+import {
+  DaoGovernanceState,
+  DaoInfoState,
+  DaoMembersState,
+  DaoTokenState,
+  ProposalPeriod,
+  TokenType
+} from './types';
+import { DaoInfo } from './DaoInfo';
+import { DaoMembers } from './DaoMembers';
+import { DaoToken } from './DaoToken';
+import { DaoGovernance } from './DaoGovernance';
 
 import styles from './CreateDAO.module.scss';
 
-enum InputName {
-  DAO_NAME = 'daoName',
-  PURPOSE = 'purpose',
-  QUANTITY = 'quantity',
-  ADDRESSES = 'addresses',
-  ROLE = 'role',
-  TOKEN_NAME = 'tokenName',
-  TOKEN_SYMBOL = 'tokenSymbol',
-  TOKEN_TYPE = 'tokenType',
-  PROPOSAL_PERIOD = 'proposalPeriod',
-  TOKEN_ADDRESS = 'tokenAddress',
-  PROPOSAL_PERIOD_TYPE = 'proposalPeriodType'
-}
+const initialDaoInfoState: DaoInfoState = {
+  name: '',
+  purpose: ''
+};
 
-enum InputLabel {
-  DAO_NAME = '* DAO Name',
-  PURPOSE = '* Purpose',
-  QUANTITY = 'Quantity of Tokens',
-  ROLE = 'Role of Members',
-  ADDRESS = 'New Member',
-  TOKEN_NAME = 'Token Name',
-  TOKEN_SYMBOL = 'Token Symbol',
-  TOKEN_ADDRESS = 'ETH Token Address',
-  PROPOSAL_PERIOD = 'Proposal Period'
-}
+const initialDaoTokenState: DaoTokenState = {
+  name: '',
+  type: TokenType.FUNGIBLE_TOKEN,
+  quantity: '',
+  address: '',
+  symbol: ''
+};
 
-enum ProposalPeriod {
-  DAYS = 'Days',
-  HOURS = 'Hours'
-}
+const initialDaoGovernanceState: DaoGovernanceState = {
+  approveOrigin: '1/2',
+  enactmentPeriod: '',
+  launchPeriod: '',
+  proposalPeriod: '',
+  voteLockingPeriod: '',
+  votingPeriod: '',
+  proposalPeriodType: ProposalPeriod.DAYS,
+  enactmentPeriodType: ProposalPeriod.DAYS,
+  launchPeriodType: ProposalPeriod.DAYS,
+  voteLockingPeriodType: ProposalPeriod.DAYS,
+  votingPeriodType: ProposalPeriod.DAYS
+};
 
-enum TokenType {
-  FUNGIBLE_TOKEN = 'Fungible Token',
-  ETH_TOKEN = 'ETH Token Address'
-}
-
-const PURPOSE_INPUT_MAX_LENGTH = 500;
-const SECONDS_IN_HOUR = 60 * 60;
-const SECONDS_IN_DAYS = 24 * 60 * 60;
-
-type Role = 'Council';
-
-type State = {
-  daoName: string;
-  purpose: string;
-  quantity: string;
-  role: Role;
-  addresses: string[];
-  tokenName: string;
-  tokenSymbol: string;
-  tokenType: TokenType;
-  tokenAddress: string;
-  proposalPeriod: string;
-  proposalPeriodType: ProposalPeriod;
+const initialDaoMembersState: DaoMembersState = {
+  role: 'Council',
+  addresses: ['']
 };
 
 export function CreateDAO() {
   const router = useRouter();
   const [nextDaoId, setNextDaoId] = useState<number>(0);
+  const [daoInfo, setDaoInfo] = useState<DaoInfoState>(initialDaoInfoState);
+  const [daoToken, setDaoToken] = useState<DaoTokenState>(initialDaoTokenState);
+  const [daoGovernance, setDaoGovernance] = useState<DaoGovernanceState>(
+    initialDaoGovernanceState
+  );
+  const [daoMembers, setDaoMembers] = useState<DaoMembersState>(
+    initialDaoMembersState
+  );
   const api = useAtomValue(apiAtom);
   const keyring = useAtomValue(keyringAtom);
   const daos = useAtomValue(daosAtom);
@@ -116,20 +97,6 @@ export function CreateDAO() {
   const daoCreatedRef = useRef<boolean>(false);
 
   const daoContract = useDaoContract();
-
-  const [state, setState] = useState<State>({
-    daoName: '',
-    purpose: '',
-    quantity: '',
-    role: 'Council',
-    addresses: [''],
-    tokenName: '',
-    tokenType: TokenType.FUNGIBLE_TOKEN,
-    tokenAddress: '',
-    tokenSymbol: '',
-    proposalPeriod: '',
-    proposalPeriodType: ProposalPeriod.DAYS
-  });
 
   useEffect(() => {
     if (!daoCreatedRef.current || createdDaoId === null) {
@@ -149,7 +116,7 @@ export function CreateDAO() {
       />
     );
     router.push(`/daos/${currentDao.id}`);
-  }, [createdDaoId, daos, router, state.daoName]);
+  }, [createdDaoId, daos, router]);
 
   useEffect(() => {
     if (proposedDaoId === null) {
@@ -221,119 +188,87 @@ export function CreateDAO() {
     };
   }, [api, metamaskSigner, nextDaoId]);
 
-  const onInputChange: ChangeEventHandler = (e) => {
-    const target = e.target as HTMLInputElement;
-    const targetName = target.name;
-    const targetValue = target.value;
-
-    if (targetName === InputName.ADDRESSES) {
-      const dataAddressIndex = target.getAttribute('data-address-index');
-      setState((prevState) => ({
-        ...prevState,
-        addresses: prevState.addresses.map((x, index) =>
-          dataAddressIndex && parseInt(dataAddressIndex, 10) === index
-            ? targetValue
-            : x
-        )
-      }));
-      return;
-    }
-
-    setState((prevState) => ({
-      ...prevState,
-      [targetName]:
-        targetName === InputName.QUANTITY ||
-        targetName === InputName.PROPOSAL_PERIOD
-          ? targetValue.replace(/[^0-9]/g, '')
-          : targetValue
-    }));
-  };
-
-  const handleAddAddressClick: MouseEventHandler = () => {
-    setState((prevState) => ({
-      ...prevState,
-      addresses: [...prevState.addresses, '']
-    }));
-  };
-
-  const handleRemoveAddressClick: MouseEventHandler = (e) => {
-    const target = e.target as HTMLButtonElement;
-    const dataAddressIndex = target.getAttribute('data-address-index');
-    if (!dataAddressIndex) {
-      return;
-    }
-
-    const addressIndex = parseInt(dataAddressIndex, 10);
-    setState((prevState) => ({
-      ...prevState,
-      addresses:
-        prevState.addresses.length === 1
-          ? ['']
-          : prevState.addresses.filter((_, index) => index !== addressIndex)
-    }));
-  };
-
-  const disabled =
-    !state.daoName ||
-    !state.purpose ||
-    (state.tokenType === TokenType.FUNGIBLE_TOKEN &&
-      (!state.tokenName || !state.tokenSymbol)) ||
-    (state.tokenType === TokenType.ETH_TOKEN && !state.tokenAddress) ||
-    !state.role ||
-    !state.proposalPeriod ||
-    !state.proposalPeriodType;
-
   const handleTransform = () => {
     if (nextDaoId === null || !keyring) {
       return [];
     }
 
-    const {
-      daoName,
-      purpose,
-      proposalPeriod,
-      proposalPeriodType,
-      tokenName,
-      tokenSymbol,
-      addresses,
-      quantity
-    } = state;
-
-    const proposal_period =
-      (parseInt(proposalPeriod, 10) *
-        (proposalPeriodType === ProposalPeriod.HOURS
-          ? SECONDS_IN_HOUR
-          : SECONDS_IN_DAYS)) /
-      appConfig.expectedBlockTimeInSeconds;
-
-    const initial_balance = quantity;
+    const initial_balance = daoToken.quantity;
     const token_id = nextDaoId;
+    const proposal_period = convertTimeToBlock(
+      daoGovernance.proposalPeriod,
+      daoGovernance.proposalPeriodType
+    );
+    const enactment_period = convertTimeToBlock(
+      daoGovernance.enactmentPeriod,
+      daoGovernance.enactmentPeriodType
+    );
+    const launch_period = convertTimeToBlock(
+      daoGovernance.launchPeriod,
+      daoGovernance.launchPeriodType
+    );
+    const voting_period = convertTimeToBlock(
+      daoGovernance.votingPeriod,
+      daoGovernance.votingPeriodType
+    );
+    const vote_locking_period = convertTimeToBlock(
+      daoGovernance.voteLockingPeriod,
+      daoGovernance.voteLockingPeriodType
+    );
+    const cooloff_period = convertTimeToBlock(
+      daoGovernance.enactmentPeriod,
+      daoGovernance.enactmentPeriodType
+    );
+
+    const proportion = daoGovernance.approveOrigin
+      .split('/')
+      .map((x) => parseInt(x, 10));
 
     const data: CreateDaoInput = {
-      name: daoName.trim(),
-      purpose: purpose.trim(),
+      name: daoInfo.name.trim(),
+      purpose: daoInfo.purpose.trim(),
       metadata: 'metadata',
       policy: {
         proposal_period,
-        approve_origin: { type: 'AtLeast', proportion: [1, 2] }
+        approve_origin: { type: 'AtLeast', proportion },
+        governance: {
+          GovernanceV1: {
+            enactment_period,
+            launch_period,
+            voting_period,
+            vote_locking_period,
+            fast_track_voting_period: 30,
+            cooloff_period,
+            minimum_deposit: 1
+          }
+        }
       }
     };
 
-    if (state.tokenType === TokenType.FUNGIBLE_TOKEN) {
-      data.token = {
-        token_id,
-        initial_balance,
-        metadata: {
-          name: tokenName.trim(),
-          symbol: tokenSymbol.trim(),
-          decimals: 10
-        }
-      };
-    } else if (state.tokenType === TokenType.ETH_TOKEN) {
-      data.token_address = state.tokenAddress;
+    switch (daoToken.type) {
+      case TokenType.ETH_TOKEN: {
+        data.token_address = daoToken.address;
+        break;
+      }
+      case TokenType.FUNGIBLE_TOKEN: {
+        data.token = {
+          token_id,
+          initial_balance,
+          metadata: {
+            name: daoToken.name.trim(),
+            symbol: daoToken.symbol.trim(),
+            decimals: 10
+          }
+        };
+        break;
+      }
+      default: {
+        // eslint-disable-next-line no-console
+        console.error(`Token type ${daoToken.type} does not exist`);
+      }
     }
 
-    const _members = addresses
+    const _members = daoMembers.addresses
       .filter((_address) => _address.length > 0)
       .map((_address) => {
         const _foundAccount = accounts?.find(
@@ -361,37 +296,6 @@ export function CreateDAO() {
 
     return [_members, [], stringToHex(JSON.stringify(data).trim())];
   };
-
-  const handleMemberChoose = (target: HTMLUListElement) => {
-    const selectedWalletAddress = target.getAttribute('data-address');
-    const selectedIndex = target.getAttribute('data-index');
-    if (!selectedWalletAddress || selectedIndex === null) {
-      return;
-    }
-    const addressIndex = parseInt(selectedIndex, 10);
-
-    setState((prevState) => ({
-      ...prevState,
-      addresses: prevState.addresses.map((_address, index) =>
-        index === addressIndex ? selectedWalletAddress : _address
-      )
-    }));
-  };
-
-  const handleOnClick: MouseEventHandler<HTMLUListElement> = useCallback(
-    (e) => handleMemberChoose(e.target as HTMLUListElement),
-    []
-  );
-
-  const handleOnKeyDown: KeyboardEventHandler<HTMLUListElement> = useCallback(
-    (e) => {
-      if (e.key !== ' ' && e.key !== 'Enter') {
-        return;
-      }
-      handleMemberChoose(e.target as HTMLUListElement);
-    },
-    []
-  );
 
   const handleDaoEthereum = async () => {
     if (!daoContract || !metamaskSigner) {
@@ -439,14 +343,15 @@ export function CreateDAO() {
     );
   };
 
-  const onTokenTypeValueChange = (tokenType: TokenType) =>
-    setState((prevState) => ({ ...prevState, tokenType }));
-
-  const onProposalPeriodTypeChange = (proposalPeriodType: ProposalPeriod) =>
-    setState((prevState) => ({
-      ...prevState,
-      proposalPeriodType
-    }));
+  const disabled =
+    !daoInfo.name ||
+    !daoInfo.purpose ||
+    (daoToken.type === TokenType.FUNGIBLE_TOKEN &&
+      (!daoToken.name || !daoToken.symbol)) ||
+    (daoToken.type === TokenType.ETH_TOKEN && !daoToken.address) ||
+    !daoMembers.role ||
+    !daoGovernance.proposalPeriod ||
+    !daoGovernance.proposalPeriodType;
 
   return (
     <div className={styles.container}>
@@ -460,257 +365,14 @@ export function CreateDAO() {
         <Typography variant="h1" className={styles.title}>
           Create DAO
         </Typography>
-        <div className={styles.info}>
-          <Typography variant="h3">DAO Info</Typography>
-          <Input
-            name={InputName.DAO_NAME}
-            label={InputLabel.DAO_NAME}
-            value={state.daoName}
-            onChange={onInputChange}
-            required
-          />
-          <Input
-            name={InputName.PURPOSE}
-            label={InputLabel.PURPOSE}
-            onChange={onInputChange}
-            value={state.purpose}
-            maxLength={PURPOSE_INPUT_MAX_LENGTH}
-            hint={
-              <Typography variant="caption3">
-                {state.purpose.length}/500
-              </Typography>
-            }
-            hintPosition="end"
-            required
-          />
-        </div>
-        <div className={styles.members}>
-          <Typography variant="h3">Members</Typography>
-          <Typography variant="body1">
-            Your Governance Solution comes with the following groups.
-          </Typography>
-          <div className={styles['members-inputs']}>
-            <Input
-              readOnly
-              name={InputName.ROLE}
-              label={InputLabel.ROLE}
-              value={state.role}
-              classNames={{
-                root: styles['members-inputs-role-root'],
-                input: styles['members-inputs-role-input']
-              }}
-              disabled
-              required
-            />
 
-            <div className={styles['members-addresses']}>
-              {state.addresses.map((x, index) => {
-                const lastItem =
-                  index === state.addresses.length - 1 &&
-                  accounts?.length !== state.addresses.length;
-                const key = `address-${index}`;
+        <DaoInfo state={daoInfo} setState={setDaoInfo} />
+        <DaoMembers state={daoMembers} setState={setDaoMembers} />
 
-                return (
-                  <MembersDropdown
-                    accounts={accounts?.filter(
-                      (_account) => !state.addresses.includes(_account.address)
-                    )}
-                    key={key}
-                    handleOnClick={handleOnClick}
-                    handleOnKeyDown={handleOnKeyDown}
-                    index={index}
-                  >
-                    <Input
-                      name={InputName.ADDRESSES}
-                      label={InputLabel.ADDRESS}
-                      onChange={onInputChange}
-                      data-address-index={index}
-                      value={
-                        (accounts?.find(
-                          (_account) =>
-                            _account.address === state.addresses[index]
-                        )?.meta.name as string) || state.addresses[index]
-                      }
-                      autoComplete="off"
-                      required
-                      endAdornment={
-                        <span className={styles['members-button-group']}>
-                          {(state.addresses[index] || !lastItem) && (
-                            <Button
-                              data-address-index={index}
-                              variant="ghost"
-                              className={styles['members-add-button']}
-                              onClick={handleRemoveAddressClick}
-                              size="sm"
-                            >
-                              <Icon name="close" size="sm" />
-                            </Button>
-                          )}
-                          {lastItem && (
-                            <Button
-                              data-address-index={index}
-                              variant="ghost"
-                              className={styles['members-add-button']}
-                              onClick={handleAddAddressClick}
-                              size="sm"
-                            >
-                              <Icon name="add" size="sm" />
-                            </Button>
-                          )}
-                        </span>
-                      }
-                    />
-                  </MembersDropdown>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-        <div>
-          <Typography variant="h3">Select Governance Token</Typography>
-          <Typography variant="body1">
-            Choose the type of your Governance token.
-          </Typography>
+        <DaoToken state={daoToken} setState={setDaoToken} />
 
-          <RadioGroup
-            name={InputName.TOKEN_TYPE}
-            onValueChange={onTokenTypeValueChange}
-            defaultValue={TokenType.FUNGIBLE_TOKEN}
-          >
-            {Object.values(TokenType).map((_tokenType) => (
-              <div key={_tokenType} className={styles['dropdown-content-span']}>
-                <RadioGroupItem value={_tokenType} id={_tokenType} />
-                <Label.Root htmlFor={_tokenType}>
-                  <Typography variant="body2">{_tokenType}</Typography>
-                </Label.Root>
-              </div>
-            ))}
-          </RadioGroup>
-        </div>
-        {state.tokenType === TokenType.FUNGIBLE_TOKEN ? (
-          <div className={styles['quantity-of-tokens']}>
-            <Typography variant="h3">Select the Quantity of Tokens</Typography>
-            <Typography variant="body1">
-              Specify the number of tokens, the maximum amount is 1 billion.
-            </Typography>
+        <DaoGovernance state={daoGovernance} setState={setDaoGovernance} />
 
-            <div className={styles['quantity-of-tokens-inputs']}>
-              <Input
-                name={InputName.QUANTITY}
-                label={InputLabel.QUANTITY}
-                value={state.quantity}
-                onChange={onInputChange}
-                type="tel"
-                required
-              />
-            </div>
-          </div>
-        ) : (
-          <div className={styles['quantity-of-tokens']}>
-            <Typography variant="h3">ETH Token Address</Typography>
-            <Typography variant="body1">Specify ETH Token Address.</Typography>
-
-            <div className={styles['quantity-of-tokens-inputs']}>
-              <Input
-                name={InputName.TOKEN_ADDRESS}
-                label={InputLabel.TOKEN_ADDRESS}
-                value={state.tokenAddress}
-                onChange={onInputChange}
-                required
-              />
-            </div>
-          </div>
-        )}
-
-        {state.tokenType === TokenType.FUNGIBLE_TOKEN && (
-          <div className={styles['token-info']}>
-            <Typography variant="h3">Select Token Info</Typography>
-            <Typography variant="body1">
-              Choose a name and symbol for the Governance token.
-            </Typography>
-
-            <div className={styles['token-info-inputs']}>
-              <Input
-                name={InputName.TOKEN_NAME}
-                label={InputLabel.TOKEN_NAME}
-                value={state.tokenName}
-                onChange={onInputChange}
-                required
-              />
-              <Input
-                name={InputName.TOKEN_SYMBOL}
-                label={InputLabel.TOKEN_SYMBOL}
-                value={state.tokenSymbol}
-                onChange={onInputChange}
-                required
-              />
-            </div>
-          </div>
-        )}
-
-        <div className={styles['proposal-period']}>
-          <Typography variant="h3">Proposal Period</Typography>
-          <Typography variant="body1">
-            Determine the duration of your DAO&apos;s proposals.
-          </Typography>
-
-          <div className={styles['proposal-period-input']}>
-            <Input
-              name={InputName.PROPOSAL_PERIOD}
-              label={InputLabel.PROPOSAL_PERIOD}
-              value={state.proposalPeriod}
-              onChange={onInputChange}
-              type="tel"
-              required
-              endAdornment={
-                <Dropdown
-                  dropdownItems={
-                    <Card dropdown className={styles['dropdown-card']}>
-                      <RadioGroup
-                        value={state.proposalPeriodType}
-                        className={styles['dropdown-radio-group']}
-                        onValueChange={onProposalPeriodTypeChange}
-                        name={InputName.PROPOSAL_PERIOD_TYPE}
-                      >
-                        {Object.values(ProposalPeriod).map(
-                          (_proposalPeriodType) => (
-                            <div
-                              key={_proposalPeriodType}
-                              className={styles['dropdown-content-span']}
-                            >
-                              <RadioGroupItem
-                                value={_proposalPeriodType}
-                                id={_proposalPeriodType}
-                              />
-                              <Label.Root htmlFor={_proposalPeriodType}>
-                                <Typography variant="body2">
-                                  {_proposalPeriodType}
-                                </Typography>
-                              </Label.Root>
-                            </div>
-                          )
-                        )}
-                      </RadioGroup>
-                    </Card>
-                  }
-                >
-                  <Button
-                    variant="text"
-                    className={styles['proposal-period-button']}
-                    size="sm"
-                  >
-                    <div className={styles['proposal-period-dropdown']}>
-                      <Typography variant="body2">
-                        {state.proposalPeriodType}
-                      </Typography>
-                      <Icon name="arrow-down" size="sm" />
-                    </div>
-                  </Button>
-                </Dropdown>
-              }
-            />
-          </div>
-        </div>
         <div className={styles['create-proposal']}>
           {substrateAccount ? (
             <TxButton
