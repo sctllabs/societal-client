@@ -74,7 +74,15 @@
   width: calc(50% - 2rem);
 }
 
-.proposal-period-input {
+.proposal-period-container {
+  display: flex;
+  gap: 4rem;
+  margin-bottom: 72px;
+}
+
+.proposal-period-item {
+  display: flex;
+  flex-direction: column;
   width: calc(50% - 2rem);
 }
 
@@ -101,13 +109,16 @@
   justify-content: center;
 }
 
-.dropdown-content-span {
-  align-items: center;
-  cursor: pointer;
+.token-type-radio-group {
   display: flex;
+  flex-direction: column;
   gap: 0.5rem;
-  justify-content: flex-start;
-  width: 100%;
+}
+
+.token-type-radio {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .dropdown-card {
@@ -119,4 +130,24 @@
   flex-direction: column;
   gap: 1rem;
   min-width: 5.5rem;
+}
+
+.approve-origin-radio-group {
+  display: flex;
+  flex-direction: row;
+  gap: 40px;
+}
+
+.approve-origin-radio-span {
+  display: flex;
+  gap: 16px;
+}
+
+.approve-origin-radio {
+  display: flex;
+  gap: 40px;
+  align-items: center;
+  background: #{colors.$grayscale-100};
+  border-radius: 8px;
+  padding: 16px 30px 16px 16px;
 }
