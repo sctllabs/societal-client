@@ -1,5 +1,4 @@
 .root {
-  --icon-size: 1.25rem;
   display: flex;
   pointer-events: none;
 }
@@ -15,21 +14,21 @@
 }
 
 .xs {
-  --icon-size: 1rem;
+  --icon-size: 16px;
 }
 
 .sm {
-  --icon-size: 1.25rem;
+  --icon-size: 20px;
 }
 
 .md {
-  --icon-size: 1.5rem;
+  --icon-size: 24px;
 }
 
 .lg {
-  --icon-size: 2rem;
+  --icon-size: 32px;
 }
 
 .xl {
-  --icon-size: 2.5rem;
+  --icon-size: 40px;
 }

@@ -19,7 +19,7 @@ export default function Home() {
       return;
     }
 
-    router.push(`daos/${daos[0].id}`);
+    router.push(`/daos/${daos[0].id}/dashboard`);
   }, [currentAccount, daos, router]);
 
   return (

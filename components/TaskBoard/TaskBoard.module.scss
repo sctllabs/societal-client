@@ -1,0 +1,12 @@
+@use "styles/colors";
+
+.header-card {
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.filter-container {
+  display: flex;
+}

@@ -14,6 +14,7 @@ import { useSubscription } from '@apollo/client';
 import SUBSCRIBE_COUNCIL_VOTES_BY_PROPOSAL_ID from 'query/subscribeCouncilVotesByProposalId.graphql';
 
 import { useDaoCollectiveContract } from 'hooks/useDaoCollectiveContract';
+import { getProposalSettings } from 'utils/getProposalSettings';
 
 import {
   LENGTH_BOUND,
@@ -25,8 +26,7 @@ import {
 
 import type {
   AddMemberProposal,
-  ProposalKind,
-  ProposalMeta,
+  CouncilProposalMeta,
   RemoveMemberProposal,
   SpendProposal,
   SubscribeCouncilVotesByProposalId,
@@ -36,7 +36,7 @@ import type {
 
 import { Button } from 'components/ui-kit/Button';
 import { TxButton } from 'components/TxButton';
-import { Icon, IconNamesType } from 'components/ui-kit/Icon';
+import { Icon } from 'components/ui-kit/Icon';
 import { Card } from 'components/ui-kit/Card';
 import { Typography } from 'components/ui-kit/Typography';
 import { Notification } from 'components/ui-kit/Notifications';
@@ -44,57 +44,10 @@ import { Countdown } from 'components/Countdown';
 
 import styles from './ProposalCard.module.scss';
 
-export enum ProposalEnum {
-  TRANSFER = 'Transfer',
-  TRANSFER_GOVERNANCE_TOKEN = 'Transfer Governance Token',
-  ADD_MEMBER = 'Add Member',
-  REMOVE_MEMBER = 'Remove Member'
-}
-
-type ProposalSettings = {
-  title: string;
-  icon: IconNamesType;
-};
-
 export interface ProposalCardProps {
-  proposal: ProposalMeta;
+  proposal: CouncilProposalMeta;
   currentBlock: number | null;
 }
-
-const getProposalSettings = (proposalKind: ProposalKind): ProposalSettings => {
-  switch (proposalKind.__typename) {
-    case 'AddMember': {
-      return {
-        title: ProposalEnum.ADD_MEMBER,
-        icon: 'user-add'
-      };
-    }
-    case 'RemoveMember': {
-      return {
-        title: ProposalEnum.REMOVE_MEMBER,
-        icon: 'user-delete'
-      };
-    }
-    case 'Spend': {
-      return {
-        title: ProposalEnum.TRANSFER,
-        icon: 'transfer'
-      };
-    }
-    case 'TransferToken': {
-      return {
-        title: ProposalEnum.TRANSFER_GOVERNANCE_TOKEN,
-        icon: 'token'
-      };
-    }
-    default: {
-      return {
-        title: ProposalEnum.TRANSFER,
-        icon: 'transfer'
-      };
-    }
-  }
-};
 
 export function ProposalCard({ proposal, currentBlock }: ProposalCardProps) {
   const api = useAtomValue(apiAtom);
@@ -269,7 +222,7 @@ export function ProposalCard({ proposal, currentBlock }: ProposalCardProps) {
           <span className={styles['proposal-title-item']}>
             <Typography variant="title4">{title}</Typography>
           </span>
-          {currentDao && currentBlock && (
+          {proposal.status === 'Open' && currentDao && currentBlock && (
             <span className={styles['proposal-title-item-countdown']}>
               <Countdown
                 end={

@@ -1,0 +1,11 @@
+subscription SubscribeVotesByProposalId($proposalId: String!) {
+  councilVoteHistories(where: { proposal: { id_eq: $proposalId } }) {
+    id
+    approvedVote
+    votedNo
+    votedYes
+    councillor {
+      id
+    }
+  }
+}

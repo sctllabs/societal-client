@@ -180,7 +180,7 @@ export type SubscribeCouncilVotesByProposalId = {
 };
 
 export type SubscribeCouncilProposalsByDaoId = {
-  councilProposals: ProposalMeta[];
+  councilProposals: CouncilProposalMeta[];
 };
 
 export type ProposalKind =
@@ -196,7 +196,7 @@ export type ProposalStatus =
   | 'Executed'
   | 'Closed';
 
-export type ProposalMeta = {
+export type CouncilProposalMeta = {
   id: string;
   hash: string;
   kind: ProposalKind;
@@ -204,7 +204,11 @@ export type ProposalMeta = {
   status: ProposalStatus;
   blockNum: number;
   voteThreshold: number;
+  meta: string;
   dao: {
+    id: string;
+  };
+  account: {
     id: string;
   };
   __typename: 'Proposal';

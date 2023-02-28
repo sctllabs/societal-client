@@ -1,12 +1,16 @@
-subscription SubscribeCouncilProposalsByDaoId($daoId: String!) {
-  councilProposals(where: { dao: { id_eq: $daoId } }, limit: 50) {
+subscription SubscribeProposalsByDaoId($daoId: String!) {
+  councilProposals(where: { dao: { id_eq: $daoId } }, orderBy: blockNum_DESC) {
     id
     hash
     index
     status
     blockNum
     voteThreshold
+    meta
     dao {
+      id
+    }
+    account {
       id
     }
     kind {
