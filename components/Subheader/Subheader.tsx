@@ -6,6 +6,8 @@ import { currentDaoAtom } from 'store/dao';
 import { generateRandomGradient } from 'utils/generateRandomGradient';
 import { formLinkByDaoId } from 'utils/formLinkByDaoId';
 
+import type { Href } from 'types';
+
 import { Typography } from 'components/ui-kit/Typography';
 import { Icon, IconNamesType } from 'components/ui-kit/Icon';
 import { Avatar } from 'components/ui-kit/Avatar';
@@ -17,7 +19,7 @@ import styles from './Subheader.module.scss';
 type Navigation = {
   icon: IconNamesType;
   title: string;
-  href: string;
+  href: Href;
 };
 
 const navigations: Navigation[] = [

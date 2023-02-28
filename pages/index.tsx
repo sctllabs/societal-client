@@ -6,6 +6,8 @@ import { useAtomValue } from 'jotai';
 import { daosAtom } from 'store/dao';
 import { currentAccountAtom } from 'store/account';
 
+import { formLinkByDaoId } from 'utils/formLinkByDaoId';
+
 import { Hero } from 'components/Hero';
 import { Overview } from 'components/Overview';
 
@@ -19,7 +21,7 @@ export default function Home() {
       return;
     }
 
-    router.push(`/daos/${daos[0].id}/dashboard`);
+    router.push(formLinkByDaoId(daos[0].id, 'dashboard'));
   }, [currentAccount, daos, router]);
 
   return (

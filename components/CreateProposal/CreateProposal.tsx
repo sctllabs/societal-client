@@ -23,6 +23,7 @@ import { LENGTH_BOUND } from 'constants/transaction';
 import { evmToAddress, isEthereumAddress } from '@polkadot/util-crypto';
 import { stringToHex } from '@polkadot/util';
 import { keyringAddExternal } from 'utils/keyringAddExternal';
+import { formLinkByDaoId } from 'utils/formLinkByDaoId';
 
 import type { Vec } from '@polkadot/types';
 import type { AccountId } from '@polkadot/types/interfaces';
@@ -135,7 +136,7 @@ export function CreateProposal({ daoId }: CreateProposalProps) {
       1000
     );
 
-    router.push(`/daos/${daoId}/dashboard`);
+    router.push(formLinkByDaoId(daoId, 'dashboard'));
   }, [daoId, router]);
 
   const onInputChange: ChangeEventHandler = (e) => {
@@ -158,7 +159,7 @@ export function CreateProposal({ daoId }: CreateProposalProps) {
   };
 
   const handleCancelClick = () => {
-    router.push(`/daos/${daoId}/dashboard`);
+    router.push(formLinkByDaoId(daoId, 'dashboard'));
   };
 
   const icon = useMemo(() => {

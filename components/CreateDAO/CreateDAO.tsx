@@ -16,6 +16,7 @@ import { useDaoContract } from 'hooks/useDaoContract';
 import { ssToEvmAddress } from 'utils/ssToEvmAddress';
 import { keyringAddExternal } from 'utils/keyringAddExternal';
 import { convertTimeToBlock } from 'utils/convertTimeToBlock';
+import { formLinkByDaoId } from 'utils/formLinkByDaoId';
 
 import { evmToAddress, isEthereumAddress } from '@polkadot/util-crypto';
 import { stringToHex } from '@polkadot/util';
@@ -115,7 +116,7 @@ export function CreateDAO() {
         variant="success"
       />
     );
-    router.push(`/daos/${currentDao.id}`);
+    router.push(formLinkByDaoId(currentDao.id, 'dashboard'));
   }, [createdDaoId, daos, router]);
 
   useEffect(() => {

@@ -7,6 +7,8 @@ import { useAtomValue, useSetAtom } from 'jotai';
 import { currentAccountAtom } from 'store/account';
 import { daosAtom } from 'store/dao';
 
+import { formLinkByDaoId } from 'utils/formLinkByDaoId';
+
 import { useSubscription } from '@apollo/client';
 import SUBSCRIBE_DAO from 'query/subscribeDaos.graphql';
 
@@ -58,7 +60,7 @@ export function Sidebar() {
         {data?.daos.map((dao) => (
           <li key={dao.id}>
             <SidebarLink
-              href={`/daos/${dao.id}/dashboard`}
+              href={formLinkByDaoId(dao.id, 'dashboard')}
               active={daoId === dao.id}
             >
               <Avatar

@@ -57,6 +57,8 @@ type DaoGovernanceProps = {
   setState: Dispatch<SetStateAction<DaoGovernanceState>>;
 };
 
+const defaultApproveOrigin = '1/2';
+
 export function DaoGovernance({ state, setState }: DaoGovernanceProps) {
   const onApproveOriginChange = (approveOrigin: keyof typeof ApproveOrigin) =>
     setState((prevState) => ({ ...prevState, approveOrigin }));
@@ -70,7 +72,7 @@ export function DaoGovernance({ state, setState }: DaoGovernanceProps) {
         </Typography>
         <RadioGroup
           className={styles['approve-origin-radio-group']}
-          defaultValue={ApproveOrigin['1/2']}
+          defaultValue={defaultApproveOrigin}
           onValueChange={onApproveOriginChange}
         >
           {(Object.keys(ApproveOrigin) as (keyof typeof ApproveOrigin)[]).map(
