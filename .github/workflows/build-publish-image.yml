@@ -26,6 +26,27 @@ env:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
+  get-environment:
+    name: Get Environment
+    runs-on: ubuntu-latest
+    outputs:
+      environment: ${{ steps.get-environment.outputs.environment }}
+    steps:
+    - name: get environment
+      id: get-environment
+      shell: bash
+      run: |
+        set -x
+        if [[ "${{ github.ref }}" =~ ^refs/heads/develop ]]
+        then
+          echo "::set-output name=environment::test"
+        fi
+        if [[ "${{ github.event.inputs.environment }}" != "" ]]
+        then
+          echo "input was provided: ${{ github.event.inputs.environment }}"
+          echo "::set-output name=environment::${{ github.event.inputs.environment }}"
+        fi
+
   build:
     # The type of runner that the job will run on
     runs-on: ubuntu-20.04
