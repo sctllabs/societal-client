@@ -54,14 +54,18 @@ jobs:
     needs:
       - get-environment
 
-    environment:
-      name: ${{ needs.get-environment.outputs.environment }}
-
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - name: Check out the repo
         uses: actions/checkout@v2.5.0
+
+      # Preparing env
+      - name: Prepare environment
+        id: env
+        run: |
+          cp .env.example .env.local
+          cp .env.${{ needs.get-environment.outputs.environment }}" .env.local
 
       - name: Set Environment
         run: |
