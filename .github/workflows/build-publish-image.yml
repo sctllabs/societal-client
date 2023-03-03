@@ -65,7 +65,7 @@ jobs:
         id: env
         run: |
           cp .env.example .env.local
-          cp .env.${{ needs.get-environment.outputs.environment }}" .env.local
+          cp ".env.${{ needs.get-environment.outputs.environment }}" .env.local
 
       - name: Set Environment
         run: |
