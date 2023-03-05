@@ -15,6 +15,7 @@ import { Button } from 'components/ui-kit/Button';
 import { NavLink } from 'components/ui-kit/NavLink';
 
 import styles from './Subheader.module.scss';
+import { CreateProposal } from '../CreateProposal';
 
 type Navigation = {
   icon: IconNamesType;
@@ -51,9 +52,6 @@ export function Subheader() {
   const [angle, color1, color2, color3] = generateRandomGradient(
     currentDao.name
   );
-
-  const handleOnCreateProposalClick = () =>
-    router.push(`/daos/${daoId}/create-proposal`);
 
   return (
     <div className={styles.root}>
@@ -101,12 +99,7 @@ export function Subheader() {
         </div>
         <div className={styles['right-container']}>
           {router.pathname.includes('create-proposal') ? null : (
-            <Button onClick={handleOnCreateProposalClick}>
-              <span className={styles['button-content']}>
-                <Icon name="proposals-add" size="sm" />
-                <Typography variant="button1">Create Proposal</Typography>
-              </span>
-            </Button>
+            <CreateProposal daoId={daoId as string} />
           )}
         </div>
       </div>

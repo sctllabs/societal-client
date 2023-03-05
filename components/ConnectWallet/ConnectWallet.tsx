@@ -298,7 +298,7 @@ export function ConnectWallet() {
           Connect Wallet
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className={styles['dialog-content']} closeIcon>
         <DialogTitle asChild>
           <Typography variant="title1">Connect wallet</Typography>
         </DialogTitle>
