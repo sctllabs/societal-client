@@ -5,9 +5,15 @@ import { currentDaoAtom } from 'store/dao';
 import { apiAtom } from 'store/api';
 
 import { useSubscription } from '@apollo/client';
-import SUBSCRIBE_PROPOSAL_BY_DAO_ID from 'query/subscribeProposalsByDaoId.graphql';
+import SUBSCRIBE_COUNCIL_PROPOSALS_BY_DAO_ID from 'query/subscribeCouncilProposalsByDaoId.graphql';
+import SUBSCRIBE_DEMOCRACY_PROPOSALS_BY_DAO_ID from 'query/subscribeDemocracyProposalsByDaoId.graphql';
 
-import type { SubscribeProposalsByDaoId } from 'types';
+import type {
+  CouncilProposalMeta,
+  DemocracyProposalMeta,
+  SubscribeCouncilProposalsByDaoId,
+  SubscribeDemocracyProposalsByDaoId
+} from 'types';
 import type { u32 } from '@polkadot/types';
 
 import { Card } from 'components/ui-kit/Card';
@@ -35,15 +41,24 @@ export function TaskBoard() {
   const [currentBlock, setCurrentBlock] = useState<number | null>(null);
   const [filter, setFilter] = useState<FilterVariant>('All');
 
-  const { data } = useSubscription<SubscribeProposalsByDaoId>(
-    SUBSCRIBE_PROPOSAL_BY_DAO_ID,
-    {
-      variables: { daoId: currentDao?.id }
-    }
-  );
+  const { data: councilProposalsData } =
+    useSubscription<SubscribeCouncilProposalsByDaoId>(
+      SUBSCRIBE_COUNCIL_PROPOSALS_BY_DAO_ID,
+      {
+        variables: { daoId: currentDao?.id }
+      }
+    );
+
+  const { data: democracyProposalsData } =
+    useSubscription<SubscribeDemocracyProposalsByDaoId>(
+      SUBSCRIBE_DEMOCRACY_PROPOSALS_BY_DAO_ID,
+      {
+        variables: { daoId: currentDao?.id }
+      }
+    );
 
   useEffect(() => {
-    const fetchCurrentBlock = async () => {
+    (async () => {
       const _currentBlock = (
         (await api?.query.system.number()) as u32 | undefined
       )?.toNumber();
@@ -52,13 +67,16 @@ export function TaskBoard() {
         return;
       }
       setCurrentBlock(_currentBlock);
-    };
-
-    fetchCurrentBlock();
+    })();
   }, [api?.query.system]);
 
   const handleFilterClick: MouseEventHandler<HTMLButtonElement> = (e) =>
     setFilter((e.target as HTMLButtonElement).innerText as FilterVariant);
+
+  const proposals: (CouncilProposalMeta | DemocracyProposalMeta)[] = [
+    ...(councilProposalsData?.councilProposals ?? []),
+    ...(democracyProposalsData?.democracyProposals ?? [])
+  ].sort((a, b) => b.blockNum - a.blockNum);
 
   return (
     <>
@@ -78,11 +96,11 @@ export function TaskBoard() {
             ))}
         </div>
       </Card>
-      {data?.councilProposals ? (
-        data.councilProposals
+      {proposals.length > 0 ? (
+        proposals
           .filter((proposal) => {
             if (filter === 'Completed') {
-              return proposal.status === 'Executed';
+              return proposal.status !== 'Open';
             }
             if (filter === 'In Progress') {
               return proposal.status === 'Open';
@@ -91,7 +109,7 @@ export function TaskBoard() {
           })
           .map((proposal) => (
             <TaskCard
-              key={proposal.hash}
+              key={`${proposal.__typename}-${proposal.id}`}
               proposal={proposal}
               currentBlock={currentBlock}
             />

@@ -1,5 +1,5 @@
 subscription DaosSubscription {
-  daos(limit: 50) {
+  daos(limit: 100) {
     id
     name
   }

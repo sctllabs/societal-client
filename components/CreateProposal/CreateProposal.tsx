@@ -28,6 +28,7 @@ import { Icon } from 'components/ui-kit/Icon';
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogTitle,
   DialogTrigger
 } from 'components/ui-kit/Dialog';
@@ -41,6 +42,14 @@ import { ProposalVotingAccess } from './ProposalVotingAccess';
 export interface CreateProposalProps {
   daoId: string;
 }
+
+const INITIAL_STATE: State = {
+  amount: '',
+  description: '',
+  target: '',
+  title: '',
+  balance: ''
+};
 
 export function CreateProposal({ daoId }: CreateProposalProps) {
   const [modalOpen, setModalOpen] = useState(false);
@@ -59,13 +68,7 @@ export function CreateProposal({ daoId }: CreateProposalProps) {
   const daoCollectiveContract = useDaoCollectiveContract();
   const daoDemocracyContract = useDaoDemocracyContract();
 
-  const [state, setState] = useState<State>({
-    amount: '',
-    description: '',
-    target: '',
-    title: '',
-    balance: ''
-  });
+  const [state, setState] = useState<State>(INITIAL_STATE);
 
   const extrinsic = useMemo(() => {
     if (proposalVotingAccess === ProposalVotingAccessEnum.Council) {
@@ -145,7 +148,9 @@ export function CreateProposal({ daoId }: CreateProposalProps) {
         ),
       1000
     );
-
+    setProposalVotingAccess(null);
+    setProposalType(null);
+    setState(INITIAL_STATE);
     setModalOpen(false);
   }, []);
 
@@ -258,48 +263,50 @@ export function CreateProposal({ daoId }: CreateProposalProps) {
             Create Proposal
           </Typography>
         </DialogTitle>
-        <div className={styles.container}>
-          <div className={styles.content}>
-            <div className={styles['proposal-settings']}>
-              <ProposalVotingAccess
-                setProposalVotingAccess={setProposalVotingAccess}
+        <DialogDescription asChild>
+          <div className={styles.container}>
+            <div className={styles.content}>
+              <div className={styles['proposal-settings']}>
+                <ProposalVotingAccess
+                  setProposalVotingAccess={setProposalVotingAccess}
+                />
+                <ProposalType setProposalType={setProposalType} />
+              </div>
+              <ProposalInputs
+                proposalVotingAccess={proposalVotingAccess}
+                proposalType={proposalType}
+                state={state}
+                setState={setState}
+                members={members}
               />
-              <ProposalType setProposalType={setProposalType} />
-            </div>
-            <ProposalInputs
-              proposalVotingAccess={proposalVotingAccess}
-              proposalType={proposalType}
-              state={state}
-              setState={setState}
-              members={members}
-            />
-            <div className={styles['buttons-container']}>
-              <Button
-                variant="outlined"
-                color="destructive"
-                onClick={handleCancelClick}
-              >
-                Cancel
-              </Button>
-
-              {metamaskAccount ? (
-                <Button onClick={handleProposeClick} disabled={disabled}>
-                  Submit
-                </Button>
-              ) : (
-                <TxButton
-                  accountId={substrateAccount?.address}
-                  params={handleTransform}
-                  disabled={disabled}
-                  tx={extrinsic}
-                  onSuccess={onSuccess}
+              <div className={styles['buttons-container']}>
+                <Button
+                  variant="outlined"
+                  color="destructive"
+                  onClick={handleCancelClick}
                 >
-                  Submit
-                </TxButton>
-              )}
+                  Cancel
+                </Button>
+
+                {metamaskAccount ? (
+                  <Button onClick={handleProposeClick} disabled={disabled}>
+                    Submit
+                  </Button>
+                ) : (
+                  <TxButton
+                    accountId={substrateAccount?.address}
+                    params={handleTransform}
+                    disabled={disabled}
+                    tx={extrinsic}
+                    onSuccess={onSuccess}
+                  >
+                    Submit
+                  </TxButton>
+                )}
+              </div>
             </div>
           </div>
-        </div>
+        </DialogDescription>
       </DialogContent>
     </Dialog>
   );

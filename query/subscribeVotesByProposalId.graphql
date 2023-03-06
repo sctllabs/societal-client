@@ -1,5 +1,8 @@
 subscription SubscribeVotesByProposalId($proposalId: String!) {
-  councilVoteHistories(where: { proposal: { id_eq: $proposalId } }) {
+  councilVoteHistories(
+    where: { proposal: { id_eq: $proposalId } }
+    limit: 100
+  ) {
     id
     approvedVote
     votedNo

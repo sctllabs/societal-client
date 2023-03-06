@@ -183,25 +183,36 @@ export type SubscribeCouncilProposalsByDaoId = {
   councilProposals: CouncilProposalMeta[];
 };
 
+export type SubscribeDemocracyProposalsByDaoId = {
+  democracyProposals: DemocracyProposalMeta[];
+};
+
 export type ProposalKind =
   | AddMemberProposal
   | RemoveMemberProposal
   | SpendProposal
   | TransferProposal;
 
-export type ProposalStatus =
+export type CouncilProposalStatus =
   | 'Open'
   | 'Approved'
   | 'Disapproved'
   | 'Executed'
   | 'Closed';
 
+export type DemocracyProposalStatus =
+  | 'Open'
+  | 'Started'
+  | 'Passed'
+  | 'NotPassed'
+  | 'Cancelled';
+
 export type CouncilProposalMeta = {
   id: string;
   hash: string;
   kind: ProposalKind;
   index: string;
-  status: ProposalStatus;
+  status: CouncilProposalStatus;
   blockNum: number;
   voteThreshold: number;
   meta: string;
@@ -211,5 +222,22 @@ export type CouncilProposalMeta = {
   account: {
     id: string;
   };
-  __typename: 'Proposal';
+  __typename: 'CouncilProposal';
+};
+
+export type DemocracyProposalMeta = {
+  id: string;
+  kind: ProposalKind;
+  index: string;
+  deposit: string;
+  status: DemocracyProposalStatus;
+  blockNum: number;
+  meta: string;
+  dao: {
+    id: string;
+  };
+  account: {
+    id: string;
+  };
+  __typename: 'DemocracyProposal';
 };

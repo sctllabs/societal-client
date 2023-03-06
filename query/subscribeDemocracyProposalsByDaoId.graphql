@@ -1,15 +1,14 @@
-subscription SubscribeCouncilProposalsByDaoId($daoId: String!) {
-  councilProposals(
+subscription SubscribeDemocracyProposalsByDaoId($daoId: String!) {
+  democracyProposals(
     where: { dao: { id_eq: $daoId } }
     orderBy: blockNum_DESC
     limit: 100
   ) {
     id
-    hash
     index
     status
     blockNum
-    voteThreshold
+    deposit
     meta
     dao {
       id

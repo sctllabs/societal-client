@@ -7,7 +7,7 @@ import { isEthereumAddress } from '@polkadot/util-crypto';
 
 import { getProposalSettings } from 'utils/getProposalSettings';
 import { maskAddress } from 'utils/maskAddress';
-import type { CouncilProposalMeta } from 'types';
+import type { CouncilProposalMeta, DemocracyProposalMeta } from 'types';
 
 import { Card } from 'components/ui-kit/Card';
 import { Icon } from 'components/ui-kit/Icon';
@@ -17,7 +17,7 @@ import { Countdown } from 'components/Countdown';
 import styles from './TaskCard.module.scss';
 
 export interface TaskCardProps {
-  proposal: CouncilProposalMeta;
+  proposal: CouncilProposalMeta | DemocracyProposalMeta;
   currentBlock: number | null;
 }
 
@@ -35,10 +35,6 @@ export function TaskCard({ proposal, currentBlock }: TaskCardProps) {
   switch (proposal.status) {
     case 'Open': {
       taskStatus = 'Active';
-      break;
-    }
-    case 'Executed': {
-      taskStatus = 'Completed';
       break;
     }
     default: {

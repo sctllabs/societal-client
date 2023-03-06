@@ -1,7 +1,11 @@
 @use "styles/colors";
 
-.proposal-card {
-  padding-bottom: 0;
+.card {
+  padding: 0;
+}
+
+.content {
+  padding: 32px 32px 0px 32px;
 }
 
 .vertical-break {
@@ -37,15 +41,16 @@
 .proposal-title-items {
   align-items: center;
   display: flex;
-  flex-grow: 1;
   justify-content: space-between;
+  width: 100%;
   padding-left: 1.5rem;
 }
 
 .proposal-title-item {
   display: flex;
   flex-direction: column;
-  min-width: 3rem;
+  justify-content: center;
+  gap: 4px;
 }
 
 .proposal-title-item-countdown {
@@ -53,6 +58,7 @@
   display: flex;
   flex-direction: column;
   min-width: 3rem;
+  gap: 8px;
 }
 
 .proposal-member-info {
@@ -95,3 +101,53 @@
   margin-top: 1.5rem;
 }
 
+.democracy-proposal-actions {
+  border-top: 5px solid #{colors.$grayscale-98};
+  padding: 20px 32px 20px 32px;
+  margin-top: 36px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.democracy-deposit {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+
+.democracy-deposit-amount {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.proposal-center-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.buttons-container {
+  display: flex;
+  gap: 20px;
+}
+
+.democracy-modal-button {
+  flex-grow: 1;
+}
+
+
+.democracy-modal-deposit-container {
+  border-radius: 8px;
+  background: #{colors.$purple-6};
+  display: flex;
+  padding: 6px 16px;
+  margin-top: 24px;
+  margin-bottom: 40px;
+}
+
+.democracy-modal-deposit {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
