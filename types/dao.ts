@@ -187,6 +187,20 @@ export type SubscribeDemocracyProposalsByDaoId = {
   democracyProposals: DemocracyProposalMeta[];
 };
 
+type DemocracySecond = {
+  id: string;
+  count: number;
+  seconder: {
+    id: string;
+    __typename: 'Account';
+  };
+  __typename: 'DemocracySecond';
+};
+
+export type SubscribeDemocracySecondsByProposalId = {
+  democracySeconds: DemocracySecond[];
+};
+
 export type ProposalKind =
   | AddMemberProposal
   | RemoveMemberProposal

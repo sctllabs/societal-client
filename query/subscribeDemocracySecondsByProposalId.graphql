@@ -1,0 +1,9 @@
+subscription SubscribeDemocracySecondByProposalId($proposalId: String!) {
+  democracySeconds(limit: 100, where: { proposal: { id_eq: $proposalId } }) {
+    id
+    count
+    seconder {
+      id
+    }
+  }
+}
