@@ -16,6 +16,7 @@ import { Chip } from 'components/ui-kit/Chip';
 import { Countdown } from 'components/Countdown';
 
 import styles from './TaskCard.module.scss';
+import { parseMeta } from '../../utils/parseMeta';
 
 export interface TaskCardProps {
   proposal: CouncilProposalMeta | DemocracyProposalMeta;
@@ -43,7 +44,9 @@ export function TaskCard({ proposal, currentBlock }: TaskCardProps) {
     }
   }
 
-  const { title, description } = JSON.parse(proposal.meta);
+  const meta = parseMeta(proposal.meta);
+  const title = meta?.title;
+  const description = meta?.description;
 
   return (
     <Card className={styles.card}>
@@ -98,8 +101,10 @@ export function TaskCard({ proposal, currentBlock }: TaskCardProps) {
               </span>
             </div>
           </div>
-          <Typography variant="title5">{title}</Typography>
-          <Typography variant="body2">{description}</Typography>
+          {title && <Typography variant="title5">{title}</Typography>}
+          {description && (
+            <Typography variant="body2">{description}</Typography>
+          )}
 
           <div className={styles['proposal-bottom-container']}>
             <span className={styles['proposal-item-info']}>

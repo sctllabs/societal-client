@@ -23,6 +23,7 @@ import styles from './ProposalCard.module.scss';
 import { CouncilProposalActions } from './CouncilProposalCardActions';
 import { DemocracyProposalCardActions } from './DemocracyProposalCardActions';
 import { Chip } from '../ui-kit/Chip';
+import { parseMeta } from '../../utils/parseMeta';
 
 export interface ProposalCardProps {
   proposal: CouncilProposalMeta | DemocracyProposalMeta;
@@ -34,7 +35,9 @@ export function ProposalCard({ proposal, currentBlock }: ProposalCardProps) {
   const { proposalTitle, icon } = getProposalSettings(proposal.kind);
   const currentDao = useAtomValue(currentDaoAtom);
 
-  const { title, description } = JSON.parse(proposal.meta);
+  const meta = parseMeta(proposal.meta);
+  const title = meta?.title;
+  const description = meta?.description;
 
   return (
     <Card className={styles.card}>
@@ -80,8 +83,10 @@ export function ProposalCard({ proposal, currentBlock }: ProposalCardProps) {
         </div>
 
         <div className={styles['proposal-center-container']}>
-          <Typography variant="title5">{title}</Typography>
-          <Typography variant="body2">{description}</Typography>
+          {title && <Typography variant="title5">{title}</Typography>}
+          {description && (
+            <Typography variant="body2">{description}</Typography>
+          )}
         </div>
 
         <div className={styles['proposal-bottom-container']}>
