@@ -1,5 +1,5 @@
-subscription SubscribeProposalsByDaoId($daoId: String!) {
-  proposals(where: { dao: { id_eq: $daoId } }, limit: 50) {
+subscription SubscribeCouncilProposalsByDaoId($daoId: String!) {
+  councilProposals(where: { dao: { id_eq: $daoId } }, limit: 50) {
     id
     hash
     index

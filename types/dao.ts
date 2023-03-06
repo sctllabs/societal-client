@@ -175,12 +175,12 @@ export type TransferProposal = {
   beneficiary: string;
 };
 
-export type SubscribeVotesByProposalId = {
-  voteHistories: VoteMeta[];
+export type SubscribeCouncilVotesByProposalId = {
+  councilVoteHistories: VoteMeta[];
 };
 
-export type SubscribeProposalsByDaoId = {
-  proposals: ProposalMeta[];
+export type SubscribeCouncilProposalsByDaoId = {
+  councilProposals: ProposalMeta[];
 };
 
 export type ProposalKind =
