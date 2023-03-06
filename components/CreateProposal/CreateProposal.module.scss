@@ -1,5 +1,6 @@
 .container {
   display: flex;
+  flex-direction: column;
   justify-content: center;
 }
 
@@ -8,8 +9,6 @@
   flex-direction: column;
   gap: 1.25rem;
   height: 100%;
-  padding: 1.5rem 2.5rem 3.125rem 2.5rem;
-  width: 50%
 }
 
 .proposal-title-card {
@@ -106,4 +105,33 @@
   display: flex;
   gap: 1.25rem;
   justify-content: center
+}
+
+.button-content {
+  align-items: center;
+  display: flex;
+  gap: 0.625rem;
+  justify-content: center;
+}
+
+.title {
+  text-align: center
+}
+
+.proposal-settings {
+  display: flex;
+  gap: 82px
+}
+
+.dialog-content {
+  min-width: 50%;
+}
+
+.balance {
+  width: calc(50% - 2.5rem);
+}
+
+.trigger {
+  justify-content: space-between;
+  width: 100%;
 }

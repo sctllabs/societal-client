@@ -10,12 +10,12 @@ import type { QueryDaoById } from 'types';
 import { Balance } from 'components/Balance';
 import { Token } from 'components/Token';
 import { About } from 'components/About';
-import { Proposals } from 'components/Proposals';
 import { Members } from 'components/Members';
+import { TaskBoard } from 'components/TaskBoard';
 
-import styles from 'styles/pages/DAOs.module.scss';
+import styles from 'styles/pages/dashboard.module.scss';
 
-export default function Dao() {
+export default function DaoDashboard() {
   const router = useRouter();
   const setCurrentDao = useSetAtom(currentDaoAtom);
 
@@ -31,13 +31,13 @@ export default function Dao() {
     if (loading) {
       return;
     }
-    if (!data) {
+    if (!data || !data.daoById) {
       router.push('/404');
     }
   }, [data, loading, router]);
 
   useEffect(() => {
-    if (!data) {
+    if (!data || !data.daoById) {
       return;
     }
 
@@ -52,7 +52,7 @@ export default function Dao() {
   return (
     <>
       <Head>
-        <title>{data?.daoById.name}</title>
+        <title>{data?.daoById?.name}</title>
       </Head>
 
       <div className={styles.container}>
@@ -62,7 +62,7 @@ export default function Dao() {
           <About />
         </div>
         <div className={styles['center-container']}>
-          <Proposals />
+          <TaskBoard />
         </div>
         <div className={styles['right-container']}>
           <Members />

@@ -75,6 +75,9 @@ $schema: (
                 theme-button-text: #{colors.$grayscale-0},
                 theme-button-text-hover: #{colors.$purple-3},
                 theme-button-text-active: #{colors.$purple-4}
+        ),
+        'nav': (
+                theme-button-text-hover: #{colors.$purple-4},
         )
 );
 
@@ -170,6 +173,13 @@ $schema: (
   @include mixins.color-variants($schema, 'ghost');
 }
 
+.nav {
+  @include mixins.color-variants($schema, 'nav');
+
+  &[data-active=true] {
+    box-shadow: inset 0px 0px 12px rgba(102, 78, 200, 0.2);
+  }
+}
 
 .text {
   @include mixins.color-variants($schema, 'text-primary');

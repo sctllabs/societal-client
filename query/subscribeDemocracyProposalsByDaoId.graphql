@@ -1,0 +1,37 @@
+subscription SubscribeDemocracyProposalsByDaoId($daoId: String!) {
+  democracyProposals(
+    where: { dao: { id_eq: $daoId } }
+    orderBy: blockNum_DESC
+    limit: 100
+  ) {
+    id
+    index
+    status
+    blockNum
+    deposit
+    meta
+    dao {
+      id
+    }
+    account {
+      id
+    }
+    kind {
+      __typename
+      ... on AddMember {
+        who
+      }
+      ... on RemoveMember {
+        who
+      }
+      ... on Spend {
+        beneficiary
+        amount
+      }
+      ... on TransferToken {
+        beneficiary
+        amount
+      }
+    }
+  }
+}

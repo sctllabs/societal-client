@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 
@@ -6,12 +7,15 @@ import { useAtomValue, useSetAtom } from 'jotai';
 import { currentAccountAtom } from 'store/account';
 import { daosAtom } from 'store/dao';
 
+import { formLinkByDaoId } from 'utils/formLinkByDaoId';
+
 import { useSubscription } from '@apollo/client';
 import SUBSCRIBE_DAO from 'query/subscribeDaos.graphql';
 
 import { Icon } from 'components/ui-kit/Icon';
-import { Link } from 'components/Link';
+import { SidebarLink } from 'components/ui-kit/SidebarLink';
 import { Avatar } from 'components/ui-kit/Avatar';
+import { Button } from 'components/ui-kit/Button';
 
 import type { SubscribeDao } from 'types';
 
@@ -37,36 +41,42 @@ export function Sidebar() {
     return null;
   }
 
+  const handleAddClick = () => router.push(`/create-dao`);
+
   return (
     <aside className={styles.root}>
       <span className={styles['logo-container']}>
         <Link href="/">
-          <span className={styles.logo}>
-            <Image src="/logo/societal-symbol.svg" alt="societal-symbol" fill />
-          </span>
+          <Image
+            src="/logo/societal-symbol.svg"
+            alt="societal-symbol"
+            width={44}
+            height={44}
+          />
         </Link>
       </span>
 
       <ul className={styles['center-container']}>
         {data?.daos.map((dao) => (
           <li key={dao.id}>
-            <Link
-              href={`/daos/${dao.id}`}
+            <SidebarLink
+              href={formLinkByDaoId(dao.id, 'dashboard')}
               active={daoId === dao.id}
-              variant="nav"
             >
-              <span className={styles['button-logo']}>
-                <Avatar value={dao.name} />
-              </span>
-            </Link>
+              <Avatar
+                value={dao.name}
+                className={styles['button-logo']}
+                radius="rounded"
+              />
+            </SidebarLink>
           </li>
         ))}
       </ul>
 
       <div className={styles['bottom-container']}>
-        <Link href="/create-dao" variant="outlined">
+        <Button variant="icon" onClick={handleAddClick}>
           <Icon name="add" />
-        </Link>
+        </Button>
       </div>
     </aside>
   );

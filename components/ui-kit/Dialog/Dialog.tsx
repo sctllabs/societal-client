@@ -39,8 +39,13 @@ const DialogOverlay = React.forwardRef<
 
 export const DialogContent = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content>
->(function DialogContent({ className, children, ...props }, ref) {
+  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content> & {
+    closeIcon?: boolean;
+  }
+>(function DialogContent(
+  { closeIcon = false, className, children, ...props },
+  ref
+) {
   return (
     <DialogPortal>
       <DialogOverlay />
@@ -50,15 +55,17 @@ export const DialogContent = React.forwardRef<
         {...props}
       >
         {children}
-        <DialogPrimitive.Close className={styles['close-button']} asChild>
-          <Button
-            variant="icon"
-            className={styles['close-button']}
-            aria-label="Close"
-          >
-            <Icon name="close" size="sm" />
-          </Button>
-        </DialogPrimitive.Close>
+        {closeIcon && (
+          <DialogPrimitive.Close className={styles['close-button']} asChild>
+            <Button
+              variant="icon"
+              className={styles['close-button']}
+              aria-label="Close"
+            >
+              <Icon name="close" size="sm" />
+            </Button>
+          </DialogPrimitive.Close>
+        )}
       </DialogPrimitive.Content>
     </DialogPortal>
   );

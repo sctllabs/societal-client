@@ -3,9 +3,17 @@ import clsx from 'clsx';
 
 import styles from './Chip.module.scss';
 
-type ChipVariant = 'filter' | 'group' | 'status' | 'task';
+type ChipVariant = 'filter' | 'group' | 'status' | 'task' | 'proposal';
 
-type ChipColor = 'default' | 'active' | 'green' | 'blue' | 'red' | 'orange';
+type ChipColor =
+  | 'default'
+  | 'active'
+  | 'green'
+  | 'blue'
+  | 'red'
+  | 'orange'
+  | 'dark-blue'
+  | 'dark-green';
 
 export interface ChipProps extends HTMLAttributes<HTMLSpanElement> {
   variant?: ChipVariant;
@@ -21,7 +29,7 @@ export function Chip({
   ...otherProps
 }: ChipProps) {
   return (
-    <span
+    <div
       className={clsx(
         styles.root,
         styles[variant],
@@ -31,6 +39,6 @@ export function Chip({
       {...otherProps}
     >
       {children}
-    </span>
+    </div>
   );
 }

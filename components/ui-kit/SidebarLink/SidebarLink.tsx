@@ -2,21 +2,17 @@ import { AnchorHTMLAttributes } from 'react';
 import NextLink, { LinkProps as InternalLinkProps } from 'next/link';
 import clsx from 'clsx';
 
-import styles from './Link.module.scss';
-
-type LinkVariant = 'icon' | 'text' | 'nav' | 'outlined' | 'filled';
+import styles from './SidebarLink.module.scss';
 
 export interface LinkProps
   extends Omit<
     AnchorHTMLAttributes<HTMLAnchorElement>,
     keyof InternalLinkProps
   > {
-  variant?: LinkVariant;
   active?: boolean;
 }
 
-export function Link({
-  variant = 'text',
+export function SidebarLink({
   active = false,
   children,
   className,
@@ -24,12 +20,7 @@ export function Link({
 }: LinkProps & InternalLinkProps) {
   return (
     <NextLink
-      className={clsx(
-        styles.root,
-        styles[variant],
-        { [styles.active]: active },
-        className
-      )}
+      className={clsx(styles.root, { [styles.active]: active }, className)}
       {...props}
     >
       {children}

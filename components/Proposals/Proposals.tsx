@@ -5,9 +5,13 @@ import { currentDaoAtom } from 'store/dao';
 import { apiAtom } from 'store/api';
 
 import { useSubscription } from '@apollo/client';
-import SUBSCRIBE_COUNCIL_PROPOSAL_BY_DAO_ID from 'query/subscribeCouncilProposalsByDaoId.graphql';
+import SUBSCRIBE_COUNCIL_PROPOSALS_BY_DAO_ID from 'query/subscribeCouncilProposalsByDaoId.graphql';
+import SUBSCRIBE_DEMOCRACY_PROPOSALS_BY_DAO_ID from 'query/subscribeDemocracyProposalsByDaoId.graphql';
 
-import type { SubscribeCouncilProposalsByDaoId } from 'types';
+import type {
+  SubscribeCouncilProposalsByDaoId,
+  SubscribeDemocracyProposalsByDaoId
+} from 'types';
 import type { u32 } from '@polkadot/types';
 
 import { Card } from 'components/ui-kit/Card';
@@ -21,12 +25,26 @@ export function Proposals() {
   const currentDao = useAtomValue(currentDaoAtom);
   const [currentBlock, setCurrentBlock] = useState<number | null>(null);
 
-  const { data } = useSubscription<SubscribeCouncilProposalsByDaoId>(
-    SUBSCRIBE_COUNCIL_PROPOSAL_BY_DAO_ID,
-    {
-      variables: { daoId: currentDao?.id }
-    }
-  );
+  const { data: councilProposalsData } =
+    useSubscription<SubscribeCouncilProposalsByDaoId>(
+      SUBSCRIBE_COUNCIL_PROPOSALS_BY_DAO_ID,
+      {
+        variables: { daoId: currentDao?.id }
+      }
+    );
+
+  const { data: democracyProposalsData } =
+    useSubscription<SubscribeDemocracyProposalsByDaoId>(
+      SUBSCRIBE_DEMOCRACY_PROPOSALS_BY_DAO_ID,
+      {
+        variables: { daoId: currentDao?.id }
+      }
+    );
+
+  const proposals = [
+    ...(councilProposalsData?.councilProposals ?? []),
+    ...(democracyProposalsData?.democracyProposals ?? [])
+  ].sort((a, b) => b.blockNum - a.blockNum);
 
   useEffect(() => {
     (async () => {
@@ -46,10 +64,10 @@ export function Proposals() {
       <Card className={styles['proposals-title-card']}>
         <Typography variant="title4">Proposals</Typography>
       </Card>
-      {data?.councilProposals ? (
-        data.councilProposals.map((proposal) => (
+      {proposals.length > 0 ? (
+        proposals.map((proposal) => (
           <ProposalCard
-            key={proposal.hash}
+            key={`${proposal.__typename}-${proposal.id}`}
             proposal={proposal}
             currentBlock={currentBlock}
           />
