@@ -9,7 +9,7 @@ export enum ProposalEnum {
 }
 
 type ProposalSettings = {
-  title: string;
+  proposalTitle: string;
   icon: IconNamesType;
 };
 
@@ -19,31 +19,31 @@ export function getProposalSettings(
   switch (proposalKind.__typename) {
     case 'AddMember': {
       return {
-        title: ProposalEnum.ADD_MEMBER,
+        proposalTitle: ProposalEnum.ADD_MEMBER,
         icon: 'user-add'
       };
     }
     case 'RemoveMember': {
       return {
-        title: ProposalEnum.REMOVE_MEMBER,
+        proposalTitle: ProposalEnum.REMOVE_MEMBER,
         icon: 'user-delete'
       };
     }
     case 'Spend': {
       return {
-        title: ProposalEnum.TRANSFER,
+        proposalTitle: ProposalEnum.TRANSFER,
         icon: 'transfer'
       };
     }
     case 'TransferToken': {
       return {
-        title: ProposalEnum.TRANSFER_GOVERNANCE_TOKEN,
+        proposalTitle: ProposalEnum.TRANSFER_GOVERNANCE_TOKEN,
         icon: 'token'
       };
     }
     default: {
       return {
-        title: ProposalEnum.TRANSFER,
+        proposalTitle: ProposalEnum.TRANSFER,
         icon: 'transfer'
       };
     }

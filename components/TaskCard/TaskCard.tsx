@@ -12,6 +12,7 @@ import type { CouncilProposalMeta, DemocracyProposalMeta } from 'types';
 import { Card } from 'components/ui-kit/Card';
 import { Icon } from 'components/ui-kit/Icon';
 import { Typography } from 'components/ui-kit/Typography';
+import { Chip } from 'components/ui-kit/Chip';
 import { Countdown } from 'components/Countdown';
 
 import styles from './TaskCard.module.scss';
@@ -30,7 +31,7 @@ export function TaskCard({ proposal, currentBlock }: TaskCardProps) {
 
   const currentDao = useAtomValue(currentDaoAtom);
 
-  const { title, icon } = getProposalSettings(proposal.kind);
+  const { proposalTitle, icon } = getProposalSettings(proposal.kind);
 
   switch (proposal.status) {
     case 'Open': {
@@ -42,9 +43,7 @@ export function TaskCard({ proposal, currentBlock }: TaskCardProps) {
     }
   }
 
-  const description = proposal.meta
-    ? JSON.parse(proposal.meta).description
-    : null;
+  const { title, description } = JSON.parse(proposal.meta);
 
   return (
     <Card className={styles.card}>
@@ -77,13 +76,30 @@ export function TaskCard({ proposal, currentBlock }: TaskCardProps) {
       </div>
       <div className={styles.content}>
         <div className={styles['description-container']}>
-          <div className={styles.title}>
+          <div className={styles['title-container']}>
             <Icon name={icon} className={styles['proposal-icon']} />
-            <Typography variant="title4">{title}</Typography>
+            <div className={styles.title}>
+              <Typography variant="title4">{proposalTitle}</Typography>
+              <span>
+                <Chip
+                  variant="proposal"
+                  color={
+                    proposal.__typename === 'DemocracyProposal'
+                      ? 'dark-green'
+                      : 'dark-blue'
+                  }
+                >
+                  <Typography variant="title6">
+                    {proposal.__typename === 'DemocracyProposal'
+                      ? 'Democracy'
+                      : 'Council'}
+                  </Typography>
+                </Chip>
+              </span>
+            </div>
           </div>
-          {description && (
-            <Typography variant="title4">{description}</Typography>
-          )}
+          <Typography variant="title5">{title}</Typography>
+          <Typography variant="body2">{description}</Typography>
 
           <div className={styles['proposal-bottom-container']}>
             <span className={styles['proposal-item-info']}>

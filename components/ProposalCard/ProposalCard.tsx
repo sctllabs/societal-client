@@ -31,10 +31,10 @@ export interface ProposalCardProps {
 
 export function ProposalCard({ proposal, currentBlock }: ProposalCardProps) {
   const accounts = useAtomValue(accountsAtom);
-  const { title, icon } = getProposalSettings(proposal.kind);
+  const { proposalTitle, icon } = getProposalSettings(proposal.kind);
   const currentDao = useAtomValue(currentDaoAtom);
 
-  const { title: proposalTitle, description } = JSON.parse(proposal.meta);
+  const { title, description } = JSON.parse(proposal.meta);
 
   return (
     <Card className={styles.card}>
@@ -43,7 +43,7 @@ export function ProposalCard({ proposal, currentBlock }: ProposalCardProps) {
           <Icon name={icon} className={styles['proposal-icon']} />
           <div className={styles['proposal-title-items']}>
             <div className={styles['proposal-title-item']}>
-              <Typography variant="title2">{title}</Typography>
+              <Typography variant="title2">{proposalTitle}</Typography>
               <span>
                 <Chip
                   variant="proposal"
@@ -80,7 +80,7 @@ export function ProposalCard({ proposal, currentBlock }: ProposalCardProps) {
         </div>
 
         <div className={styles['proposal-center-container']}>
-          <Typography variant="title5">{proposalTitle}</Typography>
+          <Typography variant="title5">{title}</Typography>
           <Typography variant="body2">{description}</Typography>
         </div>
 
