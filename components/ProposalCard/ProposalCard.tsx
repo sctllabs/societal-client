@@ -11,7 +11,7 @@ import { currentDaoAtom } from 'store/dao';
 import { appConfig } from 'config';
 
 import { useSubscription } from '@apollo/client';
-import SUBSCRIBE_VOTES_BY_PROPOSAL_ID from 'query/subscribeVotesByProposalId.graphql';
+import SUBSCRIBE_COUNCIL_VOTES_BY_PROPOSAL_ID from 'query/subscribeCouncilVotesByProposalId.graphql';
 
 import { useDaoCollectiveContract } from 'hooks/useDaoCollectiveContract';
 
@@ -29,7 +29,7 @@ import type {
   ProposalMeta,
   RemoveMemberProposal,
   SpendProposal,
-  SubscribeVotesByProposalId,
+  SubscribeCouncilVotesByProposalId,
   TransferProposal,
   TxCallback
 } from 'types';
@@ -105,8 +105,8 @@ export function ProposalCard({ proposal, currentBlock }: ProposalCardProps) {
   const daoCollectiveContract = useDaoCollectiveContract();
   const currentDao = useAtomValue(currentDaoAtom);
 
-  const { data } = useSubscription<SubscribeVotesByProposalId>(
-    SUBSCRIBE_VOTES_BY_PROPOSAL_ID,
+  const { data } = useSubscription<SubscribeCouncilVotesByProposalId>(
+    SUBSCRIBE_COUNCIL_VOTES_BY_PROPOSAL_ID,
     {
       variables: { proposalId: proposal.id }
     }
@@ -254,8 +254,10 @@ export function ProposalCard({ proposal, currentBlock }: ProposalCardProps) {
   };
 
   const disabled = proposal.status !== 'Open';
-  const ayes = data?.voteHistories.filter((_vote) => _vote.approvedVote).length;
-  const nays = data?.voteHistories.filter(
+  const ayes = data?.councilVoteHistories.filter(
+    (_vote) => _vote.approvedVote
+  ).length;
+  const nays = data?.councilVoteHistories.filter(
     (_vote) => !_vote.approvedVote
   ).length;
 

@@ -5,9 +5,9 @@ import { currentDaoAtom } from 'store/dao';
 import { apiAtom } from 'store/api';
 
 import { useSubscription } from '@apollo/client';
-import SUBSCRIBE_PROPOSAL_BY_DAO_ID from 'query/subscribeProposalsByDaoId.graphql';
+import SUBSCRIBE_COUNCIL_PROPOSAL_BY_DAO_ID from 'query/subscribeCouncilProposalsByDaoId.graphql';
 
-import type { SubscribeProposalsByDaoId } from 'types';
+import type { SubscribeCouncilProposalsByDaoId } from 'types';
 import type { u32 } from '@polkadot/types';
 
 import { Card } from 'components/ui-kit/Card';
@@ -21,8 +21,8 @@ export function Proposals() {
   const currentDao = useAtomValue(currentDaoAtom);
   const [currentBlock, setCurrentBlock] = useState<number | null>(null);
 
-  const { data } = useSubscription<SubscribeProposalsByDaoId>(
-    SUBSCRIBE_PROPOSAL_BY_DAO_ID,
+  const { data } = useSubscription<SubscribeCouncilProposalsByDaoId>(
+    SUBSCRIBE_COUNCIL_PROPOSAL_BY_DAO_ID,
     {
       variables: { daoId: currentDao?.id }
     }
@@ -46,8 +46,8 @@ export function Proposals() {
       <Card className={styles['proposals-title-card']}>
         <Typography variant="title4">Proposals</Typography>
       </Card>
-      {data?.proposals ? (
-        data.proposals.map((proposal) => (
+      {data?.councilProposals ? (
+        data.councilProposals.map((proposal) => (
           <ProposalCard
             key={proposal.hash}
             proposal={proposal}
