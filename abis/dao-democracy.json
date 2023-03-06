@@ -298,9 +298,9 @@
         "type": "uint32"
       },
       {
-        "internalType": "bytes32",
-        "name": "proposalHash",
-        "type": "bytes32"
+        "internalType": "bytes",
+        "name": "proposal",
+        "type": "bytes"
       },
       {
         "internalType": "uint256",
@@ -321,9 +321,9 @@
         "type": "uint32"
       },
       {
-        "internalType": "bytes32",
-        "name": "proposalHash",
-        "type": "bytes32"
+        "internalType": "bytes",
+        "name": "proposal",
+        "type": "bytes"
       },
       {
         "internalType": "uint256",
