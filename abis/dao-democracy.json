@@ -336,7 +336,7 @@
         "type": "bytes"
       }
     ],
-    "name": "propose",
+    "name": "propose_with_meta",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
