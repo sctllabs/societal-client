@@ -1,7 +1,7 @@
 .container {
   display: flex;
-  justify-content: center;
   flex-direction: column;
+  justify-content: center;
 }
 
 .content {
@@ -132,6 +132,6 @@
 }
 
 .trigger {
-  width: 100%;
   justify-content: space-between;
+  width: 100%;
 }

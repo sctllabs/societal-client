@@ -10,7 +10,6 @@ import type { DemocracyProposalMeta } from 'types';
 
 import { Typography } from 'components/ui-kit/Typography';
 import { Button } from 'components/ui-kit/Button';
-import { Icon } from 'components/ui-kit/Icon';
 import { TxButton } from 'components/TxButton';
 import { Notification } from 'components/ui-kit/Notifications';
 import {

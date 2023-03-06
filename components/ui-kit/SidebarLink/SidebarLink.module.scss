@@ -8,11 +8,11 @@
   border-radius: 4px;
   color: #{colors.$grayscale-0};
   display: inline-flex;
+  gap: var(--theme-link-gap);
   height: 44px;
   justify-content: center;
   padding: var(--theme-link-padding);
   width: 44px;
-  gap: var(--theme-link-gap);
 
   &:hover {
     --theme-link-bg: #{colors.$grayscale-90};

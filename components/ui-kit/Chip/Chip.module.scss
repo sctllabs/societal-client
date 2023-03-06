@@ -7,10 +7,10 @@
   background-color: var(--theme-chip-background-color);
   border: 0.4px solid var(--theme-chip-border-color);
   border-radius: var(--theme-chip-border-radius);
+  color: var(--theme-chip-text-color);
   display: inline-flex;
   justify-content: center;
   padding: var(--theme-chip-padding);
-  color: var(--theme-chip-text-color);
 }
 
 .filter {

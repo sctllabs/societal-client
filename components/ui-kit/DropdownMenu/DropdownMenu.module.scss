@@ -1,13 +1,13 @@
 @use 'styles/colors';
 
 .content {
-  min-width: 220px;
-  background-color: #{colors.$grayscale-100};
-  border-radius: 8px;
-  padding: 8px;
-  filter: drop-shadow(0px 0px 32px rgba(102, 78, 200, 0.1));
   animation-duration: 400ms;
   animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  background-color: #{colors.$grayscale-100};
+  border-radius: 8px;
+  filter: drop-shadow(0px 0px 32px rgba(102, 78, 200, 0.1));
+  min-width: 220px;
+  padding: 8px;
   will-change: transform, opacity;
 
   &[data-side='top'] {
@@ -34,14 +34,14 @@
 .item {
   --dropdown-item-bg-highlighted: #{colors.$purple-2};
   --dropdown-item-color-highlighted: #{colors.$grayscale-100};
+  align-items: center;
 
   border-radius: 4px;
   display: flex;
-  align-items: center;
   height: 40px;
+  outline: none;
   position: relative;
   user-select: none;
-  outline: none;
 
   &[data-disabled] {
     opacity: 0.3;
@@ -55,18 +55,18 @@
 }
 
 .separator {
-  height: 1px;
   background-color: var(--violet6);
+  height: 1px;
   margin: 5px;
 }
 
 .indicator {
-  position: absolute;
-  left: 0;
-  width: 25px;
-  display: inline-flex;
   align-items: center;
+  display: inline-flex;
   justify-content: center;
+  left: 0;
+  position: absolute;
+  width: 25px;
 }
 
 

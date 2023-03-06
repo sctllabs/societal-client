@@ -43,8 +43,8 @@
 }
 
 .trigger {
-  width: 100%;
   justify-content: space-between;
+  width: 100%;
 }
 
 .wallet-button {
@@ -59,29 +59,29 @@
 }
 
 .disconnect-button {
-  display: flex;
   align-items: center;
-  gap: 0.5rem;
-  justify-content: space-between;
-  cursor: pointer;
-  width: 100%;
-  padding: 0 8px;
-  height: 100%;
 
   color: #{colors.$red-2};
+  cursor: pointer;
+  display: flex;
+  gap: 0.5rem;
+  height: 100%;
+  justify-content: space-between;
+  padding: 0 8px;
+  width: 100%;
 
   &:hover {
-    color: #{colors.$red-1};
     background-color: #{colors.$grayscale-100};
+    color: #{colors.$red-1};
   }
 }
 
 .disconnect-icon {
-  display: flex;
-  justify-content: center;
   align-items: center;
-  width: 24px;
+  display: flex;
   height: 24px;
+  justify-content: center;
+  width: 24px;
 }
 
 .dialog-content {
