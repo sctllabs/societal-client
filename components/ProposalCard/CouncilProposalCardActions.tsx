@@ -19,7 +19,7 @@ import {
 } from 'constants/transaction';
 import type {
   CouncilProposalMeta,
-  SubscribeVotesByProposalId,
+  SubscribeCouncilVotesByProposalId,
   TxCallback
 } from 'types';
 
@@ -41,7 +41,7 @@ export function CouncilProposalActions({
   const metamaskAccount = useAtomValue(metamaskAccountAtom);
   const daoCollectiveContract = useDaoCollectiveContract();
 
-  const { data } = useSubscription<SubscribeVotesByProposalId>(
+  const { data } = useSubscription<SubscribeCouncilVotesByProposalId>(
     SUBSCRIBE_VOTES_BY_PROPOSAL_ID,
     {
       variables: { proposalId: proposal.id }
