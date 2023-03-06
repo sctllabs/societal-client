@@ -4,7 +4,7 @@ metadata:
   name: {{ include "societal-client.fullname" . }}-ingress
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
-    cert-manager.io/cluster-issuer: "letsencrypt"
+    cert-manager.io/cluster-issuer: "letsencrypt-development"
 spec:
   ingressClassName: nginx
   tls:
