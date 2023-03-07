@@ -283,7 +283,10 @@ export function CreateDAO() {
         }
 
         // TODO: re-work this
-        if (_foundAccount?.type === 'sr25519') {
+        if (
+          _foundAccount?.type === 'sr25519' ||
+          _foundAccount?.type === 'ed25519'
+        ) {
           return _address;
         }
 
