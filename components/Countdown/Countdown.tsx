@@ -7,7 +7,7 @@ interface CountdownProps {
 }
 
 export function Countdown({ end, typography }: CountdownProps) {
-  const countdown = useCountdown(end);
+  const countdown = useCountdown(end, false);
 
   return <Typography variant={typography}>{countdown}</Typography>;
 }

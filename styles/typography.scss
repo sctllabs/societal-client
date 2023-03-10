@@ -264,3 +264,11 @@
     $line-height: 1rem
   );
 }
+
+%countdown {
+  @include mixins.typography(
+    $font-size: 3.375rem,
+    $font-weight: 700,
+    $line-height: 3rem
+  );
+}

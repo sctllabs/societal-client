@@ -1,11 +1,4 @@
-import {
-  ChangeEventHandler,
-  Dispatch,
-  KeyboardEventHandler,
-  MouseEventHandler,
-  SetStateAction,
-  useCallback
-} from 'react';
+import { ChangeEventHandler, Dispatch, SetStateAction } from 'react';
 
 import { useAtomValue } from 'jotai';
 import { accountsAtom } from 'store/account';
@@ -16,7 +9,6 @@ import { Input } from 'components/ui-kit/Input';
 import { Typography } from 'components/ui-kit/Typography';
 import { MembersDropdown } from 'components/MembersDropdown';
 
-import styles from './CreateProposal.module.scss';
 import {
   InputLabel,
   InputName,
@@ -24,6 +16,7 @@ import {
   ProposalVotingAccessEnum,
   State
 } from './types';
+import styles from './CreateProposal.module.scss';
 
 const MAX_INPUT_LENGTH = 500;
 
@@ -65,35 +58,12 @@ export function ProposalInputs({
     }
   }
 
-  const handleMemberChoose = useCallback(
-    (target: HTMLUListElement) => {
-      const selectedWalletAddress = target.getAttribute('data-address');
-      if (!selectedWalletAddress) {
-        return;
-      }
-      setState((prevState) => ({
-        ...prevState,
-        target: selectedWalletAddress
-      }));
-    },
-    [setState]
-  );
-
-  const handleOnClick: MouseEventHandler<HTMLUListElement> = useCallback(
-    (e) => handleMemberChoose(e.target as HTMLUListElement),
-    [handleMemberChoose]
-  );
-
-  const handleOnKeyDown: KeyboardEventHandler<HTMLUListElement> = useCallback(
-    (e) => {
-      if (e.key !== ' ' && e.key !== 'Enter') {
-        return;
-      }
-
-      handleMemberChoose(e.target as HTMLUListElement);
-    },
-    [handleMemberChoose]
-  );
+  const onAccountValueChange = (target: string) => {
+    setState((prevState) => ({
+      ...prevState,
+      target
+    }));
+  };
 
   const onInputChange: ChangeEventHandler = (e) => {
     const target = e.target as HTMLInputElement;
@@ -150,8 +120,7 @@ export function ProposalInputs({
 
           <MembersDropdown
             accounts={_accounts}
-            handleOnClick={handleOnClick}
-            handleOnKeyDown={handleOnKeyDown}
+            onValueChange={onAccountValueChange}
           >
             <Input
               onChange={onInputChange}
@@ -171,8 +140,7 @@ export function ProposalInputs({
         <div className={styles['proposal-input-member']}>
           <MembersDropdown
             accounts={_accounts}
-            handleOnClick={handleOnClick}
-            handleOnKeyDown={handleOnKeyDown}
+            onValueChange={onAccountValueChange}
           >
             <Input
               onChange={onInputChange}

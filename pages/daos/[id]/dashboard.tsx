@@ -5,7 +5,7 @@ import { useSetAtom } from 'jotai';
 import { currentDaoAtom } from 'store/dao';
 import { useSubscription } from '@apollo/client';
 import SUBSCRIBE_DAO_BY_ID from 'query/subscribeDaoById.graphql';
-import type { QueryDaoById } from 'types';
+import type { SubscribeDaoById } from 'types';
 
 import { Balance } from 'components/Balance';
 import { Token } from 'components/Token';
@@ -19,9 +19,12 @@ export default function DaoDashboard() {
   const router = useRouter();
   const setCurrentDao = useSetAtom(currentDaoAtom);
 
-  const { data, loading } = useSubscription<QueryDaoById>(SUBSCRIBE_DAO_BY_ID, {
-    variables: { id: router.query.id }
-  });
+  const { data, loading } = useSubscription<SubscribeDaoById>(
+    SUBSCRIBE_DAO_BY_ID,
+    {
+      variables: { id: router.query.id }
+    }
+  );
 
   useEffect(() => {
     if (router.query.id && typeof router.query.id !== 'string') {

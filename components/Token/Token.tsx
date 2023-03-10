@@ -3,13 +3,13 @@ import { ethers } from 'ethers';
 import erc20Abi from 'abis/erc20.abi.json';
 import { appConfig } from 'config';
 
-import { useAtomValue } from 'jotai';
+import { useAtom, useAtomValue } from 'jotai';
+import { tokenAtom } from 'store/token';
 import { currentDaoAtom, daosAtom } from 'store/dao';
 import { apiAtom } from 'store/api';
 
 import type { AssetBalance } from '@polkadot/types/interfaces';
 import type { Option } from '@polkadot/types';
-import type { DaoToken } from 'types';
 
 import { Typography } from 'components/ui-kit/Typography';
 import { Card } from 'components/ui-kit/Card';
@@ -20,7 +20,7 @@ import styles from './Token.module.scss';
 const TOKEN_TYPE = 'Governance token';
 
 export function Token() {
-  const [token, setToken] = useState<DaoToken | null>(null);
+  const [token, setToken] = useAtom(tokenAtom);
   const api = useAtomValue(apiAtom);
   const daos = useAtomValue(daosAtom);
   const currentDao = useAtomValue(currentDaoAtom);
@@ -67,7 +67,7 @@ export function Token() {
         console.error(e);
       }
     })();
-  }, [currentDao, daos]);
+  }, [currentDao, daos, setToken]);
 
   useEffect(() => {
     if (!api) {
@@ -102,7 +102,7 @@ export function Token() {
         unsubscribe();
       }
     };
-  }, [api, currentDao, daos]);
+  }, [api, currentDao, daos, setToken]);
 
   return (
     <Card className={styles.card}>
@@ -118,7 +118,7 @@ export function Token() {
           </div>
 
           <Typography variant="title1">
-            {token &&
+            {token.quantity &&
               Intl.NumberFormat('en-US', { minimumFractionDigits: 2 }).format(
                 parseFloat(token.quantity)
               )}

@@ -35,7 +35,8 @@ export type TypographyVariants =
   | 'value7'
   | 'value8'
   | 'button1'
-  | 'button2';
+  | 'button2'
+  | 'countdown';
 
 export interface TypographyProps extends HTMLAttributes<HTMLElement> {
   variant: TypographyVariants;
@@ -74,7 +75,8 @@ const elementsByVariants: Record<TypographyVariants, ElementType> = {
   value7: 'p',
   value8: 'p',
   button1: 'p',
-  button2: 'p'
+  button2: 'p',
+  countdown: 'p'
 };
 
 export const Typography = forwardRef<HTMLElement, TypographyProps>(

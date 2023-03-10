@@ -19,8 +19,8 @@ export type WalletName =
   | 'Subwallet'
   | 'Development Accounts';
 
-export type WalletMeta = {
+export type WalletMeta = Readonly<{
   name: WalletName;
   icon: WalletIconPath;
   source: WalletSource;
-};
+}>;

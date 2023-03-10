@@ -1,5 +1,10 @@
 import Image from 'next/image';
-import { KeyboardEventHandler, MouseEventHandler, ReactElement } from 'react';
+import {
+  KeyboardEventHandler,
+  MouseEventHandler,
+  ReactElement,
+  useCallback
+} from 'react';
 
 import { wallets } from 'constants/wallets';
 
@@ -14,18 +19,45 @@ import styles from './MembersDropdown.module.scss';
 export interface MembersDropdownProps {
   accounts?: KeyringPair[];
   children: ReactElement;
-  handleOnClick: MouseEventHandler<HTMLUListElement>;
-  handleOnKeyDown: KeyboardEventHandler<HTMLUListElement>;
+  onValueChange: (address: string, index?: string | null) => void;
   index?: number;
 }
 
 export function MembersDropdown({
   accounts,
   index,
-  handleOnClick,
-  handleOnKeyDown,
+  onValueChange,
   children
 }: MembersDropdownProps) {
+  const handleMemberChoose = useCallback(
+    (target: HTMLUListElement) => {
+      const selectedWalletAddress = target.getAttribute('data-address');
+      const selectedIndex = target.getAttribute('data-index');
+
+      if (!selectedWalletAddress) {
+        return;
+      }
+      onValueChange(selectedWalletAddress, selectedIndex);
+    },
+    [onValueChange]
+  );
+
+  const handleOnClick: MouseEventHandler<HTMLUListElement> = useCallback(
+    (e) => handleMemberChoose(e.target as HTMLUListElement),
+    [handleMemberChoose]
+  );
+
+  const handleOnKeyDown: KeyboardEventHandler<HTMLUListElement> = useCallback(
+    (e) => {
+      if (e.key !== ' ' && e.key !== 'Enter') {
+        return;
+      }
+
+      handleMemberChoose(e.target as HTMLUListElement);
+    },
+    [handleMemberChoose]
+  );
+
   if (!accounts) {
     return null;
   }

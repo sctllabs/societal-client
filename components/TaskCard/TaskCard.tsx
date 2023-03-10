@@ -3,7 +3,6 @@ import { appConfig } from 'config';
 
 import { useAtomValue } from 'jotai';
 import { currentDaoAtom } from 'store/dao';
-import { isEthereumAddress } from '@polkadot/util-crypto';
 
 import { getProposalSettings } from 'utils/getProposalSettings';
 import { maskAddress } from 'utils/maskAddress';
@@ -111,10 +110,7 @@ export function TaskCard({ proposal, currentBlock }: TaskCardProps) {
               <span className={styles['proposal-item']}>
                 <Icon name="user-profile" size="xs" />
                 <Typography variant="title5">
-                  {maskAddress(
-                    proposal.account.id,
-                    isEthereumAddress(proposal.account.id) ? 'eth' : 'ss58'
-                  )}
+                  {maskAddress(proposal.account.id)}
                 </Typography>
               </span>
             </span>
@@ -143,10 +139,7 @@ export function TaskCard({ proposal, currentBlock }: TaskCardProps) {
                   <span className={styles['proposal-item']}>
                     <Icon name="user-profile" size="xs" />
                     <Typography variant="title5">
-                      {maskAddress(
-                        proposal.kind.beneficiary,
-                        isEthereumAddress(proposal.account.id) ? 'eth' : 'ss58'
-                      )}
+                      {maskAddress(proposal.kind.beneficiary)}
                     </Typography>
                   </span>
                 </span>
@@ -159,10 +152,7 @@ export function TaskCard({ proposal, currentBlock }: TaskCardProps) {
                 <span className={styles['proposal-item']}>
                   <Icon name="user-profile" size="xs" />
                   <Typography variant="title5">
-                    {maskAddress(
-                      proposal.kind.who,
-                      isEthereumAddress(proposal.account.id) ? 'eth' : 'ss58'
-                    )}
+                    {maskAddress(proposal.kind.who)}
                   </Typography>
                 </span>
               </span>

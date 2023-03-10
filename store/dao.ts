@@ -1,5 +1,5 @@
 import { atom } from 'jotai';
-import type { DaoQuery, SubscriptionDao } from 'types';
+import type { Dao, DaoNameAndId } from 'types';
 
-export const daosAtom = atom<SubscriptionDao[] | null>(null);
-export const currentDaoAtom = atom<DaoQuery | null>(null);
+export const daosAtom = atom<DaoNameAndId[] | null>(null);
+export const currentDaoAtom = atom<Dao | null>(null);

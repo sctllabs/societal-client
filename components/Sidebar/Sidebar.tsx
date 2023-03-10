@@ -17,7 +17,7 @@ import { SidebarLink } from 'components/ui-kit/SidebarLink';
 import { Avatar } from 'components/ui-kit/Avatar';
 import { Button } from 'components/ui-kit/Button';
 
-import type { SubscribeDao } from 'types';
+import type { SubscribeDaos } from 'types';
 
 import styles from './Sidebar.module.scss';
 
@@ -26,7 +26,7 @@ export function Sidebar() {
   const currentAccount = useAtomValue(currentAccountAtom);
   const setDaos = useSetAtom(daosAtom);
 
-  const { data, loading } = useSubscription<SubscribeDao>(SUBSCRIBE_DAO);
+  const { data, loading } = useSubscription<SubscribeDaos>(SUBSCRIBE_DAO);
 
   const daoId = router.query.id as string;
 
