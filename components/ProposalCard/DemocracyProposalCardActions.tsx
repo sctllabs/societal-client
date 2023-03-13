@@ -93,9 +93,9 @@ export function DemocracyProposalCardActions({
   const handleCancelClick = () => setModalOpen(false);
 
   const times = data?.democracySeconds.find((_democracySecond) => {
-    if (metamaskAccount) {
+    if (metamaskAccount && metamaskAccount._address) {
       return (
-        _democracySecond.seconder.id === evmToAddress(metamaskAccount?._address)
+        _democracySecond.seconder.id === evmToAddress(metamaskAccount._address)
       );
     }
 

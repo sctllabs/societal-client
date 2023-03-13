@@ -31,8 +31,8 @@ export function Referendum() {
     if (substrateAccount) {
       return substrateAccount.address;
     }
-    if (metamaskAccount) {
-      return evmToAddress(metamaskAccount?._address);
+    if (metamaskAccount && metamaskAccount?._address) {
+      return evmToAddress(metamaskAccount._address);
     }
     return null;
   }, [metamaskAccount, substrateAccount]);
