@@ -5,6 +5,7 @@ subscription SubscribeDaoById($id: String!) {
     purpose
     metadata
     council
+    blockNum
     policy {
       proposalPeriod
     }

@@ -8,7 +8,7 @@ import { apiAtom } from 'store/api';
 import { useDaoCollectiveContract } from 'hooks/useDaoCollectiveContract';
 
 import { useSubscription } from '@apollo/client';
-import SUBSCRIBE_VOTES_BY_PROPOSAL_ID from 'query/subscribeVotesByProposalId.graphql';
+import SUBSCRIBE_VOTES_BY_PROPOSAL_ID from 'query/subscribeCouncilVotesByProposalId.graphql';
 
 import {
   LENGTH_BOUND,

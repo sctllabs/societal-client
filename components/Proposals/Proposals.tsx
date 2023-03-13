@@ -60,7 +60,7 @@ export function Proposals() {
   }, [api?.query.system]);
 
   return (
-    <>
+    <div className={styles.container}>
       <Card className={styles['proposals-title-card']}>
         <Typography variant="title4">Proposals</Typography>
       </Card>
@@ -79,6 +79,6 @@ export function Proposals() {
           </Typography>
         </Card>
       )}
-    </>
+    </div>
   );
 }

@@ -1,0 +1,10 @@
+subscription SubscribeDelegationsById($id: String!) {
+  democracyDelegations(where: { id_startsWith: $id }, limit: 100) {
+    id
+    lockedBalance
+    conviction
+    target {
+      id
+    }
+  }
+}

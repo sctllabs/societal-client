@@ -1,7 +1,6 @@
 import {
   ChangeEventHandler,
   Dispatch,
-  KeyboardEventHandler,
   MouseEventHandler,
   SetStateAction
 } from 'react';
@@ -60,30 +59,18 @@ export function DaoMembers({ state, setState }: DaoMembersProps) {
     }));
   };
 
-  const handleMemberChoose = (target: HTMLUListElement) => {
-    const selectedWalletAddress = target.getAttribute('data-address');
-    const selectedIndex = target.getAttribute('data-index');
-    if (!selectedWalletAddress || selectedIndex === null) {
+  const onMemberValueChange = (address: string, index?: string | null) => {
+    if (typeof index !== 'string') {
       return;
     }
-    const addressIndex = parseInt(selectedIndex, 10);
+    const addressIndex = parseInt(index, 10);
 
     setState((prevState) => ({
       ...prevState,
-      addresses: prevState.addresses.map((_address, index) =>
-        index === addressIndex ? selectedWalletAddress : _address
+      addresses: prevState.addresses.map((_address, idx) =>
+        idx === addressIndex ? address : _address
       )
     }));
-  };
-
-  const handleOnClick: MouseEventHandler<HTMLUListElement> = (e) =>
-    handleMemberChoose(e.target as HTMLUListElement);
-
-  const handleOnKeyDown: KeyboardEventHandler<HTMLUListElement> = (e) => {
-    if (e.key !== ' ' && e.key !== 'Enter') {
-      return;
-    }
-    handleMemberChoose(e.target as HTMLUListElement);
   };
 
   const handleAddAddressClick: MouseEventHandler = () =>
@@ -142,8 +129,7 @@ export function DaoMembers({ state, setState }: DaoMembersProps) {
                   (_account) => !state.addresses.includes(_account.address)
                 )}
                 key={key}
-                handleOnClick={handleOnClick}
-                handleOnKeyDown={handleOnKeyDown}
+                onValueChange={onMemberValueChange}
                 index={index}
               >
                 <Input

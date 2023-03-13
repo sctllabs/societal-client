@@ -13,9 +13,9 @@ import { Icon, IconNamesType } from 'components/ui-kit/Icon';
 import { Avatar } from 'components/ui-kit/Avatar';
 import { Button } from 'components/ui-kit/Button';
 import { NavLink } from 'components/ui-kit/NavLink';
+import { CreateProposal } from 'components/CreateProposal';
 
 import styles from './Subheader.module.scss';
-import { CreateProposal } from '../CreateProposal';
 
 type Navigation = {
   icon: IconNamesType;
@@ -45,9 +45,8 @@ export function Subheader() {
     return null;
   }
 
-  const handleOnClick = () => {
+  const handleOnClick = () =>
     navigator.clipboard.writeText(currentDao.account.id);
-  };
 
   const [angle, color1, color2, color3] = generateRandomGradient(
     currentDao.name
@@ -99,7 +98,7 @@ export function Subheader() {
         </div>
         <div className={styles['right-container']}>
           {router.pathname.includes('create-proposal') ? null : (
-            <CreateProposal daoId={daoId as string} />
+            <CreateProposal />
           )}
         </div>
       </div>

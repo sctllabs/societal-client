@@ -10,6 +10,7 @@ import {
   metamaskAccountAtom,
   substrateAccountAtom
 } from 'store/account';
+import { currentDaoAtom } from 'store/dao';
 
 import { LENGTH_BOUND } from 'constants/transaction';
 import { evmToAddress, isEthereumAddress } from '@polkadot/util-crypto';
@@ -19,6 +20,7 @@ import { keyringAddExternal } from 'utils/keyringAddExternal';
 import type { Vec } from '@polkadot/types';
 import type { AccountId } from '@polkadot/types/interfaces';
 import type { KeyringPair } from '@polkadot/keyring/types';
+import type { Dao } from 'types';
 
 import { Button } from 'components/ui-kit/Button';
 import { Typography } from 'components/ui-kit/Typography';
@@ -39,10 +41,6 @@ import { ProposalType } from './ProposalType';
 import { ProposalInputs } from './ProposalInputs';
 import { ProposalVotingAccess } from './ProposalVotingAccess';
 
-export interface CreateProposalProps {
-  daoId: string;
-}
-
 const INITIAL_STATE: State = {
   amount: '',
   description: '',
@@ -51,7 +49,7 @@ const INITIAL_STATE: State = {
   balance: ''
 };
 
-export function CreateProposal({ daoId }: CreateProposalProps) {
+export function CreateProposal() {
   const [modalOpen, setModalOpen] = useState(false);
 
   const [proposalVotingAccess, setProposalVotingAccess] =
@@ -64,6 +62,7 @@ export function CreateProposal({ daoId }: CreateProposalProps) {
   const substrateAccount = useAtomValue(substrateAccountAtom);
   const accounts = useAtomValue(accountsAtom);
   const keyring = useAtomValue(keyringAtom);
+  const currentDao = useAtomValue(currentDaoAtom);
 
   const daoCollectiveContract = useDaoCollectiveContract();
   const daoDemocracyContract = useDaoDemocracyContract();
@@ -80,8 +79,12 @@ export function CreateProposal({ daoId }: CreateProposalProps) {
   useEffect(() => {
     let unsubscribe: any | null = null;
 
+    if (!currentDao) {
+      return undefined;
+    }
+
     api?.query.daoCouncil
-      .members(daoId, (_members: Vec<AccountId>) => {
+      .members(currentDao.id, (_members: Vec<AccountId>) => {
         setMembers(
           _members.map((_member) => ({
             ...accounts?.find(
@@ -101,40 +104,47 @@ export function CreateProposal({ daoId }: CreateProposalProps) {
         unsubscribe();
       }
     };
-  }, [accounts, api, daoId]);
+  }, [accounts, api, currentDao]);
 
-  const getProposalTx = useCallback(() => {
-    const target = isEthereumAddress(state.target)
-      ? evmToAddress(state.target)
-      : state.target;
+  const getProposalTx = useCallback(
+    (_currentDao: Dao) => {
+      const target = isEthereumAddress(state.target)
+        ? evmToAddress(state.target)
+        : state.target;
 
-    const amount = parseInt(state.amount, 10);
+      const amount = parseInt(state.amount, 10);
 
-    switch (proposalType) {
-      case ProposalEnum.PROPOSE_ADD_MEMBER: {
-        return api?.tx.daoCouncilMembers.addMember(daoId, target);
+      switch (proposalType) {
+        case ProposalEnum.PROPOSE_ADD_MEMBER: {
+          return api?.tx.daoCouncilMembers.addMember(_currentDao.id, target);
+        }
+        case ProposalEnum.PROPOSE_REMOVE_MEMBER: {
+          return api?.tx.daoCouncilMembers.removeMember(_currentDao.id, target);
+        }
+        case ProposalEnum.PROPOSE_TRANSFER: {
+          return api?.tx.daoTreasury.spend(_currentDao.id, amount, target);
+        }
+        case ProposalEnum.PROPOSE_TRANSFER_GOVERNANCE_TOKEN: {
+          return api?.tx.daoTreasury.transferToken(
+            currentDao?.id,
+            amount,
+            target
+          );
+        }
+        default: {
+          throw new Error('No such extrinsic method exists.');
+        }
       }
-      case ProposalEnum.PROPOSE_REMOVE_MEMBER: {
-        return api?.tx.daoCouncilMembers.removeMember(daoId, target);
-      }
-      case ProposalEnum.PROPOSE_TRANSFER: {
-        return api?.tx.daoTreasury.spend(daoId, amount, target);
-      }
-      case ProposalEnum.PROPOSE_TRANSFER_GOVERNANCE_TOKEN: {
-        return api?.tx.daoTreasury.transferToken(daoId, amount, target);
-      }
-      default: {
-        throw new Error('No such extrinsic method exists.');
-      }
-    }
-  }, [
-    api?.tx.daoCouncilMembers,
-    api?.tx.daoTreasury,
-    daoId,
-    proposalType,
-    state.amount,
-    state.target
-  ]);
+    },
+    [
+      api?.tx.daoCouncilMembers,
+      api?.tx.daoTreasury,
+      currentDao?.id,
+      proposalType,
+      state.amount,
+      state.target
+    ]
+  );
 
   const proposalCreatedHandler = useCallback(() => {
     setTimeout(
@@ -157,6 +167,9 @@ export function CreateProposal({ daoId }: CreateProposalProps) {
   const handleCancelClick = () => setModalOpen(false);
 
   const handleTransform = useCallback(() => {
+    if (!currentDao) {
+      throw new Error('Current DAO does not exist');
+    }
     const meta = stringToHex(
       JSON.stringify({
         title: state.title.trim(),
@@ -164,15 +177,20 @@ export function CreateProposal({ daoId }: CreateProposalProps) {
       })
     );
 
-    const _tx = getProposalTx();
+    const _tx = getProposalTx(currentDao);
 
     if (proposalVotingAccess === ProposalVotingAccessEnum.Council) {
-      return [daoId, _tx, LENGTH_BOUND, meta];
+      return [currentDao.id, _tx, LENGTH_BOUND, meta];
     }
 
-    return [daoId, { Inline: _tx?.method.toHex() }, state.balance, meta];
+    return [
+      currentDao.id,
+      { Inline: _tx?.method.toHex() },
+      state.balance,
+      meta
+    ];
   }, [
-    daoId,
+    currentDao,
     getProposalTx,
     proposalVotingAccess,
     state.balance,
@@ -195,7 +213,7 @@ export function CreateProposal({ daoId }: CreateProposalProps) {
   const onSuccess = () => proposalCreatedHandler();
 
   const handleProposeClick = async () => {
-    if (!metamaskAccount || !keyring) {
+    if (!metamaskAccount || !keyring || !currentDao) {
       return;
     }
 
@@ -207,18 +225,22 @@ export function CreateProposal({ daoId }: CreateProposalProps) {
     );
 
     try {
-      const _tx = getProposalTx();
+      const _tx = getProposalTx(currentDao);
 
       if (proposalVotingAccess === ProposalVotingAccessEnum.Council) {
         await daoCollectiveContract
           ?.connect(metamaskAccount)
-          .propose_with_meta(daoId, _tx?.method.toHex(), meta);
+          .propose_with_meta(currentDao.id, _tx?.method.toHex(), meta);
       }
       if (proposalVotingAccess === ProposalVotingAccessEnum.Democracy) {
-        // TODO @asansyzb figure out what to do with eth
         await daoDemocracyContract
           ?.connect(metamaskAccount)
-          .propose_with_meta(daoId, _tx?.method.toHex(), state.amount, meta);
+          .propose_with_meta(
+            currentDao.id,
+            _tx?.method.toHex(),
+            state.amount,
+            meta
+          );
       }
 
       proposalCreatedHandler();
