@@ -53,12 +53,23 @@ enum InputName {
 }
 
 enum ConvictionOptions {
+  'No Conviction' = 'None',
   '1x voting balance, locked for 1x enactment (0.00 days)' = 'Locked1x',
   '2x voting balance, locked for 2x enactment (0.00 days)' = 'Locked2x',
   '3x voting balance, locked for 4x enactment (0.00 days)' = 'Locked3x',
   '4x voting balance, locked for 8x enactment (0.00 days)' = 'Locked4x',
   '5x voting balance, locked for 16x enactment (0.01 days)' = 'Locked5x',
   '6x voting balance, locked for 32x enactment (0.01 days)' = 'Locked6x'
+}
+
+enum ConvictionToEth {
+  'None' = 0,
+  'Locked1x' = 1,
+  'Locked2x' = 2,
+  'Locked3x' = 3,
+  'Locked4x' = 4,
+  'Locked5x' = 5,
+  'Locked6x' = 6
 }
 
 const INITIAL_STATE: DelegationState = {
@@ -85,11 +96,15 @@ export function DelegateModal() {
   const onConvictionValueChange = (conviction: string) =>
     setState((prevState) => ({ ...prevState, conviction }));
 
-  const onAddressValueChange = (address: string) =>
+  const onAddressValueChange = (address: string) => {
+    const meta = accounts?.filter((acc) => acc.address === address)?.[0].meta;
+    const account = (meta?.isEthereum ? meta.ethAddress : address) as string;
+
     setState((prevState) => ({
       ...prevState,
-      account: address
+      account
     }));
+  };
 
   const onInputChange: ChangeEventHandler = (e) => {
     const target = e.target as HTMLInputElement;
@@ -127,7 +142,12 @@ export function DelegateModal() {
     try {
       await daoDemocracyContract
         ?.connect(metamaskAccount)
-        .delegate(currentDao.id, state.account, state.conviction, state.amount);
+        .delegate(
+          currentDao.id,
+          state.account,
+          ConvictionToEth[state.conviction as any],
+          state.amount
+        );
     } catch (e) {
       // eslint-disable-next-line no-console
       console.error(e);

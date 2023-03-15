@@ -168,6 +168,7 @@ export type TransferProposal = Readonly<{
 }>;
 
 type Conviction =
+  | 'None'
   | 'Locked1x'
   | 'Locked2x'
   | 'Locked3x'
