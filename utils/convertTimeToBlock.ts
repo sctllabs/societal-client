@@ -3,16 +3,22 @@ import { appConfig } from 'config';
 
 const SECONDS_IN_HOUR = 60 * 60;
 const SECONDS_IN_DAYS = 24 * 60 * 60;
+const SECONDS_IN_MINUTE = 60;
 
 export function convertTimeToBlock(
   proposalPeriod: string,
   proposalPeriodType: ProposalPeriod
 ) {
   return (
-    (parseInt(proposalPeriod, 10) *
-      (proposalPeriodType === ProposalPeriod.HOURS
-        ? SECONDS_IN_HOUR
-        : SECONDS_IN_DAYS)) /
+    (parseInt(proposalPeriod, 10) * SECONDS_IN_MINUTE) /
     appConfig.expectedBlockTimeInSeconds
   );
+
+  // return (
+  //   (parseInt(proposalPeriod, 10) *
+  //     (proposalPeriodType === ProposalPeriod.HOURS
+  //       ? SECONDS_IN_HOUR
+  //       : SECONDS_IN_DAYS)) /
+  //   appConfig.expectedBlockTimeInSeconds
+  // );
 }

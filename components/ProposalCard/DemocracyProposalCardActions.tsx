@@ -13,7 +13,8 @@ import { useDaoDemocracyContract } from 'hooks/useDaoDemocracyContract';
 
 import type {
   DemocracyProposalMeta,
-  SubscribeDemocracySecondsByProposalId
+  SubscribeDemocracySecondsByProposalId,
+  TxFailedCallback
 } from 'types';
 
 import { Typography } from 'components/ui-kit/Typography';
@@ -54,33 +55,7 @@ export function DemocracyProposalCardActions({
   const substrateAccount = useAtomValue(substrateAccountAtom);
   const metamaskAccount = useAtomValue(metamaskAccountAtom);
 
-  const handleProposalSecond = async () => {
-    if (!metamaskAccount || !data) {
-      return;
-    }
-
-    const secondsUpperBound = data.democracySeconds.reduce(
-      (acc, _democracySecond) => acc + _democracySecond.count,
-      0
-    );
-
-    await daoDemocracyContract
-      ?.connect(metamaskAccount)
-      .second(proposal.dao.id, proposal.index, secondsUpperBound);
-
-    toast.success(
-      <Notification
-        title="Second created"
-        body="You've seconded for proposal."
-        variant="success"
-      />
-    );
-    setModalOpen(false);
-  };
-
-  const disabled = false;
-
-  const onFinishSuccess = () => {
+  const onSuccess = () => {
     toast.success(
       <Notification
         title="Second closed"
@@ -88,9 +63,41 @@ export function DemocracyProposalCardActions({
         variant="success"
       />
     );
+    setModalOpen(false);
   };
 
+  const secondsUpperBound =
+    data?.democracySeconds.reduce(
+      (acc, _democracySecond) => acc + _democracySecond.count,
+      0
+    ) || 0;
+
+  const handleProposalSecond = async () => {
+    if (!metamaskAccount || !data) {
+      return;
+    }
+
+    await daoDemocracyContract
+      ?.connect(metamaskAccount)
+      .second(proposal.dao.id, proposal.index, secondsUpperBound);
+
+    onSuccess();
+  };
+
+  const disabled = false;
+
   const handleCancelClick = () => setModalOpen(false);
+
+  const onFailed: TxFailedCallback = () => {
+    // eslint-disable-next-line no-console
+    toast.error(
+      <Notification
+        title="Transaction failed"
+        body="Transaction failed"
+        variant="error"
+      />
+    );
+  };
 
   const times = data?.democracySeconds.find((_democracySecond) => {
     if (metamaskAccount && metamaskAccount._address) {
@@ -106,12 +113,14 @@ export function DemocracyProposalCardActions({
     return null;
   })?.count;
 
+  const lockedBalance = BigInt(proposal.deposit) * BigInt(secondsUpperBound);
+
   return (
     <div className={styles['democracy-proposal-actions']}>
       <div className={styles['democracy-deposit']}>
         <Typography variant="caption2">Locked balance:</Typography>
         <span className={styles['democracy-deposit-amount']}>
-          <Typography variant="value3">{proposal.deposit}</Typography>
+          <Typography variant="value3">{lockedBalance.toString()}</Typography>
           <Typography variant="title4">
             {currentDao?.fungibleToken.symbol}
           </Typography>
@@ -121,68 +130,72 @@ export function DemocracyProposalCardActions({
         {times && (
           <Typography variant="caption2">
             You have already <br /> seconded&nbsp;
-            <span className={styles.bold}>{times}</span> times
+            <span className={styles.bold}>{times}</span> time(s)
           </Typography>
         )}
+        {proposal.status === 'Open' && (
+          <Dialog open={modalOpen} onOpenChange={setModalOpen}>
+            <DialogTrigger asChild>
+              <Button variant="filled">Second</Button>
+            </DialogTrigger>
 
-        <Dialog open={modalOpen} onOpenChange={setModalOpen}>
-          <DialogTrigger asChild>
-            <Button variant="filled">Second</Button>
-          </DialogTrigger>
+            <DialogContent>
+              <DialogTitle asChild>
+                <Typography variant="title1">
+                  Tokens required to second the proposal
+                </Typography>
+              </DialogTitle>
 
-          <DialogContent closeIcon={false}>
-            <DialogTitle asChild>
-              <Typography variant="title1">
-                Tokens required to second the proposal
-              </Typography>
-            </DialogTitle>
-
-            <DialogDescription asChild>
-              <>
-                <div className={styles['democracy-modal-deposit-container']}>
-                  <span className={styles['democracy-modal-deposit']}>
-                    <Typography variant="title4">{proposal.deposit}</Typography>
-                    <Typography variant="body2">
-                      {currentDao?.fungibleToken.symbol}
-                    </Typography>
-                  </span>
-                </div>
-                <div className={styles['buttons-container']}>
-                  <Button
-                    variant="outlined"
-                    color="destructive"
-                    className={styles['democracy-modal-button']}
-                    onClick={handleCancelClick}
-                  >
-                    Cancel
-                  </Button>
-                  {metamaskAccount ? (
+              <DialogDescription asChild>
+                <>
+                  <div className={styles['democracy-modal-deposit-container']}>
+                    <span className={styles['democracy-modal-deposit']}>
+                      <Typography variant="title4">
+                        {proposal.deposit}
+                      </Typography>
+                      <Typography variant="body2">
+                        {currentDao?.fungibleToken.symbol}
+                      </Typography>
+                    </span>
+                  </div>
+                  <div className={styles['buttons-container']}>
                     <Button
+                      variant="outlined"
+                      color="destructive"
                       className={styles['democracy-modal-button']}
-                      disabled={disabled}
-                      variant="filled"
-                      onClick={handleProposalSecond}
+                      onClick={handleCancelClick}
                     >
-                      Second
+                      Cancel
                     </Button>
-                  ) : (
-                    <TxButton
-                      className={styles['democracy-modal-button']}
-                      disabled={disabled}
-                      accountId={substrateAccount?.address}
-                      tx={api?.tx.daoDemocracy.second}
-                      params={[proposal.dao.id, proposal.index]}
-                      variant="filled"
-                      onSuccess={onFinishSuccess}
-                    >
-                      Second
-                    </TxButton>
-                  )}
-                </div>
-              </>
-            </DialogDescription>
-          </DialogContent>
-        </Dialog>
+                    {metamaskAccount ? (
+                      <Button
+                        className={styles['democracy-modal-button']}
+                        disabled={disabled}
+                        variant="filled"
+                        onClick={handleProposalSecond}
+                      >
+                        Second
+                      </Button>
+                    ) : (
+                      <TxButton
+                        className={styles['democracy-modal-button']}
+                        disabled={disabled}
+                        accountId={substrateAccount?.address}
+                        tx={api?.tx.daoDemocracy.second}
+                        params={[proposal.dao.id, proposal.index]}
+                        variant="filled"
+                        onSuccess={onSuccess}
+                        onFailed={onFailed}
+                      >
+                        Second
+                      </TxButton>
+                    )}
+                  </div>
+                </>
+              </DialogDescription>
+            </DialogContent>
+          </Dialog>
+        )}
       </div>
     </div>
   );

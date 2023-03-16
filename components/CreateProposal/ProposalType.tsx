@@ -10,7 +10,6 @@ import {
 } from 'components/ui-kit/Select';
 
 import { InputLabel, ProposalEnum } from './types';
-import styles from './CreateProposal.module.scss';
 
 type ProposalTypeProps = {
   setProposalType: Dispatch<SetStateAction<ProposalEnum | null>>;
@@ -22,7 +21,7 @@ export function ProposalType({ setProposalType }: ProposalTypeProps) {
 
   return (
     <Select onValueChange={onProposalTypeValueChange}>
-      <SelectTrigger className={styles.trigger}>
+      <SelectTrigger>
         <SelectValue placeholder={InputLabel.PROPOSAL_TYPE} />
       </SelectTrigger>
       <SelectContent>

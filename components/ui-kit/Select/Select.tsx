@@ -24,7 +24,7 @@ export const SelectTrigger = React.forwardRef<
       {...props}
     >
       {children}
-      <Icon name="arrow-down" />
+      <Icon name="arrow-down" size="xs" />
     </SelectPrimitive.Trigger>
   );
 });

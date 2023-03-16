@@ -20,7 +20,7 @@ import { Typography } from 'components/ui-kit/Typography';
 import { Notification } from 'components/ui-kit/Notifications';
 import { TxButton } from 'components/TxButton';
 
-import styles from './Referendum.module.scss';
+import styles from './ReferendumInfo.module.scss';
 
 export function UndelegateModal() {
   const [modalOpen, setModalOpen] = useState(false);
@@ -78,7 +78,7 @@ export function UndelegateModal() {
           Undelegate
         </Button>
       </DialogTrigger>
-      <DialogContent className={styles['dialog-content']} closeIcon={false}>
+      <DialogContent className={styles['dialog-content']}>
         <DialogTitle asChild>
           <Typography className={styles.title} variant="title1">
             Undelegate votes

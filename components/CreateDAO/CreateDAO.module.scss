@@ -91,14 +91,6 @@
   gap: 4rem;
 }
 
-
-.proposal-period-dropdown {
-  align-items: center;
-  display: flex;
-  gap: 0.5rem;
-  justify-content: center;
-}
-
 .proposal-period-button {
   padding: 0;
 }
@@ -123,6 +115,11 @@
 
 .dropdown-card {
   padding: 1rem;
+}
+
+.dropdown-content-span {
+  display: flex;
+  gap: 8px;
 }
 
 .dropdown-radio-group {

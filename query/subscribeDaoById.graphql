@@ -8,6 +8,12 @@ subscription SubscribeDaoById($id: String!) {
     blockNum
     policy {
       proposalPeriod
+      governance {
+        ... on GovernanceV1 {
+          __typename
+          launchPeriod
+        }
+      }
     }
     account {
       id

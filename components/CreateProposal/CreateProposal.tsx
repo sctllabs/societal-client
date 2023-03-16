@@ -20,7 +20,7 @@ import { keyringAddExternal } from 'utils/keyringAddExternal';
 import type { Vec } from '@polkadot/types';
 import type { AccountId } from '@polkadot/types/interfaces';
 import type { KeyringPair } from '@polkadot/keyring/types';
-import type { Dao } from 'types';
+import type { Dao, TxFailedCallback } from 'types';
 
 import { Button } from 'components/ui-kit/Button';
 import { Typography } from 'components/ui-kit/Typography';
@@ -77,7 +77,7 @@ export function CreateProposal() {
   }, [api, proposalVotingAccess]);
 
   useEffect(() => {
-    let unsubscribe: any | null = null;
+    let unsubscribe: any;
 
     if (!currentDao) {
       return undefined;
@@ -99,11 +99,7 @@ export function CreateProposal() {
       // eslint-disable-next-line no-console
       .catch(console.error);
 
-    return () => {
-      if (unsubscribe) {
-        unsubscribe();
-      }
-    };
+    return () => unsubscribe && unsubscribe();
   }, [accounts, api, currentDao]);
 
   const getProposalTx = useCallback(
@@ -269,6 +265,16 @@ export function CreateProposal() {
     }
   };
 
+  const onFailed: TxFailedCallback = () => {
+    toast.error(
+      <Notification
+        title="Transaction declined"
+        body="Transaction was declined."
+        variant="error"
+      />
+    );
+  };
+
   return (
     <Dialog open={modalOpen} onOpenChange={setModalOpen}>
       <DialogTrigger asChild>
@@ -279,7 +285,7 @@ export function CreateProposal() {
           </span>
         </Button>
       </DialogTrigger>
-      <DialogContent className={styles['dialog-content']} closeIcon={false}>
+      <DialogContent className={styles['dialog-content']}>
         <DialogTitle asChild>
           <Typography className={styles.title} variant="title1">
             Create Proposal
@@ -321,6 +327,7 @@ export function CreateProposal() {
                     disabled={disabled}
                     tx={extrinsic}
                     onSuccess={onSuccess}
+                    onFailed={onFailed}
                   >
                     Submit
                   </TxButton>

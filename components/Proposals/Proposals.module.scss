@@ -7,10 +7,6 @@
   gap: 20px;
 }
 
-.proposals-title-card {
-  padding: 0.875rem 1.5rem;
-}
-
 .proposals-empty-card {
   align-items: center;
   display: flex;
@@ -22,3 +18,21 @@
   color: #{colors.$grayscale-55};
 }
 
+.tabs-container {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+}
+
+.tabs {
+  display: flex;
+  flex-grow: 1;
+}
+
+.history-button {
+  padding: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+}

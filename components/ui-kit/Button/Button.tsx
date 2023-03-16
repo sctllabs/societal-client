@@ -12,8 +12,9 @@ type ButtonVariants =
   | 'link'
   | 'ghost'
   | 'icon'
-  | 'nav';
-type ButtonColors = 'primary' | 'destructive';
+  | 'nav'
+  | 'vote';
+type ButtonColors = 'primary' | 'destructive' | 'success';
 type ButtonSize = 'xs' | 'sm' | 'md' | 'lg';
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {

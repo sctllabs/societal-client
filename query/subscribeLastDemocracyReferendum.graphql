@@ -1,0 +1,38 @@
+subscription SubscribeDemocracyReferendums {
+  democracyReferendums(limit: 50, orderBy: id_DESC) {
+    id
+    status
+    voteThreshold
+    index
+    democracyProposal {
+      id
+      index
+      meta
+      blockNum
+      deposit
+      account {
+        id
+      }
+      dao {
+        id
+      }
+      kind {
+        __typename
+        ... on AddMember {
+          who
+        }
+        ... on RemoveMember {
+          who
+        }
+        ... on Spend {
+          beneficiary
+          amount
+        }
+        ... on TransferToken {
+          beneficiary
+          amount
+        }
+      }
+    }
+  }
+}

@@ -90,17 +90,15 @@ export function MembersDropdown({
                     data-address={_account.address}
                     data-index={index}
                   >
-                    <span className={styles['member-dropdown-button-span']}>
-                      <Image
-                        src={currentWallet.icon}
-                        alt={currentWallet.name}
-                        width={24}
-                        height={24}
-                      />
-                      <Typography variant="title4">
-                        {_account.meta.name as string}
-                      </Typography>
-                    </span>
+                    <Image
+                      src={currentWallet.icon}
+                      alt={currentWallet.name}
+                      width={24}
+                      height={24}
+                    />
+                    <Typography variant="title4">
+                      {_account.meta.name as string}
+                    </Typography>
                   </Button>
                 </li>
               );

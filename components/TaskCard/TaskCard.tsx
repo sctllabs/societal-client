@@ -60,19 +60,15 @@ export function TaskCard({ proposal, currentBlock }: TaskCardProps) {
           <Typography variant="title7">{taskStatus}</Typography>
         </div>
         {proposal.status === 'Open' && currentDao && currentBlock && (
-          <div className={styles.countdown}>
-            <Countdown
-              end={
-                (proposal.blockNum +
-                  currentDao.policy.proposalPeriod -
-                  currentBlock) *
-                1000 *
-                appConfig.expectedBlockTimeInSeconds
-              }
-              typography="value5"
-            />
-            <Typography variant="body2">left</Typography>
-          </div>
+          <Countdown
+            endBlock={
+              proposal.blockNum +
+              currentDao.policy.proposalPeriod -
+              currentBlock
+            }
+            orientation="horizontal"
+            typography="value5"
+          />
         )}
       </div>
       <div className={styles.content}>

@@ -20,7 +20,7 @@ export function Balance() {
   const currentDao = useAtomValue(currentDaoAtom);
 
   useEffect(() => {
-    let unsubscribe: any | null = null;
+    let unsubscribe: any;
 
     if (!currentDao) {
       return undefined;
@@ -36,11 +36,7 @@ export function Balance() {
       // eslint-disable-next-line no-console
       .catch(console.error);
 
-    return () => {
-      if (unsubscribe) {
-        unsubscribe();
-      }
-    };
+    return () => unsubscribe && unsubscribe();
   }, [api, currentDao]);
 
   return (
