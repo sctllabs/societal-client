@@ -24,7 +24,7 @@ import { UndelegateModal } from './UndelegateModal';
 import styles from './ReferendumInfo.module.scss';
 
 export function ReferendumInfo() {
-  const amount = 100;
+  // const amount = 100;
   const tokenSymbol = useAtomValue(tokenSymbolAtom);
 
   const [delegation, setDelegation] = useState<DemocracyDelegation | null>(
