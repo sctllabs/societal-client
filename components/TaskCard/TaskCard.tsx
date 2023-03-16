@@ -23,7 +23,7 @@ export interface TaskCardProps {
 
 const currency = '$SCTL';
 
-type TaskStatus = 'Active' | 'Completed';
+type TaskStatus = 'Active' | 'Completed' | 'Referendum';
 
 export function TaskCard({ proposal, currentBlock }: TaskCardProps) {
   let taskStatus: TaskStatus;
@@ -35,6 +35,10 @@ export function TaskCard({ proposal, currentBlock }: TaskCardProps) {
   switch (proposal.status) {
     case 'Open': {
       taskStatus = 'Active';
+      break;
+    }
+    case 'Referendum': {
+      taskStatus = 'Referendum';
       break;
     }
     default: {
