@@ -143,7 +143,7 @@ export function DemocracyReferendumVoteModal({
   return (
     <Dialog open={modalOpen} onOpenChange={setModalOpen}>
       <DialogTrigger asChild>
-        <Button variant="filled">Voting process</Button>
+        <Button variant="filled">Vote</Button>
       </DialogTrigger>
 
       <DialogContent closeIcon>
