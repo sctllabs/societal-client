@@ -39,7 +39,8 @@ export enum ApproveOrigin {
 
 export enum ProposalPeriod {
   DAYS = 'Days',
-  HOURS = 'Hours'
+  HOURS = 'Hours',
+  MINUTES = 'Minutes'
 }
 
 export enum TokenType {
