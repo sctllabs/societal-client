@@ -92,7 +92,7 @@ export function ReferendumInfo() {
         />
       )}
 
-      <div className={styles['item-container']}>
+      {/* <div className={styles['item-container']}>
         <Typography variant="caption2">Locked balance</Typography>
         <span className={styles.balance}>
           <Typography variant="title1">{amount}</Typography>
@@ -102,7 +102,7 @@ export function ReferendumInfo() {
           Here will be displayed the list of blocked tokens with which you
           seconded or voted for proposals.
         </Typography>
-      </div>
+      </div> */}
       {delegation && (
         <div className={styles['item-container']}>
           <div className={styles['undelegate-container']}>
