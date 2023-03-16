@@ -11,7 +11,7 @@ import { apiAtom } from 'store/api';
 import { currentDaoAtom } from 'store/dao';
 
 import { useDaoDemocracyContract } from 'hooks/useDaoDemocracyContract';
-import { ConvictionOptions } from 'constants/conviction';
+import { ConvictionOptions, ConvictionToEth } from 'constants/conviction';
 
 import { Notification } from 'components/ui-kit/Notifications';
 import { Input } from 'components/ui-kit/Input';
@@ -77,11 +77,15 @@ export function DelegateModal() {
   const onConvictionValueChange = (conviction: string) =>
     setState((prevState) => ({ ...prevState, conviction }));
 
-  const onAddressValueChange = (address: string) =>
+  const onAddressValueChange = (address: string) => {
+    const meta = accounts?.filter((acc) => acc.address === address)?.[0].meta;
+    const account = (meta?.isEthereum ? meta.ethAddress : address) as string;
+
     setState((prevState) => ({
       ...prevState,
-      account: address
+      account
     }));
+  };
 
   const onInputChange: ChangeEventHandler = (e) => {
     const target = e.target as HTMLInputElement;
@@ -119,7 +123,12 @@ export function DelegateModal() {
     try {
       await daoDemocracyContract
         ?.connect(metamaskAccount)
-        .delegate(currentDao.id, state.account, state.conviction, state.amount);
+        .delegate(
+          currentDao.id,
+          state.account,
+          ConvictionToEth[state.conviction as any],
+          state.amount
+        );
     } catch (e) {
       // eslint-disable-next-line no-console
       console.error(e);

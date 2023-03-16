@@ -4,6 +4,7 @@ import type { JsonRpcSigner } from '@ethersproject/providers';
 import { keyringAtom } from 'store/api';
 
 const substrateAccountStorageKey = 'substrateAccountStorageKey';
+const substrateWalletStorageKey = 'substrateWalletStorageKey';
 const metamaskAccountStorageKey = 'metamaskAccountStorageKey';
 
 // Metamask
@@ -32,6 +33,11 @@ export const substrateAccountAddressAtom = atom<string | null>(
     ? localStorage.getItem(substrateAccountStorageKey)
     : null
 );
+export const substrateWalletAtom = atom<string | null>(
+  typeof window !== 'undefined'
+    ? localStorage.getItem(substrateWalletStorageKey)
+    : null
+);
 export const substrateAccountAtom = atom<KeyringPair | null>(null);
 export const setCurrentSubstrateAccountAtom = atom(
   null,
@@ -40,6 +46,11 @@ export const setCurrentSubstrateAccountAtom = atom(
     _set(substrateAccountAddressAtom, _account?.address.toString());
 
     localStorage.setItem(substrateAccountStorageKey, _account.address);
+
+    localStorage.setItem(
+      substrateWalletStorageKey,
+      _account.meta?.source as string
+    );
   }
 );
 
@@ -61,6 +72,7 @@ export const currentAccountAtom = atom(
 
 export const disconnectAccountsAtom = atom(null, (_get, _set) => {
   localStorage.removeItem(substrateAccountStorageKey);
+  localStorage.removeItem(substrateWalletStorageKey);
   localStorage.removeItem(metamaskAccountStorageKey);
   _set(metamaskAccountAtom, null);
   _set(metamaskAccountAddressAtom, null);

@@ -14,13 +14,15 @@ import {
   persistMetamaskAccountAtom,
   substrateAccountAddressAtom,
   setCurrentSubstrateAccountAtom,
-  disconnectAccountsAtom
+  disconnectAccountsAtom,
+  substrateWalletAtom
 } from 'store/account';
 import { appConfig } from 'config';
 import { retrieveChainInfo } from 'utils/retrieveChainInfo';
 import type { ApiPromise } from '@polkadot/api';
 import type { Keyring } from '@polkadot/ui-keyring';
 import type { u32 } from '@polkadot/types';
+import { WalletSource } from 'types';
 
 export function Preloader() {
   const connectRef = useRef<boolean>(false);
@@ -28,6 +30,7 @@ export function Preloader() {
   const [keyring, setKeyring] = useAtom(keyringAtom);
   const persistMetamaskAccount = useAtomValue(persistMetamaskAccountAtom);
   const persistSubstrateAccount = useAtomValue(substrateAccountAddressAtom);
+  const persistSubstrateWallet = useAtomValue(substrateWalletAtom);
   const socket = useAtomValue(socketAtom);
   const setApiError = useSetAtom(apiErrorAtom);
   const setJsonRPC = useSetAtom(jsonrpcAtom);
@@ -41,7 +44,8 @@ export function Preloader() {
     async (
       _keyring: Keyring,
       _metamaskAccountAddress: string | null,
-      _substrateAccountAddress: string | null
+      _substrateAccountAddress: string | null,
+      _substrateWallet: string | null
     ) => {
       try {
         if (_metamaskAccountAddress) {
@@ -52,10 +56,24 @@ export function Preloader() {
           );
           await setCurrentMetamaskAccount(signer);
         }
+
+        // TODO: re-work wallet pre-loader approach
         if (_substrateAccountAddress) {
-          setCurrentSubstrateAccount(
-            _keyring.getPair(_substrateAccountAddress)
-          );
+          const substrateWallet = _substrateWallet || 'polkadot-js';
+
+          try {
+            const { polkadotWallet } = await import('providers/polkadotWallet');
+            await polkadotWallet.connectWallet(
+              _keyring,
+              substrateWallet as WalletSource
+            );
+
+            setCurrentSubstrateAccount(
+              _keyring.getPair(_substrateAccountAddress as any)
+            );
+          } catch (e) {
+            console.log(e);
+          }
         }
       } catch (e) {
         disconnectAccounts();
@@ -127,7 +145,8 @@ export function Preloader() {
     loadCurrentAccount(
       keyring,
       persistMetamaskAccount,
-      persistSubstrateAccount
+      persistSubstrateAccount,
+      persistSubstrateWallet
     );
   }, [
     persistMetamaskAccount,
