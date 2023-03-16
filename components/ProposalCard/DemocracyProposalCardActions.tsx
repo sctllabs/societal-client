@@ -69,8 +69,8 @@ export function DemocracyProposalCardActions({
   const secondsUpperBound =
     data?.democracySeconds.reduce(
       (acc, _democracySecond) => acc + _democracySecond.count,
-      0
-    ) || 0;
+      1
+    ) || 1;
 
   const handleProposalSecond = async () => {
     if (!metamaskAccount || !data) {
