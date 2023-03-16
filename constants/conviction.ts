@@ -6,3 +6,13 @@ export enum ConvictionOptions {
   '5x voting balance, locked for 16x enactment (0.01 days)' = 'Locked5x',
   '6x voting balance, locked for 32x enactment (0.01 days)' = 'Locked6x'
 }
+
+export enum ConvictionToEth {
+  'None' = 0,
+  'Locked1x' = 1,
+  'Locked2x' = 2,
+  'Locked3x' = 3,
+  'Locked4x' = 4,
+  'Locked5x' = 5,
+  'Locked6x' = 6
+}
