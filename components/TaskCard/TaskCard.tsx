@@ -1,5 +1,4 @@
 import clsx from 'clsx';
-import { appConfig } from 'config';
 
 import { useAtomValue } from 'jotai';
 import { currentDaoAtom } from 'store/dao';
