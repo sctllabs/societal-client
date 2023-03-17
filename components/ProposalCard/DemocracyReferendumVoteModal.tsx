@@ -148,9 +148,7 @@ export function DemocracyReferendumVoteModal({
 
       <DialogContent closeIcon>
         <DialogTitle asChild>
-          <Typography variant="title1">
-            Tokens required to second the proposal
-          </Typography>
+          <Typography variant="title1">Voting process</Typography>
         </DialogTitle>
 
         <DialogDescription asChild>
