@@ -60,8 +60,9 @@ export function Preloader() {
         // TODO: re-work wallet pre-loader approach
         if (_substrateAccountAddress) {
           const substrateWallet =
-            (_substrateWallet && _substrateWallet !== 'undefined') ||
-            'polkadot-js';
+            _substrateWallet && _substrateWallet !== 'undefined'
+              ? _substrateWallet
+              : 'polkadot-js';
 
           try {
             const { polkadotWallet } = await import('providers/polkadotWallet');
