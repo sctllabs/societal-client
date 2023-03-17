@@ -47,7 +47,9 @@ export function Proposals() {
     );
 
   const { data: referendumsData } =
-    useSubscription<SubscribeDemocracyReferendums>(SUBSCRIBE_LAST_REFERENDUM);
+    useSubscription<SubscribeDemocracyReferendums>(SUBSCRIBE_LAST_REFERENDUM, {
+      variables: { daoId: currentDao?.id }
+    });
 
   const proposals =
     tab === 'List'

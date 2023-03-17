@@ -89,16 +89,15 @@ export function ProposalCard({ proposal }: ProposalCardProps) {
                 <Chip
                   variant="proposal"
                   color={
-                    proposal.__typename === 'DemocracyProposal' ||
-                    proposal.__typename === 'DemocracyReferendum'
-                      ? 'dark-green'
-                      : 'dark-blue'
+                    proposal.__typename === 'CouncilProposal'
+                      ? 'dark-blue'
+                      : 'dark-green'
                   }
                 >
                   <Typography variant="title6">
-                    {proposal.__typename === 'DemocracyProposal'
-                      ? 'Democracy'
-                      : 'Council'}
+                    {proposal.__typename === 'CouncilProposal'
+                      ? 'Council'
+                      : 'Democracy'}
                   </Typography>
                 </Chip>
               </span>
