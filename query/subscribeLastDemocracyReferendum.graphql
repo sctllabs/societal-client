@@ -1,5 +1,9 @@
-subscription SubscribeDemocracyReferendums {
-  democracyReferendums(limit: 50, orderBy: id_DESC) {
+subscription SubscribeDemocracyReferendums($daoId: String!) {
+  democracyReferendums(
+    where: { democracyProposal: { dao: { id_eq: $daoId } } }
+    limit: 50
+    orderBy: id_DESC
+  ) {
     id
     status
     voteThreshold
