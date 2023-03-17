@@ -80,7 +80,7 @@ export function PeriodInput({
                   >
                     {Object.values(ProposalPeriod).map(
                       (_proposalPeriodType) => (
-                        <div
+                        <span
                           key={_proposalPeriodType}
                           className={styles['dropdown-content-span']}
                         >
@@ -93,7 +93,7 @@ export function PeriodInput({
                               {_proposalPeriodType}
                             </Typography>
                           </Label.Root>
-                        </div>
+                        </span>
                       )
                     )}
                   </RadioGroup>
@@ -105,12 +105,8 @@ export function PeriodInput({
                 className={styles['proposal-period-button']}
                 size="sm"
               >
-                <div className={styles['proposal-period-dropdown']}>
-                  <Typography variant="body2">
-                    {state[periodTypeName]}
-                  </Typography>
-                  <Icon name="arrow-down" size="sm" />
-                </div>
+                <Typography variant="body2">{state[periodTypeName]}</Typography>
+                <Icon name="arrow-down" size="sm" />
               </Button>
             </Dropdown>
           }

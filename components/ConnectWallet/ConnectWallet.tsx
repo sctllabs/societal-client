@@ -305,7 +305,7 @@ export function ConnectWallet() {
         <div className={styles['wallets-content']}>
           {selectedWallet ? (
             <Select onValueChange={onAccountValueChange}>
-              <SelectTrigger className={styles.trigger}>
+              <SelectTrigger>
                 <SelectValue placeholder="Choose an account" />
               </SelectTrigger>
               <SelectContent>

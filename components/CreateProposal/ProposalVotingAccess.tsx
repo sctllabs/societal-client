@@ -10,7 +10,6 @@ import {
 } from 'components/ui-kit/Select';
 
 import { InputLabel, ProposalVotingAccessEnum } from './types';
-import styles from './CreateProposal.module.scss';
 
 type ProposalVotingAccessProps = {
   setProposalVotingAccess: Dispatch<
@@ -27,7 +26,7 @@ export function ProposalVotingAccess({
 
   return (
     <Select onValueChange={onProposalVotingAccessValueChange}>
-      <SelectTrigger className={styles.trigger}>
+      <SelectTrigger>
         <SelectValue placeholder={InputLabel.PROPOSAL_VOTING_ACCESS} />
       </SelectTrigger>
       <SelectContent>

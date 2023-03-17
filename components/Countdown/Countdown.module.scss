@@ -1,0 +1,14 @@
+.container {
+  display: flex;
+}
+
+.horizontal {
+  align-items: center;
+  gap: 4px;
+}
+
+.vertical {
+  align-items: flex-end;
+  flex-direction: column;
+  gap: 8px;
+}

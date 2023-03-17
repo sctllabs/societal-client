@@ -124,7 +124,8 @@ export function CreateDAO() {
       return undefined;
     }
 
-    let unsubscribe: any | null = null;
+    let unsubscribe: any;
+
     api?.query.dao
       .daos<Option<DaoCodec>>(
         proposedDaoId,
@@ -158,11 +159,7 @@ export function CreateDAO() {
       // eslint-disable-next-line no-console
       .catch(console.error);
 
-    return () => {
-      if (unsubscribe) {
-        unsubscribe();
-      }
-    };
+    return () => unsubscribe && unsubscribe();
   }, [
     api?.query.dao,
     metamaskSigner,
@@ -172,7 +169,7 @@ export function CreateDAO() {
   ]);
 
   useEffect(() => {
-    let unsubscribe: any | null = null;
+    let unsubscribe: any;
 
     api?.query.dao
       .nextDaoId<u32>((_nextDaoId: u32) => setNextDaoId(_nextDaoId.toNumber()))
@@ -182,11 +179,7 @@ export function CreateDAO() {
       // eslint-disable-next-line no-console
       .catch(console.error);
 
-    return () => {
-      if (unsubscribe) {
-        unsubscribe();
-      }
-    };
+    return () => unsubscribe && unsubscribe();
   }, [api, metamaskSigner, nextDaoId]);
 
   const handleTransform = () => {

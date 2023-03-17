@@ -1,13 +1,5 @@
-import type { Struct, Bytes } from '@polkadot/types';
-
-/* start queries */
-export type SubscribeCouncilProposalsByDaoId = {
-  readonly councilProposals: CouncilProposalMeta[];
-};
-
-export type SubscribeCouncilVotesByProposalId = {
-  readonly councilVoteHistories: CouncilVoteHistory[];
-};
+import type { Bytes, Struct } from '@polkadot/types';
+import { Account } from './account';
 
 export type SubscribeDaoById = {
   readonly daoById: Dao;
@@ -17,34 +9,25 @@ export type SubscribeDaos = {
   readonly daos: DaoNameAndId[];
 };
 
-export type SubscribeDemocracyDelegationById = {
-  readonly democracyDelegations: DemocracyDelegation[];
-};
-
-export type SubscribeDemocracyProposalsByDaoId = {
-  readonly democracyProposals: DemocracyProposalMeta[];
-};
-
 export type SubscribeDemocracySecondsByProposalId = {
   readonly democracySeconds: DemocracySecond[];
 };
-
-/* end queries */
 
 export type DaoNameAndId = {
   id: string;
   name: string;
 };
 
-type Account = Readonly<{
-  __typename: 'Account';
-  id: string;
+type GovernanceV1 = Readonly<{
+  __typename: 'GovernanceV1';
+  launchPeriod: number;
 }>;
 
 type Policy = Readonly<{
   __typename: 'Policy';
   id: string;
   proposalPeriod: number;
+  governance: GovernanceV1;
 }>;
 
 type FungibleToken = Readonly<{
@@ -122,15 +105,6 @@ export interface DaoCodec extends Struct {
   readonly founder: Bytes;
 }
 
-export type CouncilVoteHistory = Readonly<{
-  id: string;
-  approvedVote: boolean;
-  votedNo: number;
-  votedYes: number;
-  councillor: Account;
-  __typename: 'VoteHistory';
-}>;
-
 export type DaoToken = {
   readonly name: string;
   readonly symbol: string;
@@ -138,101 +112,9 @@ export type DaoToken = {
   quantity: string;
 };
 
-export enum ProposalType {
-  AddMember = 'AddMember',
-  RemoveMember = 'RemoveMember',
-  Spend = 'Spend',
-  TransferToken = 'TransferToken'
-}
-
-export type AddMemberProposal = Readonly<{
-  __typename: ProposalType.AddMember;
-  who: string;
-}>;
-
-export type RemoveMemberProposal = Readonly<{
-  __typename: ProposalType.RemoveMember;
-  who: string;
-}>;
-
-export type SpendProposal = Readonly<{
-  __typename: ProposalType.Spend;
-  beneficiary: string;
-  amount: bigint;
-}>;
-
-export type TransferProposal = Readonly<{
-  __typename: ProposalType.TransferToken;
-  amount: bigint;
-  beneficiary: string;
-}>;
-
-type Conviction =
-  | 'None'
-  | 'Locked1x'
-  | 'Locked2x'
-  | 'Locked3x'
-  | 'Locked4x'
-  | 'Locked5x'
-  | 'Locked6x';
-
-export type DemocracyDelegation = Readonly<{
-  target: Account;
-  lockedBalance: string;
-  conviction: Conviction;
-  __typename: 'DemocracyDelegationItem';
-}>;
-
 type DemocracySecond = Readonly<{
   id: string;
   count: number;
   seconder: Account;
   __typename: 'DemocracySecond';
-}>;
-
-export type ProposalKind =
-  | AddMemberProposal
-  | RemoveMemberProposal
-  | SpendProposal
-  | TransferProposal;
-
-export type CouncilProposalStatus =
-  | 'Open'
-  | 'Approved'
-  | 'Disapproved'
-  | 'Executed'
-  | 'Closed';
-
-export type DemocracyProposalStatus =
-  | 'Open'
-  | 'Started'
-  | 'Passed'
-  | 'NotPassed'
-  | 'Cancelled';
-
-export type CouncilProposalMeta = Readonly<{
-  id: string;
-  hash: string;
-  kind: ProposalKind;
-  index: string;
-  status: CouncilProposalStatus;
-  blockNum: number;
-  voteThreshold: number;
-  meta: string;
-  dao: Pick<Dao, 'id'>;
-  account: Account;
-  __typename: 'CouncilProposal';
-}>;
-
-export type DemocracyProposalMeta = Readonly<{
-  id: string;
-  kind: ProposalKind;
-  index: string;
-  deposit: string;
-  status: DemocracyProposalStatus;
-  blockNum: number;
-  meta: string;
-  dao: Pick<Dao, 'id'>;
-  account: Account;
-  __typename: 'DemocracyProposal';
 }>;

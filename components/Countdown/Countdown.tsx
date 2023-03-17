@@ -1,13 +1,28 @@
-import { useCountdown } from 'hooks/useCountdown';
+import clsx from 'clsx';
+import { useProposalCountdown } from 'hooks/useCountdown';
 import { Typography, TypographyVariants } from 'components/ui-kit/Typography';
 
+import styles from './Countdown.module.scss';
+
+type CountdownOrientation = 'vertical' | 'horizontal';
+
 interface CountdownProps {
-  end: number;
+  endBlock: number;
   typography: TypographyVariants;
+  orientation: CountdownOrientation;
 }
 
-export function Countdown({ end, typography }: CountdownProps) {
-  const countdown = useCountdown(end, false);
+export function Countdown({
+  endBlock,
+  typography,
+  orientation
+}: CountdownProps) {
+  const countdown = useProposalCountdown(endBlock);
 
-  return <Typography variant={typography}>{countdown}</Typography>;
+  return (
+    <span className={clsx(styles.container, styles[orientation])}>
+      <Typography variant={typography}>{countdown}</Typography>
+      <Typography variant="caption2">left</Typography>
+    </span>
+  );
 }

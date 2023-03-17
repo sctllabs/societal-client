@@ -7,7 +7,7 @@ import { useSubscription } from '@apollo/client';
 import SUBSCRIBE_DAO_BY_ID from 'query/subscribeDaoById.graphql';
 import type { SubscribeDaoById } from 'types';
 import { Proposals } from 'components/Proposals';
-import { Referendum } from 'components/Referendum';
+import { ReferendumInfo } from 'components/ReferendumInfo';
 
 import styles from 'styles/pages/governance.module.scss';
 
@@ -51,7 +51,7 @@ export default function DaoGovernance() {
   return (
     <div className={styles.container}>
       <Proposals />
-      <Referendum />
+      <ReferendumInfo />
     </div>
   );
 }

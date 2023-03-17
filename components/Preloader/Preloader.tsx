@@ -4,6 +4,7 @@ import {
   apiAtom,
   apiConnectedAtom,
   apiErrorAtom,
+  currentBlockAtom,
   jsonrpcAtom,
   keyringAtom,
   socketAtom
@@ -20,6 +21,7 @@ import { appConfig } from 'config';
 import { retrieveChainInfo } from 'utils/retrieveChainInfo';
 import type { ApiPromise } from '@polkadot/api';
 import type { Keyring } from '@polkadot/ui-keyring';
+import type { u32 } from '@polkadot/types';
 import { WalletSource } from 'types';
 
 export function Preloader() {
@@ -35,6 +37,7 @@ export function Preloader() {
   const setApiConnected = useSetAtom(apiConnectedAtom);
   const setCurrentMetamaskAccount = useSetAtom(setCurrentMetamaskAccountAtom);
   const setCurrentSubstrateAccount = useSetAtom(setCurrentSubstrateAccountAtom);
+  const setCurrentBlock = useSetAtom(currentBlockAtom);
   const disconnectAccounts = useSetAtom(disconnectAccountsAtom);
 
   const loadCurrentAccount = useCallback(
@@ -56,7 +59,9 @@ export function Preloader() {
 
         // TODO: re-work wallet pre-loader approach
         if (_substrateAccountAddress) {
-          const substrateWallet = _substrateWallet || 'polkadot-js';
+          const substrateWallet =
+            (_substrateWallet && _substrateWallet !== 'undefined') ||
+            'polkadot-js';
 
           try {
             const { polkadotWallet } = await import('providers/polkadotWallet');
@@ -121,6 +126,18 @@ export function Preloader() {
     _api.on('error', (err: Error) => setApiError(err.message));
     _api.on('ready', () => setApi(_api));
   }, [setApi, setApiConnected, setApiError, setJsonRPC, socket]);
+
+  useEffect(() => {
+    let unsubscribe: any | null = null;
+
+    api?.query.system
+      .number((_currentBlock: u32) => setCurrentBlock(_currentBlock.toNumber()))
+      .then((unsub) => {
+        unsubscribe = unsub;
+      });
+
+    return () => unsubscribe && unsubscribe();
+  }, [api, setCurrentBlock]);
 
   useEffect(() => {
     if (!keyring) {

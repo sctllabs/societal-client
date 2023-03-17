@@ -1,0 +1,66 @@
+@use "styles/colors";
+
+.list {
+  border-bottom: 1px solid #{colors.$purple-5};
+  display: flex;
+  flex-grow: 1;
+  flex-shrink: 0;
+  gap: 48px;
+  padding-bottom: 12px;
+}
+
+.trigger {
+  align-items: center;
+  color: #{colors.$grayscale-70};
+  cursor: pointer;
+  display: flex;
+  flex: 1;
+  justify-content: center;
+  max-width: fit-content;
+  min-width: 48px;
+  position: relative;
+  user-select: none;
+
+  &[data-disabled] {
+    cursor: not-allowed;
+  }
+
+  &::after {
+    border: 2px solid transparent;
+    border-radius: 4px;
+    bottom: -14.5px;
+    content: '';
+    position: absolute;
+    width: calc(100% - 4px);
+  }
+
+  &:focus {
+    position: relative;
+  }
+
+  &:hover:not([data-disabled]) {
+    color: #{colors.$grayscale-0};
+  }
+
+  &[data-state='active'] {
+    color: #{colors.$grayscale-0};
+
+    &::after {
+      border-color: #{colors.$purple-4};
+    }
+  }
+}
+
+
+.content {
+  background-color: white;
+  border-bottom-left-radius: 6px;
+  border-bottom-right-radius: 6px;
+  flex-grow: 1;
+  outline: none;
+  padding: 20px;
+}
+
+.content:focus {
+  box-shadow: 0 0 0 2px black;
+}

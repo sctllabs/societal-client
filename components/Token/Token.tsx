@@ -97,11 +97,7 @@ export function Token() {
         unsubscribe = unsub;
       });
 
-    return () => {
-      if (unsubscribe) {
-        unsubscribe();
-      }
-    };
+    return () => unsubscribe && unsubscribe();
   }, [api, currentDao, daos, setToken]);
 
   return (

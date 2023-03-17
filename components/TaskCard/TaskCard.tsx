@@ -1,5 +1,4 @@
 import clsx from 'clsx';
-import { appConfig } from 'config';
 
 import { useAtomValue } from 'jotai';
 import { currentDaoAtom } from 'store/dao';
@@ -24,7 +23,7 @@ export interface TaskCardProps {
 
 const currency = '$SCTL';
 
-type TaskStatus = 'Active' | 'Completed';
+type TaskStatus = 'Active' | 'Completed' | 'Referendum';
 
 export function TaskCard({ proposal, currentBlock }: TaskCardProps) {
   let taskStatus: TaskStatus;
@@ -36,6 +35,10 @@ export function TaskCard({ proposal, currentBlock }: TaskCardProps) {
   switch (proposal.status) {
     case 'Open': {
       taskStatus = 'Active';
+      break;
+    }
+    case 'Referendum': {
+      taskStatus = 'Referendum';
       break;
     }
     default: {
@@ -60,19 +63,15 @@ export function TaskCard({ proposal, currentBlock }: TaskCardProps) {
           <Typography variant="title7">{taskStatus}</Typography>
         </div>
         {proposal.status === 'Open' && currentDao && currentBlock && (
-          <div className={styles.countdown}>
-            <Countdown
-              end={
-                (proposal.blockNum +
-                  currentDao.policy.proposalPeriod -
-                  currentBlock) *
-                1000 *
-                appConfig.expectedBlockTimeInSeconds
-              }
-              typography="value5"
-            />
-            <Typography variant="body2">left</Typography>
-          </div>
+          <Countdown
+            endBlock={
+              proposal.blockNum +
+              currentDao.policy.proposalPeriod -
+              currentBlock
+            }
+            orientation="horizontal"
+            typography="value5"
+          />
         )}
       </div>
       <div className={styles.content}>

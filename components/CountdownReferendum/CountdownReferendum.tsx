@@ -1,16 +1,21 @@
-import { useCountdown } from 'hooks/useCountdown';
+import { useReferendumCountdown } from 'hooks/useCountdown';
+
+import { Typography } from 'components/ui-kit/Typography';
 
 import styles from './CountodnwReferendum.module.scss';
-import { Typography } from '../ui-kit/Typography';
 
 type CountdownReferendumProps = {
-  end: number;
+  launchPeriod: number;
+  currentBlock: number;
 };
 
 const timeframes = ['Days', 'Hours', 'Minutes', 'Seconds'];
 
-export function CountdownReferendum({ end }: CountdownReferendumProps) {
-  const countdown = useCountdown(end, true);
+export function CountdownReferendum({
+  launchPeriod,
+  currentBlock
+}: CountdownReferendumProps) {
+  const countdown = useReferendumCountdown(currentBlock, launchPeriod);
 
   return (
     <div className={styles.container}>
