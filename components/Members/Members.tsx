@@ -47,6 +47,10 @@ export function Members() {
 
         _assetBalances.forEach(([key, value]) => {
           const [, accountId] = key.toHuman() as any;
+          if (accountId === currentDao.account.id) {
+            return;
+          }
+
           const tokenBalance = value.toHuman();
 
           if (!members[accountId]) {
