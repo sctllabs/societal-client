@@ -234,7 +234,7 @@ export function CreateProposal() {
           .propose_with_meta(
             currentDao.id,
             _tx?.method.toHex(),
-            state.amount,
+            state.balance,
             meta
           );
       }
