@@ -2,8 +2,8 @@ import React from 'react';
 import * as RadioGroupPrimitive from '@radix-ui/react-radio-group';
 import clsx from 'clsx';
 
+import { Icon } from 'components/ui-kit/Icon';
 import styles from './Radio.module.scss';
-import { Icon } from '../Icon';
 
 export const RadioGroup = React.forwardRef<
   React.ElementRef<typeof RadioGroupPrimitive.Root>,

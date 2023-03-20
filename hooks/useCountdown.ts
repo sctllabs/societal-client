@@ -41,7 +41,7 @@ export function useProposalCountdown(value: number) {
     return () => clearInterval(interval);
   }, []);
 
-  return formatCountdown(state);
+  return formatCountdown(state, false);
 }
 
 export function useReferendumCountdown(

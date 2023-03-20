@@ -97,9 +97,7 @@ export function Subheader() {
           ))}
         </div>
         <div className={styles['right-container']}>
-          {router.pathname.includes('create-proposal') ? null : (
-            <CreateProposal />
-          )}
+          <CreateProposal />
         </div>
       </div>
     </div>

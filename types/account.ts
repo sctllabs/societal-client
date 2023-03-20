@@ -1,3 +1,5 @@
+import type { AssetBalance, TAssetBalance } from '@polkadot/types/interfaces';
+
 export type Account = Readonly<{
   __typename: 'Account';
   id: string;
@@ -16,3 +18,8 @@ export type AccountDaoMember = Readonly<{
     isFroze: boolean;
   };
 }>;
+
+export type AssetAccount = AssetBalance & {
+  frozenBalance: TAssetBalance;
+  reservedBalance: TAssetBalance;
+};

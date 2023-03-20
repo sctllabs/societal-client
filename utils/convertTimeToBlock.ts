@@ -9,13 +9,25 @@ export function convertTimeToBlock(
   proposalPeriod: string,
   proposalPeriodType: ProposalPeriod
 ) {
+  let multiplier: number;
+  switch (proposalPeriodType) {
+    case ProposalPeriod.DAYS: {
+      multiplier = SECONDS_IN_DAY;
+      break;
+    }
+    case ProposalPeriod.HOURS:
+      multiplier = SECONDS_IN_HOUR;
+      break;
+    case ProposalPeriod.MINUTES: {
+      multiplier = SECONDS_IN_MINUTE;
+      break;
+    }
+    default: {
+      multiplier = SECONDS_IN_MINUTE;
+    }
+  }
   return (
-    (parseInt(proposalPeriod, 10) *
-      (proposalPeriodType === ProposalPeriod.DAYS
-        ? SECONDS_IN_DAY
-        : proposalPeriodType === ProposalPeriod.HOURS
-        ? SECONDS_IN_HOUR
-        : SECONDS_IN_MINUTE)) /
+    (parseInt(proposalPeriod, 10) * multiplier) /
     appConfig.expectedBlockTimeInSeconds
   );
 }

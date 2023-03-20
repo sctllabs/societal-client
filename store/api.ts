@@ -14,3 +14,4 @@ export const keyringAtom = atom<Keyring | null>(null);
 export const apiConnectedAtom = atom<boolean>(false);
 export const apiErrorAtom = atom<string | null>(null);
 export const currentBlockAtom = atom<number | null>(null);
+export const currencySymbolAtom = atom<string | null>(null);

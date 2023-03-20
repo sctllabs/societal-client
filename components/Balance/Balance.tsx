@@ -2,7 +2,9 @@ import { useEffect, useState } from 'react';
 
 import { useAtomValue } from 'jotai';
 import { currentDaoAtom } from 'store/dao';
-import { apiAtom } from 'store/api';
+import { apiAtom, currencySymbolAtom } from 'store/api';
+
+import { formatBalance } from 'utils/formatBalance';
 
 import type { AccountInfo } from '@polkadot/types/interfaces';
 
@@ -11,11 +13,10 @@ import { Typography } from 'components/ui-kit/Typography';
 
 import styles from './Balance.module.scss';
 
-const CURRENCY = '$SCTL';
-
 export function Balance() {
-  const [balance, setBalance] = useState<string | null>(null);
   const api = useAtomValue(apiAtom);
+  const currency = useAtomValue(currencySymbolAtom);
+  const [balance, setBalance] = useState<bigint | null>(null);
 
   const currentDao = useAtomValue(currentDaoAtom);
 
@@ -28,7 +29,7 @@ export function Balance() {
 
     api?.query.system
       .account(currentDao.account.id, ({ data: { free } }: AccountInfo) =>
-        setBalance(free.toString())
+        setBalance(free.toBigInt())
       )
       .then((unsub) => {
         unsubscribe = unsub;
@@ -43,13 +44,10 @@ export function Balance() {
     <Card className={styles.card}>
       <Typography variant="caption2">Balance of all assets</Typography>
       <div className={styles.balance}>
-        <Typography variant="title1">
-          {balance &&
-            Intl.NumberFormat('en-US', { minimumFractionDigits: 2 }).format(
-              parseFloat(balance)
-            )}
-        </Typography>
-        <Typography variant="title2">{CURRENCY}</Typography>
+        {balance !== null && (
+          <Typography variant="title1">{formatBalance(balance)}</Typography>
+        )}
+        <Typography variant="title2">{currency}</Typography>
       </div>
     </Card>
   );

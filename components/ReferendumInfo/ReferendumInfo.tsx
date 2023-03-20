@@ -4,12 +4,14 @@ import { currentDaoAtom } from 'store/dao';
 import { apiAtom, currentBlockAtom } from 'store/api';
 import {
   accountsAtom,
+  currentAccountTokenBalanceAtom,
   metamaskAccountAtom,
   substrateAccountAtom
 } from 'store/account';
 import { tokenSymbolAtom } from 'store/token';
 
 import { maskAddress } from 'utils/maskAddress';
+import { formatBalance } from 'utils/formatBalance';
 import { evmToAddress } from '@polkadot/util-crypto';
 import type { Conviction, DemocracyDelegation } from 'types';
 import type { Voting } from '@polkadot/types/interfaces';
@@ -24,8 +26,8 @@ import { UndelegateModal } from './UndelegateModal';
 import styles from './ReferendumInfo.module.scss';
 
 export function ReferendumInfo() {
-  // const amount = 100;
   const tokenSymbol = useAtomValue(tokenSymbolAtom);
+  const accountTokenBalance = useAtomValue(currentAccountTokenBalanceAtom);
 
   const [delegation, setDelegation] = useState<DemocracyDelegation | null>(
     null
@@ -92,17 +94,21 @@ export function ReferendumInfo() {
         />
       )}
 
-      {/* <div className={styles['item-container']}>
-        <Typography variant="caption2">Locked balance</Typography>
-        <span className={styles.balance}>
-          <Typography variant="title1">{amount}</Typography>
-          <Typography variant="title2">{tokenSymbol}</Typography>
-        </span>
-        <Typography variant="body1">
-          Here will be displayed the list of blocked tokens with which you
-          seconded or voted for proposals.
-        </Typography>
-      </div> */}
+      {accountTokenBalance && (
+        <div className={styles['item-container']}>
+          <Typography variant="caption2">Locked balance</Typography>
+          <span className={styles.balance}>
+            <Typography variant="title1">
+              {formatBalance(accountTokenBalance.frozenBalance.toBigInt())}
+            </Typography>
+            <Typography variant="title2">{tokenSymbol}</Typography>
+          </span>
+          <Typography variant="body1">
+            Here will be displayed the list of blocked tokens with which you
+            seconded or voted for proposals.
+          </Typography>
+        </div>
+      )}
       {delegation && (
         <div className={styles['item-container']}>
           <div className={styles['undelegate-container']}>

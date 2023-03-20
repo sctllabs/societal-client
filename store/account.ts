@@ -1,7 +1,9 @@
 import { atom } from 'jotai';
+import { keyringAtom } from 'store/api';
+
 import type { KeyringPair } from '@polkadot/keyring/types';
 import type { JsonRpcSigner } from '@ethersproject/providers';
-import { keyringAtom } from 'store/api';
+import type { AssetAccount } from '../types';
 
 const substrateAccountStorageKey = 'substrateAccountStorageKey';
 const substrateWalletStorageKey = 'substrateWalletStorageKey';
@@ -80,3 +82,6 @@ export const disconnectAccountsAtom = atom(null, (_get, _set) => {
   _set(substrateAccountAtom, null);
   _set(substrateAccountAddressAtom, null);
 });
+
+export const currentAccountBalanceAtom = atom<bigint | null>(null);
+export const currentAccountTokenBalanceAtom = atom<AssetAccount | null>(null);

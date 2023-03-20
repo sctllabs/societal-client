@@ -77,7 +77,8 @@ export type CouncilProposalStatus =
   | 'Approved'
   | 'Disapproved'
   | 'Executed'
-  | 'Closed';
+  | 'Closed'
+  | 'Expired';
 
 export type DemocracyProposalStatus = 'Open' | 'Referendum';
 
