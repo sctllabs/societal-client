@@ -49,10 +49,9 @@ export function useReferendumCountdown(
   launchPeriod: number
 ) {
   const [state, setState] = useState(
-    launchPeriod -
-      (currentBlock % launchPeriod) *
-        appConfig.expectedBlockTimeInSeconds *
-        1000
+    (launchPeriod - (currentBlock % launchPeriod)) *
+      appConfig.expectedBlockTimeInSeconds *
+      1000
   );
 
   useEffect(() => {
