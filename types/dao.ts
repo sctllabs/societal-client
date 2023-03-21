@@ -21,6 +21,7 @@ export type DaoNameAndId = {
 type GovernanceV1 = Readonly<{
   __typename: 'GovernanceV1';
   launchPeriod: number;
+  votingPeriod: number;
 }>;
 
 type Policy = Readonly<{

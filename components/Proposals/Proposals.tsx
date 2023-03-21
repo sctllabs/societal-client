@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
-import { useAtomValue } from 'jotai';
+import { useAtomValue, useSetAtom } from 'jotai';
 import { currentDaoAtom } from 'store/dao';
 import { currentBlockAtom } from 'store/api';
+import { currentReferendumAtom } from 'store/referendum';
 
 import { useSubscription } from '@apollo/client';
 import SUBSCRIBE_COUNCIL_PROPOSALS_BY_DAO_ID from 'query/subscribeCouncilProposalsByDaoId.graphql';
@@ -31,6 +32,7 @@ const tabOptions: TabOption[] = ['List', 'Referendum'];
 export function Proposals() {
   const currentDao = useAtomValue(currentDaoAtom);
   const currentBlock = useAtomValue(currentBlockAtom);
+  const setCurrentReferendum = useSetAtom(currentReferendumAtom);
   const [tab, setTab] = useState<TabOption>('List');
 
   const { data: councilProposalsData } =
@@ -53,6 +55,27 @@ export function Proposals() {
     useSubscription<SubscribeDemocracyReferendums>(SUBSCRIBE_LAST_REFERENDUM, {
       variables: { daoId: currentDao?.id }
     });
+
+  useEffect(() => {
+    if (!referendumsData?.democracyReferendums) {
+      return;
+    }
+
+    const ongoingReferendum = referendumsData.democracyReferendums.find(
+      (x) => x.status === 'Started'
+    );
+
+    if (!ongoingReferendum) {
+      return;
+    }
+
+    setCurrentReferendum({
+      ...ongoingReferendum.democracyProposal,
+      status: ongoingReferendum.status,
+      index: ongoingReferendum.index,
+      __typename: ongoingReferendum.__typename
+    });
+  }, [referendumsData, setCurrentReferendum]);
 
   const proposals =
     tab === 'List'
