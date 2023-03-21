@@ -79,6 +79,16 @@ export function AccountTokenBalance() {
             {tokenSymbol}
           </Typography>
         </div>
+
+        <div className={styles.item}>
+          <Typography variant="caption1">Reserved balance: </Typography>
+          <Typography variant="caption2">
+            {formatBalance(accountTokenBalance.reservedBalance.toBigInt())}
+            &nbsp;
+            {tokenSymbol}
+          </Typography>
+        </div>
+
         <div className={styles.item}>
           <Typography variant="caption1">Frozen balance: </Typography>
           <Typography variant="caption2">
@@ -95,28 +105,21 @@ export function AccountTokenBalance() {
               Revoke Vote
             </Button>
           ) : (
-            <TxButton
-              className={styles['unlock-button']}
-              accountId={substrateAccount?.address}
-              tx={api?.tx.daoDemocracy.unlock}
-              params={[currentDao?.id, substrateAccount?.address]}
-              variant="outlined"
-              onSuccess={onSuccess}
-              onFailed={onFailed}
-              size="xs"
-            >
-              Unlock
-            </TxButton>
+            accountTokenBalance?.frozenBalance.toBigInt() > 0 && (
+              <TxButton
+                className={styles['unlock-button']}
+                accountId={substrateAccount?.address}
+                tx={api?.tx.daoDemocracy.unlock}
+                params={[currentDao?.id, substrateAccount?.address]}
+                variant="outlined"
+                onSuccess={onSuccess}
+                onFailed={onFailed}
+                size="xs"
+              >
+                Unlock
+              </TxButton>
+            )
           )}
-        </div>
-
-        <div className={styles.item}>
-          <Typography variant="caption1">Reserved balance: </Typography>
-          <Typography variant="caption2">
-            {formatBalance(accountTokenBalance.reservedBalance.toBigInt())}
-            &nbsp;
-            {tokenSymbol}
-          </Typography>
         </div>
       </Card>
     )

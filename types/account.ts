@@ -11,15 +11,12 @@ export type AccountDaoMember = Readonly<{
   __typename: 'AccountDaoMember';
   accountId: string;
   kind: DaoMemberKind[];
-  tokenBalance?: {
-    balance: string;
-    reservedBalance: string;
-    frozenBalance: string;
-    isFroze: boolean;
-  };
+  tokenBalance?: AssetAccount;
 }>;
 
 export type AssetAccount = AssetBalance & {
+  balance: TAssetBalance;
   frozenBalance: TAssetBalance;
   reservedBalance: TAssetBalance;
+  isFrozen: boolean;
 };

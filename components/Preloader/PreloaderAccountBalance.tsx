@@ -11,6 +11,7 @@ import { currentDaoAtom } from 'store/dao';
 import { evmToAddress } from '@polkadot/util-crypto';
 import type { AccountInfo, AssetBalance } from '@polkadot/types/interfaces';
 import type { Option } from '@polkadot/types';
+import { AssetAccount } from 'types';
 
 export function PreloaderAccountBalance() {
   const api = useAtomValue(apiAtom);
@@ -83,23 +84,27 @@ export function PreloaderAccountBalance() {
       return undefined;
     }
 
-    api?.query.assets
-      .account(
-        currentDao.fungibleToken.id,
-        accountAddress,
-        (_assetBalance: Option<AssetBalance>) => {
-          if (_assetBalance.isSome) {
-            setCurrentAccountTokenBalance(_assetBalance.value);
+    if (currentDao.fungibleToken?.id) {
+      api?.query.assets
+        .account(
+          currentDao.fungibleToken.id,
+          accountAddress,
+          (_assetBalance: Option<AssetBalance>) => {
+            if (_assetBalance.isSome) {
+              setCurrentAccountTokenBalance(
+                _assetBalance.value as AssetAccount
+              );
+            }
           }
-        }
-      )
-      .then((unsub) => {
-        unsubscribe = unsub;
-      })
-      .catch((e) => {
-        // eslint-disable-next-line no-console
-        console.error(e);
-      });
+        )
+        .then((unsub) => {
+          unsubscribe = unsub;
+        })
+        .catch((e) => {
+          // eslint-disable-next-line no-console
+          console.error(e);
+        });
+    }
 
     return () => unsubscribe && unsubscribe();
   }, [

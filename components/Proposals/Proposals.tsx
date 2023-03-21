@@ -113,7 +113,8 @@ export function Proposals() {
       ) : (
         <Card className={styles['proposals-empty-card']}>
           <Typography variant="caption2" className={styles.caption}>
-            You don&apos;t have any proposals yet
+            You don&apos;t have any&nbsp;
+            {tab === 'Referendum' ? 'referendums' : 'proposals'} yet
           </Typography>
         </Card>
       )}
