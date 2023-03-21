@@ -66,6 +66,7 @@ export function Proposals() {
     );
 
     if (!ongoingReferendum) {
+      setCurrentReferendum(null);
       return;
     }
 
