@@ -1,9 +1,9 @@
+import clsx from 'clsx';
 import { useReferendumCountdown } from 'hooks/useCountdown';
 
 import { Typography } from 'components/ui-kit/Typography';
 
 import styles from './CountodnwReferendum.module.scss';
-import clsx from 'clsx';
 
 type CountdownReferendumProps = {
   launchPeriod: number;
