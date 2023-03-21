@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 import { useAtomValue } from 'jotai';
 import { currentDaoAtom } from 'store/dao';
+import { currentBlockAtom } from 'store/api';
 
 import { useSubscription } from '@apollo/client';
 import SUBSCRIBE_COUNCIL_PROPOSALS_BY_DAO_ID from 'query/subscribeCouncilProposalsByDaoId.graphql';
@@ -9,6 +10,7 @@ import SUBSCRIBE_DEMOCRACY_PROPOSALS_BY_DAO_ID from 'query/subscribeDemocracyPro
 import SUBSCRIBE_LAST_REFERENDUM from 'query/subscribeLastDemocracyReferendum.graphql';
 
 import type {
+  CouncilProposalStatus,
   SubscribeCouncilProposalsByDaoId,
   SubscribeDemocracyProposalsByDaoId,
   SubscribeDemocracyReferendums
@@ -28,6 +30,7 @@ const tabOptions: TabOption[] = ['List', 'Referendum'];
 
 export function Proposals() {
   const currentDao = useAtomValue(currentDaoAtom);
+  const currentBlock = useAtomValue(currentBlockAtom);
   const [tab, setTab] = useState<TabOption>('List');
 
   const { data: councilProposalsData } =
@@ -54,7 +57,19 @@ export function Proposals() {
   const proposals =
     tab === 'List'
       ? [
-          ...(councilProposalsData?.councilProposals ?? []),
+          ...(councilProposalsData?.councilProposals.map((x) => {
+            if (
+              currentDao &&
+              currentBlock &&
+              x.blockNum + currentDao.policy.proposalPeriod < currentBlock
+            ) {
+              return {
+                ...x,
+                status: 'Expired' as CouncilProposalStatus
+              };
+            }
+            return x;
+          }) ?? []),
           ...(democracyProposalsData?.democracyProposals ?? [])
         ].sort((a, b) => b.blockNum - a.blockNum)
       : referendumsData?.democracyReferendums.map((referendum) => ({
@@ -98,7 +113,8 @@ export function Proposals() {
       ) : (
         <Card className={styles['proposals-empty-card']}>
           <Typography variant="caption2" className={styles.caption}>
-            You don&apos;t have any proposals yet
+            You don&apos;t have any&nbsp;
+            {tab === 'Referendum' ? 'referendums' : 'proposals'} yet
           </Typography>
         </Card>
       )}

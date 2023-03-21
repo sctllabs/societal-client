@@ -12,6 +12,7 @@ import { Icon } from 'components/ui-kit/Icon';
 
 import { DemocracyReferendumVoteModal } from './DemocracyReferendumVoteModal';
 import styles from './ProposalCard.module.scss';
+import { DemocracyReferendumRevokeVote } from './DemocracyReferendumRevokeVote';
 
 type DemocracyReferendumCardActionsProps = {
   proposal: DemocracyReferendumMeta;
@@ -105,26 +106,30 @@ export function DemocracyReferendumCardActions({
               />
             </div>
           </div>
+
           <DemocracyReferendumVoteModal proposal={proposal} />
         </>
       )}
       {referendumInfo?.isFinished && (
-        <div
-          className={clsx(
-            styles['referendum-status'],
-            styles[
-              referendumInfo.asFinished.approved.toPrimitive()
-                ? 'approved'
-                : 'failed'
-            ]
-          )}
-        >
-          <Typography variant="button1">
-            {referendumInfo.asFinished.approved.toPrimitive()
-              ? 'Approved'
-              : 'Failed'}
-          </Typography>
-        </div>
+        <>
+          <DemocracyReferendumRevokeVote proposal={proposal} />
+          <div
+            className={clsx(
+              styles['referendum-status'],
+              styles[
+                referendumInfo.asFinished.approved.toPrimitive()
+                  ? 'approved'
+                  : 'failed'
+              ]
+            )}
+          >
+            <Typography variant="button1">
+              {referendumInfo.asFinished.approved.toPrimitive()
+                ? 'Approved'
+                : 'Failed'}
+            </Typography>
+          </div>
+        </>
       )}
     </div>
   );

@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import clsx from 'clsx';
 import { useAtomValue } from 'jotai';
 import { accountsAtom } from 'store/account';
 import { currentDaoAtom } from 'store/dao';
@@ -7,6 +8,7 @@ import { currentBlockAtom } from 'store/api';
 import { getProposalSettings } from 'utils/getProposalSettings';
 import { parseMeta } from 'utils/parseMeta';
 import { maskAddress } from 'utils/maskAddress';
+import { formatBalance } from 'utils/formatBalance';
 
 import type {
   AddMemberProposal,
@@ -38,11 +40,38 @@ export interface ProposalCardProps {
     | DemocracyReferendumMeta;
 }
 
+type ProposalStatus =
+  | 'Active'
+  | 'Completed'
+  | 'Expired'
+  | 'Referendum'
+  | 'Started';
+
 export function ProposalCard({ proposal }: ProposalCardProps) {
   const accounts = useAtomValue(accountsAtom);
   const { proposalTitle, icon } = getProposalSettings(proposal.kind);
   const currentDao = useAtomValue(currentDaoAtom);
   const currentBlock = useAtomValue(currentBlockAtom);
+
+  const proposalStatus: ProposalStatus = useMemo(() => {
+    switch (proposal.status) {
+      case 'Open': {
+        return 'Active';
+      }
+      case 'Referendum': {
+        return 'Completed';
+      }
+      case 'Expired': {
+        return 'Expired';
+      }
+      case 'Started': {
+        return 'Started';
+      }
+      default: {
+        return 'Completed';
+      }
+    }
+  }, [proposal.status]);
 
   const meta = parseMeta(proposal.meta);
   const title = meta?.title;
@@ -73,12 +102,27 @@ export function ProposalCard({ proposal }: ProposalCardProps) {
     }
 
     return (
-      <Countdown endBlock={end} orientation="vertical" typography="value5" />
+      <Countdown endBlock={end} orientation="horizontal" typography="value5" />
     );
   }, [currentBlock, currentDao, proposal]);
 
   return (
     <Card className={styles.card}>
+      <div className={styles.header}>
+        <div className={styles['status-container']}>
+          <Icon
+            name="circle"
+            className={clsx(
+              styles['status-icon'],
+              styles[`icon-${proposalStatus.toLowerCase()}`]
+            )}
+          />
+          <Typography variant="title7">{proposalStatus}</Typography>
+        </div>
+        {proposal.status === 'Open' &&
+          proposal.__typename !== 'DemocracyProposal' &&
+          countdown}
+      </div>
       <div className={styles.content}>
         <div className={styles['proposal-title-container']}>
           <Icon name={icon} className={styles['proposal-icon']} />
@@ -102,7 +146,6 @@ export function ProposalCard({ proposal }: ProposalCardProps) {
                 </Chip>
               </span>
             </div>
-            {countdown}
           </div>
         </div>
 
@@ -119,7 +162,9 @@ export function ProposalCard({ proposal }: ProposalCardProps) {
             <span className={styles['proposal-item']}>
               <Icon name="user-profile" size="xs" />
               <Typography variant="value6">
-                {maskAddress(proposal.account.id)}
+                {(accounts?.find(
+                  (_account) => _account.address === proposal.account.id
+                )?.meta.name as string) ?? maskAddress(proposal.account.id)}
               </Typography>
             </span>
           </div>
@@ -131,9 +176,7 @@ export function ProposalCard({ proposal }: ProposalCardProps) {
                 <span className={styles['proposal-transfer-info']}>
                   <Typography variant="caption3">Amount</Typography>
                   <Typography variant="title5">
-                    {new Intl.NumberFormat('en-US', {
-                      minimumFractionDigits: 2
-                    }).format(proposal.kind.amount)}
+                    {formatBalance(proposal.kind.amount)}
                   </Typography>
                 </span>
               </div>
@@ -146,7 +189,8 @@ export function ProposalCard({ proposal }: ProposalCardProps) {
                         _account.address ===
                         (proposal.kind as SpendProposal | TransferProposal)
                           .beneficiary
-                    )?.meta.name as string) ?? proposal.kind.beneficiary}
+                    )?.meta.name as string) ??
+                      maskAddress(proposal.kind.beneficiary)}
                   </Typography>
                 </div>
               </div>
@@ -179,23 +223,24 @@ export function ProposalCard({ proposal }: ProposalCardProps) {
             </div>
           )}
 
-          {proposal.__typename === 'DemocracyProposal' && seconds.length > 0 && (
-            <div className={styles['proposal-item-container']}>
-              <Typography variant="title7">
-                235 users seconded this proposal
-              </Typography>
-              <span className={styles['seconded-container']}>
-                <span className={styles['profile-pictures']}>
-                  {Array.from(Array(10).keys()).map((x) => (
-                    <Icon key={x} name="user-profile" size="sm" />
-                  ))}
+          {proposal.__typename === 'DemocracyProposal' &&
+            seconds.length > 0 && (
+              <div className={styles['proposal-item-container']}>
+                <Typography variant="title7">
+                  235 users seconded this proposal
+                </Typography>
+                <span className={styles['seconded-container']}>
+                  <span className={styles['profile-pictures']}>
+                    {Array.from(Array(10).keys()).map((x) => (
+                      <Icon key={x} name="user-profile" size="sm" />
+                    ))}
+                  </span>
+                  <Button variant="text" className={styles['button-see-all']}>
+                    <Typography variant="button1">See all</Typography>
+                  </Button>
                 </span>
-                <Button variant="text" className={styles['button-see-all']}>
-                  <Typography variant="button1">See all</Typography>
-                </Button>
-              </span>
-            </div>
-          )}
+              </div>
+            )}
           {proposal.__typename === 'CouncilProposal' && (
             <CouncilProposalActions proposal={proposal} />
           )}

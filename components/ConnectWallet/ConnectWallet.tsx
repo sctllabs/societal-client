@@ -79,9 +79,7 @@ export function ConnectWallet() {
     }
   }, [keyring, selectedAccountAddress, setSubstrateAccount]);
 
-  const handleDisconnect = async () => {
-    disconnectAccounts();
-  };
+  const handleDisconnect = async () => disconnectAccounts();
 
   const handleWalletConnect = async (targetText: WalletName) => {
     if (!keyring) {

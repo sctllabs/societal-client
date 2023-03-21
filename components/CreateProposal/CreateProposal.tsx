@@ -142,25 +142,26 @@ export function CreateProposal() {
     ]
   );
 
-  const proposalCreatedHandler = useCallback(() => {
-    setTimeout(
-      () =>
-        toast.success(
-          <Notification
-            title="Proposal created"
-            body="Proposal was created."
-            variant="success"
-          />
-        ),
-      1000
-    );
+  const onSuccess = useCallback(() => {
     setProposalVotingAccess(null);
     setProposalType(null);
     setState(INITIAL_STATE);
     setModalOpen(false);
+    toast.success(
+      <Notification
+        title="Proposal created"
+        body="Proposal was created."
+        variant="success"
+      />
+    );
   }, []);
 
-  const handleCancelClick = () => setModalOpen(false);
+  const handleCancelClick = () => {
+    setProposalVotingAccess(null);
+    setProposalType(null);
+    setState(INITIAL_STATE);
+    setModalOpen(false);
+  };
 
   const handleTransform = useCallback(() => {
     if (!currentDao) {
@@ -206,8 +207,6 @@ export function CreateProposal() {
       proposalType === ProposalEnum.PROPOSE_REMOVE_MEMBER) &&
       !state.target);
 
-  const onSuccess = () => proposalCreatedHandler();
-
   const handleProposeClick = async () => {
     if (!metamaskAccount || !keyring || !currentDao) {
       return;
@@ -239,7 +238,7 @@ export function CreateProposal() {
           );
       }
 
-      proposalCreatedHandler();
+      onSuccess();
 
       if (isEthereumAddress(state.target)) {
         keyringAddExternal(keyring, state.target);

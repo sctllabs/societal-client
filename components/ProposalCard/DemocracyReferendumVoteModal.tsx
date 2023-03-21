@@ -94,27 +94,7 @@ export function DemocracyReferendumVoteModal({
     setModalOpen(false);
   };
 
-  const handleProposalSecond = async () => {
-    if (!metamaskAccount) {
-      return;
-    }
-
-    // TODO
-    const approvedVote = 'yay';
-
-    await daoDemocracyContract
-      ?.connect(metamaskAccount)
-      .standardVote(
-        proposal.dao.id,
-        proposal.index,
-        approvedVote,
-        voteState.amount,
-        voteState.conviction
-      );
-    onSuccess();
-  };
-
-  const onFailed = () => {
+  const onFailed = () =>
     toast.error(
       <Notification
         title="Transaction failed"
@@ -122,7 +102,31 @@ export function DemocracyReferendumVoteModal({
         variant="error"
       />
     );
+
+  const handleProposalSecond = async (approvedVote: boolean) => {
+    if (!metamaskAccount) {
+      return;
+    }
+
+    try {
+      await daoDemocracyContract
+        ?.connect(metamaskAccount)
+        .standardVote(
+          proposal.dao.id,
+          proposal.index,
+          approvedVote,
+          voteState.amount,
+          voteState.conviction
+        );
+      onSuccess();
+    } catch (e) {
+      onFailed();
+    }
   };
+
+  const handleProposalSecondAye = () => handleProposalSecond(true);
+
+  const handleProposalSecondNay = () => handleProposalSecond(false);
 
   const handleTransform = (aye: boolean) => {
     const vote = {
@@ -190,17 +194,17 @@ export function DemocracyReferendumVoteModal({
                     className={styles['democracy-modal-button']}
                     disabled={disabled}
                     variant="filled"
-                    onClick={handleProposalSecond}
+                    onClick={handleProposalSecondNay}
                   >
-                    Second
+                    Vote Nay
                   </Button>
                   <Button
                     className={styles['democracy-modal-button']}
                     disabled={disabled}
                     variant="filled"
-                    onClick={handleProposalSecond}
+                    onClick={handleProposalSecondAye}
                   >
-                    Second
+                    Vote Aye
                   </Button>
                 </>
               ) : (

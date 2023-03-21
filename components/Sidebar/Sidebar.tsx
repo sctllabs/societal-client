@@ -3,8 +3,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 
-import { useAtomValue, useSetAtom } from 'jotai';
-import { currentAccountAtom } from 'store/account';
+import { useSetAtom } from 'jotai';
 import { daosAtom } from 'store/dao';
 
 import { formLinkByDaoId } from 'utils/formLinkByDaoId';
@@ -23,7 +22,6 @@ import styles from './Sidebar.module.scss';
 
 export function Sidebar() {
   const router = useRouter();
-  const currentAccount = useAtomValue(currentAccountAtom);
   const setDaos = useSetAtom(daosAtom);
 
   const { data, loading } = useSubscription<SubscribeDaos>(SUBSCRIBE_DAO);
@@ -37,7 +35,7 @@ export function Sidebar() {
     setDaos(data.daos);
   }, [data, setDaos]);
 
-  if (!currentAccount || loading) {
+  if (loading) {
     return null;
   }
 

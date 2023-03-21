@@ -25,11 +25,17 @@
   width: 100%;
 }
 
-.leftContainer {
+.left-container {
   align-items: center;
   display: flex;
   justify-content: center;
   min-width: 20rem;
+}
+
+.right-container {
+  align-items: center;
+  display: flex;
+  gap: 8px;
 }
 
 .account-button {

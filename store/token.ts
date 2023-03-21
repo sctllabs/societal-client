@@ -5,6 +5,7 @@ export const tokenNameAtom = atom<string | null>(null);
 export const tokenSymbolAtom = atom<string | null>(null);
 export const tokenDecimalsAtom = atom<number | null>(null);
 export const tokenQuantityAtom = atom<string | null>(null);
+export const tokenLoadingAtom = atom<boolean>(false);
 
 export const tokenAtom = atom(
   (get) => ({

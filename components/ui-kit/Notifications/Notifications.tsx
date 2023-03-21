@@ -1,8 +1,8 @@
 import React, { ReactNode } from 'react';
 import { Icon, IconNamesType } from 'components/ui-kit/Icon';
+import { Typography } from 'components/ui-kit/Typography';
 
 import styles from './Notifications.module.scss';
-import { Typography } from '../Typography';
 
 type NotificationVariant = 'success' | 'warning' | 'error' | 'info';
 

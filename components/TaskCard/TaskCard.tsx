@@ -1,12 +1,23 @@
+import { useMemo } from 'react';
 import clsx from 'clsx';
 
 import { useAtomValue } from 'jotai';
 import { currentDaoAtom } from 'store/dao';
+import { tokenSymbolAtom } from 'store/token';
+import { accountsAtom } from 'store/account';
 
 import { getProposalSettings } from 'utils/getProposalSettings';
 import { maskAddress } from 'utils/maskAddress';
 import { parseMeta } from 'utils/parseMeta';
-import type { CouncilProposalMeta, DemocracyProposalMeta } from 'types';
+import { formatBalance } from 'utils/formatBalance';
+import type {
+  AddMemberProposal,
+  CouncilProposalMeta,
+  DemocracyProposalMeta,
+  RemoveMemberProposal,
+  SpendProposal,
+  TransferProposal
+} from 'types';
 
 import { Card } from 'components/ui-kit/Card';
 import { Icon } from 'components/ui-kit/Icon';
@@ -21,30 +32,32 @@ export interface TaskCardProps {
   currentBlock: number | null;
 }
 
-const currency = '$SCTL';
-
-type TaskStatus = 'Active' | 'Completed' | 'Referendum';
+type TaskStatus = 'Active' | 'Completed' | 'Expired' | 'Referendum';
 
 export function TaskCard({ proposal, currentBlock }: TaskCardProps) {
-  let taskStatus: TaskStatus;
+  const taskStatus: TaskStatus = useMemo(() => {
+    switch (proposal.status) {
+      case 'Open': {
+        return 'Active';
+      }
+      case 'Referendum': {
+        return 'Completed';
+      }
+      case 'Expired': {
+        return 'Expired';
+      }
+      default: {
+        return 'Completed';
+      }
+    }
+  }, [proposal.status]);
 
   const currentDao = useAtomValue(currentDaoAtom);
+  const tokenSymbol = useAtomValue(tokenSymbolAtom);
+  const accounts = useAtomValue(accountsAtom);
 
   const { proposalTitle, icon } = getProposalSettings(proposal.kind);
 
-  switch (proposal.status) {
-    case 'Open': {
-      taskStatus = 'Active';
-      break;
-    }
-    case 'Referendum': {
-      taskStatus = 'Referendum';
-      break;
-    }
-    default: {
-      taskStatus = 'Completed';
-    }
-  }
   const meta = parseMeta(proposal.meta);
   const title = meta?.title;
   const description = meta?.description;
@@ -109,7 +122,9 @@ export function TaskCard({ proposal, currentBlock }: TaskCardProps) {
               <span className={styles['proposal-item']}>
                 <Icon name="user-profile" size="xs" />
                 <Typography variant="title5">
-                  {maskAddress(proposal.account.id)}
+                  {(accounts?.find(
+                    (_account) => _account.address === proposal.account.id
+                  )?.meta.name as string) ?? maskAddress(proposal.account.id)}
                 </Typography>
               </span>
             </span>
@@ -122,15 +137,9 @@ export function TaskCard({ proposal, currentBlock }: TaskCardProps) {
                   <span className={styles['proposal-item']}>
                     <Icon name="treasury" size="xs" />
                     <Typography variant="title5">
-                      {new Intl.NumberFormat('en-US', {
-                        minimumFractionDigits: 2
-                      }).format(proposal.kind.amount)}
+                      {formatBalance(proposal.kind.amount)}
                     </Typography>
-                    <Typography variant="body2">
-                      {proposal.kind.__typename === 'TransferToken'
-                        ? currentDao?.fungibleToken.symbol || ''
-                        : currency}
-                    </Typography>
+                    <Typography variant="body2">{tokenSymbol}</Typography>
                   </span>
                 </span>
                 <span className={styles['proposal-item-info']}>
@@ -138,7 +147,13 @@ export function TaskCard({ proposal, currentBlock }: TaskCardProps) {
                   <span className={styles['proposal-item']}>
                     <Icon name="user-profile" size="xs" />
                     <Typography variant="title5">
-                      {maskAddress(proposal.kind.beneficiary)}
+                      {(accounts?.find(
+                        (_account) =>
+                          _account.address ===
+                          (proposal.kind as TransferProposal | SpendProposal)
+                            .beneficiary
+                      )?.meta.name as string) ??
+                        maskAddress(proposal.kind.beneficiary)}
                     </Typography>
                   </span>
                 </span>
@@ -151,7 +166,15 @@ export function TaskCard({ proposal, currentBlock }: TaskCardProps) {
                 <span className={styles['proposal-item']}>
                   <Icon name="user-profile" size="xs" />
                   <Typography variant="title5">
-                    {maskAddress(proposal.kind.who)}
+                    {(accounts?.find(
+                      (_account) =>
+                        _account.address ===
+                        (
+                          proposal.kind as
+                            | AddMemberProposal
+                            | RemoveMemberProposal
+                        ).who
+                    )?.meta.name as string) ?? maskAddress(proposal.kind.who)}
                   </Typography>
                 </span>
               </span>

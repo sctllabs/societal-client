@@ -103,14 +103,15 @@
 }
 
 .democracy-referendum-actions {
+  align-items: center;
   border-top: 5px solid #{colors.$grayscale-98};
   display: flex;
   gap: 20px;
   justify-content: space-between;
   margin-top: 36px;
+  min-height: 80px;
   padding: 20px 32px 20px 32px;
   position: relative;
-  min-height: 80px;
 }
 
 .democracy-deposit {
@@ -247,19 +248,20 @@
 }
 
 .referendum-status {
-  display: flex;
-  justify-content: center;
   align-items: center;
-  height: 52px;
-  width: 253px;
-  position: absolute;
-  right: 0;
-  bottom: 0;
   background-color: var(--referendum-background-color);
-  border-width: 1px 0px 0px 1px;
-  border-style: solid;
   border-color: var(--referendum-border-color);
   border-radius: 8px 0px 8px 0px;
+  border-style: solid;
+  border-width: 1px 0px 0px 1px;
+  bottom: 0;
+  display: flex;
+  height: 52px;
+  justify-content: center;
+  margin-bottom: -28px;
+  margin-right: -32px;
+  right: 0;
+  width: 253px;
 }
 
 .approved {
@@ -270,4 +272,35 @@
 .failed {
   --referendum-background-color: #{rgba(colors.$red-1, 0.1)};
   --referendum-border-color: #{colors.$red-1};
+}
+
+.header {
+  align-items: center;
+  border-bottom: 1px solid #{colors.$grayscale-30};
+  display: flex;
+  justify-content: space-between;
+  padding: 16px 20px;
+}
+
+.status-container {
+  align-items: center;
+  display: flex;
+  gap: 4px;
+}
+
+.status-icon {
+  height: 8px;
+  width: 8px;
+}
+
+.icon-active {
+  color: #{colors.$blue-1};
+}
+
+.icon-expired {
+  color: #{colors.$orange-2};
+}
+
+.icon-completed {
+  color: #{colors.$green-1};
 }
