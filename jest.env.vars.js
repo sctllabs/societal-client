@@ -21,3 +21,4 @@ process.env.NEXT_PUBLIC_TOKEN_API_KEY = '9aa3d95b3bc440fa88ea12eaa4456161';
 process.env.NEXT_PUBLIC_EXPECTED_BLOCK_TIME_IN_SECONDS = '3';
 process.env.NEXT_PUBLIC_HTTP_API_URI = 'http://localhost:4350/graphql';
 process.env.NEXT_PUBLIC_WS_API_URI = 'ws://localhost:4350/graphql';
+process.env.NEXT_PUBLIC_NETWORK_NAME = 'Societal';
