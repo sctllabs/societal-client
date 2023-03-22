@@ -1,11 +1,12 @@
 import { ChangeEventHandler, useState } from 'react';
 import { toast } from 'react-toastify';
 
+import { formatDistance } from 'date-fns';
 import { useAtomValue } from 'jotai';
 import { metamaskAccountAtom, substrateAccountAtom } from 'store/account';
 import { apiAtom } from 'store/api';
 
-import { ConvictionOptions } from 'constants/conviction';
+import { ConvictionOptions, ConvictionToEth } from 'constants/conviction';
 import { useDaoDemocracyContract } from 'hooks/useDaoDemocracyContract';
 import type { DemocracyReferendumMeta } from 'types';
 
@@ -29,6 +30,9 @@ import { Button } from 'components/ui-kit/Button';
 import { Input } from 'components/ui-kit/Input';
 import { Icon } from 'components/ui-kit/Icon';
 import { TxButton } from 'components/TxButton';
+
+import { appConfig } from 'config';
+import { currentDaoAtom } from 'store/dao';
 
 import styles from './ProposalCard.module.scss';
 
@@ -61,6 +65,7 @@ export function DemocracyReferendumVoteModal({
   const [modalOpen, setModalOpen] = useState(false);
   const [voteState, setVoteState] = useState(INITIAL_STATE);
 
+  const currentDao = useAtomValue(currentDaoAtom);
   const metamaskAccount = useAtomValue(metamaskAccountAtom);
   const substrateAccount = useAtomValue(substrateAccountAtom);
   const api = useAtomValue(apiAtom);
@@ -175,14 +180,29 @@ export function DemocracyReferendumVoteModal({
                 <SelectValue placeholder={InputLabel.CONVICTION} />
               </SelectTrigger>
               <SelectContent>
+                {/* TODO: @asansyzb avoid copy-pasting - see DelegateModal */}
                 {Object.entries(ConvictionOptions).map(
-                  ([convictionOption, convictionValue]) => (
-                    <SelectItem value={convictionValue} key={convictionOption}>
-                      <Typography variant="body2">
-                        {convictionOption}
-                      </Typography>
-                    </SelectItem>
-                  )
+                  ([convictionOption, convictionValue]) => {
+                    const duration =
+                      ConvictionToEth[convictionValue] *
+                      (currentDao?.policy.governance.enactmentPeriod.valueOf() ||
+                        0) *
+                      appConfig.expectedBlockTimeInSeconds *
+                      1000;
+
+                    return (
+                      <SelectItem
+                        value={convictionValue}
+                        key={convictionOption}
+                      >
+                        {/* TODO: @asansyzb Format duration */}
+                        <Typography variant="body2">
+                          {convictionOption}
+                          {duration > 0 && ` (${formatDistance(0, duration)})`}
+                        </Typography>
+                      </SelectItem>
+                    );
+                  }
                 )}
               </SelectContent>
             </Select>

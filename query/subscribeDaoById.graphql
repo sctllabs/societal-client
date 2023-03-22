@@ -13,6 +13,7 @@ subscription SubscribeDaoById($id: String!) {
           __typename
           launchPeriod
           votingPeriod
+          enactmentPeriod
         }
       }
     }

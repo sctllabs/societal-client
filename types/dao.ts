@@ -22,6 +22,7 @@ type GovernanceV1 = Readonly<{
   __typename: 'GovernanceV1';
   launchPeriod: number;
   votingPeriod: number;
+  enactmentPeriod: number;
 }>;
 
 type Policy = Readonly<{

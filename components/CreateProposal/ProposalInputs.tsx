@@ -158,8 +158,8 @@ export function ProposalInputs({
       {proposalVotingAccess === ProposalVotingAccessEnum.Democracy && (
         <div className={styles.balance}>
           <Input
-            name={InputName.LOCKED_BALANCE}
-            label={InputLabel.LOCKED_BALANCE}
+            name={InputName.DEPOSIT}
+            label={InputLabel.DEPOSIT}
             value={state.balance}
             onChange={onInputChange}
             type="tel"

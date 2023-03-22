@@ -11,7 +11,7 @@ export enum InputName {
   TARGET = 'target',
   DESCRIPTION = 'description',
   TITLE = 'title',
-  LOCKED_BALANCE = 'balance'
+  DEPOSIT = 'balance'
 }
 
 export enum InputLabel {
@@ -22,7 +22,7 @@ export enum InputLabel {
   MEMBER = 'Choose a member',
   DESCRIPTION = 'Description',
   TITLE = 'Title',
-  LOCKED_BALANCE = 'Locked balance'
+  DEPOSIT = 'Deposit'
 }
 
 export enum ProposalEnum {
