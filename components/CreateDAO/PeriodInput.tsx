@@ -8,25 +8,20 @@ import { Icon } from 'components/ui-kit/Icon';
 import { RadioGroup, RadioGroupItem } from 'components/ui-kit/Radio';
 import { Card } from 'components/ui-kit/Card';
 
-import {
-  DaoGovernanceState,
-  PeriodName,
-  PeriodTypeName,
-  ProposalPeriod
-} from './types';
+import { ProposalPeriod } from './types';
 import styles from './CreateDAO.module.scss';
 
-type PeriodInputProps = {
+type PeriodInputProps<T> = {
   title: string;
   subtitle: string;
-  state: DaoGovernanceState;
-  setState: Dispatch<SetStateAction<DaoGovernanceState>>;
+  state: T;
+  setState: Dispatch<SetStateAction<T>>;
   periodLabel: string;
-  periodName: PeriodName;
-  periodTypeName: PeriodTypeName;
+  periodName: string;
+  periodTypeName: string;
 };
 
-export function PeriodInput({
+export function PeriodInput<T extends Record<string, string>>({
   title,
   subtitle,
   state,
@@ -34,7 +29,7 @@ export function PeriodInput({
   periodName,
   periodTypeName,
   setState
-}: PeriodInputProps) {
+}: PeriodInputProps<T>) {
   const onInputChange: ChangeEventHandler = (e) => {
     const target = e.target as HTMLInputElement;
     const targetName = target.name;

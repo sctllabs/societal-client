@@ -66,6 +66,8 @@ type CreateDaoPolicy = {
   proposal_period: number;
   approve_origin: DaoPolicyProportion;
   governance: DaoGovernance;
+  bounty_payout_delay: number;
+  bounty_update_period: number;
 };
 
 type CreateDaoTokenMetadata = {

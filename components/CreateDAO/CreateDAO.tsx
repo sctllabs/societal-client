@@ -29,6 +29,7 @@ import { Button } from 'components/ui-kit/Button';
 import { Notification } from 'components/ui-kit/Notifications';
 import { TxButton } from 'components/TxButton';
 import {
+  DaoBountyState,
   DaoGovernanceState,
   DaoInfoState,
   DaoMembersState,
@@ -42,6 +43,7 @@ import { DaoToken } from './DaoToken';
 import { DaoGovernance } from './DaoGovernance';
 
 import styles from './CreateDAO.module.scss';
+import { DaoBounty } from './DaoBounty';
 
 const initialDaoInfoState: DaoInfoState = {
   name: '',
@@ -75,6 +77,13 @@ const initialDaoMembersState: DaoMembersState = {
   addresses: ['']
 };
 
+const initialDaoBountyState: DaoBountyState = {
+  updatePeriod: '',
+  awardDelayPeriod: '',
+  updatePeriodType: ProposalPeriod.DAYS,
+  awardDelayPeriodType: ProposalPeriod.DAYS
+};
+
 export function CreateDAO() {
   const router = useRouter();
   const [nextDaoId, setNextDaoId] = useState<number>(0);
@@ -85,6 +94,9 @@ export function CreateDAO() {
   );
   const [daoMembers, setDaoMembers] = useState<DaoMembersState>(
     initialDaoMembersState
+  );
+  const [daoBounty, setDaoBounty] = useState<DaoBountyState>(
+    initialDaoBountyState
   );
   const api = useAtomValue(apiAtom);
   const keyring = useAtomValue(keyringAtom);
@@ -213,6 +225,14 @@ export function CreateDAO() {
       daoGovernance.enactmentPeriod,
       daoGovernance.enactmentPeriodType
     );
+    const bounty_payout_delay = convertTimeToBlock(
+      daoBounty.awardDelayPeriod,
+      daoBounty.awardDelayPeriodType
+    );
+    const bounty_update_period = convertTimeToBlock(
+      daoBounty.updatePeriod,
+      daoBounty.updatePeriodType
+    );
 
     const proportion = daoGovernance.approveOrigin
       .split('/')
@@ -224,6 +244,8 @@ export function CreateDAO() {
       metadata: 'metadata',
       policy: {
         proposal_period,
+        bounty_payout_delay,
+        bounty_update_period,
         approve_origin: { type: 'AtLeast', proportion },
         governance: {
           GovernanceV1: {
@@ -348,7 +370,20 @@ export function CreateDAO() {
     (daoToken.type === TokenType.ETH_TOKEN && !daoToken.address) ||
     !daoMembers.role ||
     !daoGovernance.proposalPeriod ||
-    !daoGovernance.proposalPeriodType;
+    !daoGovernance.proposalPeriodType ||
+    !daoGovernance.approveOrigin ||
+    !daoGovernance.votingPeriodType ||
+    !daoGovernance.votingPeriodType ||
+    !daoGovernance.voteLockingPeriod ||
+    !daoGovernance.voteLockingPeriodType ||
+    !daoGovernance.enactmentPeriod ||
+    !daoGovernance.enactmentPeriodType ||
+    !daoGovernance.launchPeriod ||
+    !daoGovernance.launchPeriodType ||
+    !daoBounty.awardDelayPeriodType ||
+    !daoBounty.awardDelayPeriodType ||
+    !daoBounty.updatePeriodType ||
+    !daoBounty.updatePeriodType;
 
   return (
     <div className={styles.container}>
@@ -369,6 +404,7 @@ export function CreateDAO() {
         <DaoToken state={daoToken} setState={setDaoToken} />
 
         <DaoGovernance state={daoGovernance} setState={setDaoGovernance} />
+        <DaoBounty state={daoBounty} setState={setDaoBounty} />
 
         <div className={styles['create-proposal']}>
           {substrateAccount ? (

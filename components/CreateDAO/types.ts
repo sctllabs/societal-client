@@ -50,24 +50,42 @@ export enum TokenType {
 
 export type Role = 'Council';
 
-export type PeriodName =
+export type GovernancePeriodName =
   | 'proposalPeriod'
   | 'votingPeriod'
   | 'enactmentPeriod'
   | 'voteLockingPeriod'
   | 'launchPeriod';
 
-export type PeriodTypeName =
+export type GovernancePeriodTypeName =
   | 'proposalPeriodType'
   | 'votingPeriodType'
   | 'enactmentPeriodType'
   | 'voteLockingPeriodType'
   | 'launchPeriodType';
 
-export type PeriodInputType = {
+export type GovernancePeriodInputType = {
   title: string;
   subtitle: string;
   label: string;
-  periodName: PeriodName;
-  periodTypeName: PeriodTypeName;
+  periodName: GovernancePeriodName;
+  periodTypeName: GovernancePeriodTypeName;
+};
+
+export type DaoBountyState = {
+  updatePeriod: string;
+  awardDelayPeriod: string;
+  updatePeriodType: ProposalPeriod;
+  awardDelayPeriodType: ProposalPeriod;
+};
+
+export type BountyPeriodName = 'updatePeriod' | 'awardDelayPeriod';
+export type BountyPeriodTypeName = 'updatePeriodType' | 'awardDelayPeriodType';
+
+export type BountyPeriodInputType = {
+  title: string;
+  subtitle: string;
+  label: string;
+  periodName: BountyPeriodName;
+  periodTypeName: BountyPeriodTypeName;
 };
