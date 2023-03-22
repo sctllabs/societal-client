@@ -89,13 +89,12 @@ export function PreloaderAccountBalance() {
         .account(
           currentDao.fungibleToken.id,
           accountAddress,
-          (_assetBalance: Option<AssetBalance>) => {
-            if (_assetBalance.isSome) {
-              setCurrentAccountTokenBalance(
-                _assetBalance.value as AssetAccount
-              );
-            }
-          }
+          (_assetBalance: Option<AssetBalance>) =>
+            setCurrentAccountTokenBalance(
+              _assetBalance.isSome
+                ? (_assetBalance.value as AssetAccount)
+                : null
+            )
         )
         .then((unsub) => {
           unsubscribe = unsub;
