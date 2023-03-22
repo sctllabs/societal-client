@@ -1,6 +1,7 @@
 import { ChangeEventHandler, useState } from 'react';
 import { toast } from 'react-toastify';
 
+import { formatDistance } from 'date-fns';
 import { useAtomValue } from 'jotai';
 import {
   accountsAtom,
@@ -35,6 +36,7 @@ import {
 import { TxButton } from 'components/TxButton';
 
 import styles from './ReferendumInfo.module.scss';
+import { appConfig } from 'config';
 
 type DelegationState = {
   account: string;
@@ -195,13 +197,27 @@ export function DelegateModal() {
               </SelectTrigger>
               <SelectContent>
                 {Object.entries(ConvictionOptions).map(
-                  ([convictionOption, convictionValue]) => (
-                    <SelectItem value={convictionValue} key={convictionOption}>
-                      <Typography variant="body2">
-                        {convictionOption}
-                      </Typography>
-                    </SelectItem>
-                  )
+                  ([convictionOption, convictionValue]) => {
+                    const duration =
+                      ConvictionToEth[convictionValue] *
+                      (currentDao?.policy.governance.enactmentPeriod.valueOf() ||
+                        0) *
+                      appConfig.expectedBlockTimeInSeconds *
+                      1000;
+
+                    return (
+                      <SelectItem
+                        value={convictionValue}
+                        key={convictionOption}
+                      >
+                        {/* TODO: @asansyzb Format duration */}
+                        <Typography variant="body2">
+                          {convictionOption}
+                          {duration > 0 && ` (${formatDistance(0, duration)})`}
+                        </Typography>
+                      </SelectItem>
+                    );
+                  }
                 )}
               </SelectContent>
             </Select>
