@@ -110,7 +110,10 @@ export function ReferendumInfo() {
           <Typography variant="caption2">Locked balance</Typography>
           <span className={styles.balance}>
             <Typography variant="title1">
-              {formatBalance(accountTokenBalance.frozenBalance.toBigInt())}
+              {formatBalance(
+                accountTokenBalance.reservedBalance.toBigInt() +
+                  accountTokenBalance.frozenBalance.toBigInt()
+              )}
             </Typography>
             <Typography variant="title2">{tokenSymbol}</Typography>
           </span>
