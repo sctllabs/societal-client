@@ -31,9 +31,10 @@ import { Input } from 'components/ui-kit/Input';
 import { Icon } from 'components/ui-kit/Icon';
 import { TxButton } from 'components/TxButton';
 
-import styles from './ProposalCard.module.scss';
 import { appConfig } from 'config';
 import { currentDaoAtom } from 'store/dao';
+
+import styles from './ProposalCard.module.scss';
 
 type DemocracyReferendumVoteModalProps = {
   proposal: DemocracyReferendumMeta;

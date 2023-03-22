@@ -35,8 +35,9 @@ import {
 } from 'components/ui-kit/Select';
 import { TxButton } from 'components/TxButton';
 
-import styles from './ReferendumInfo.module.scss';
 import { appConfig } from 'config';
+
+import styles from './ReferendumInfo.module.scss';
 
 type DelegationState = {
   account: string;
