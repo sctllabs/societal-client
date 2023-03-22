@@ -9,6 +9,7 @@ import {
   substrateAccountAtom
 } from 'store/account';
 import { tokenSymbolAtom } from 'store/token';
+import { currentReferendumAtom } from 'store/referendum';
 
 import { maskAddress } from 'utils/maskAddress';
 import { formatBalance } from 'utils/formatBalance';
@@ -28,6 +29,7 @@ import styles from './ReferendumInfo.module.scss';
 export function ReferendumInfo() {
   const tokenSymbol = useAtomValue(tokenSymbolAtom);
   const accountTokenBalance = useAtomValue(currentAccountTokenBalanceAtom);
+  const currentReferendum = useAtomValue(currentReferendumAtom);
 
   const [delegation, setDelegation] = useState<DemocracyDelegation | null>(
     null
@@ -82,14 +84,23 @@ export function ReferendumInfo() {
     substrateAccount
   ]);
 
+  const isReferendumActive = !!currentReferendum;
+
   return (
     <Card className={styles.card}>
       <Typography variant="title2">
-        The next referendum will start in
+        {isReferendumActive
+          ? 'Until the end of the referendum'
+          : 'The next referendum will start in'}
       </Typography>
       {currentBlock && currentDao?.policy.governance.launchPeriod && (
         <CountdownReferendum
-          launchPeriod={currentDao.policy.governance.launchPeriod}
+          active={isReferendumActive}
+          launchPeriod={
+            isReferendumActive
+              ? currentDao.policy.governance.votingPeriod
+              : currentDao.policy.governance.launchPeriod
+          }
           currentBlock={currentBlock}
         />
       )}

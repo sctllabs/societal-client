@@ -24,3 +24,8 @@
   justify-content: center;
   width: 89px;
 }
+
+.active {
+  background: #{colors.$purple-6};
+  color: #{colors.$purple-3};
+}

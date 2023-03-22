@@ -86,12 +86,12 @@ export function ProposalCard({ proposal }: ProposalCardProps) {
 
     const {
       proposalPeriod,
-      governance: { launchPeriod }
+      governance: { votingPeriod }
     } = currentDao.policy;
 
     const end =
       proposal.__typename === 'DemocracyReferendum'
-        ? currentBlock % launchPeriod
+        ? votingPeriod - (currentBlock % votingPeriod)
         : proposal.blockNum + proposalPeriod - currentBlock;
 
     if (
