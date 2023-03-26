@@ -380,9 +380,9 @@ export function CreateDAO() {
     !daoGovernance.enactmentPeriodType ||
     !daoGovernance.launchPeriod ||
     !daoGovernance.launchPeriodType ||
+    !daoBounty.awardDelayPeriod ||
     !daoBounty.awardDelayPeriodType ||
-    !daoBounty.awardDelayPeriodType ||
-    !daoBounty.updatePeriodType ||
+    !daoBounty.updatePeriod ||
     !daoBounty.updatePeriodType;
 
   return (
