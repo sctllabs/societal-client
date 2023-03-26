@@ -1,6 +1,7 @@
 import { MouseEventHandler, useEffect, useState } from 'react';
 import { useAtomValue } from 'jotai';
 import { currentDaoAtom } from 'store/dao';
+import { accountsAtom } from 'store/account';
 
 import { Card } from 'components/ui-kit/Card';
 import { Typography } from 'components/ui-kit/Typography';
@@ -19,6 +20,7 @@ import styles from './Members.module.scss';
 export function Members() {
   const currentDao = useAtomValue(currentDaoAtom);
   const api = useAtomValue(apiAtom);
+  const accounts = useAtomValue(accountsAtom);
   const [daoMembers, setDaoMembers] = useState<AccountDaoMember[]>([]);
 
   useEffect(() => {
@@ -100,7 +102,10 @@ export function Members() {
         {daoMembers.map(({ accountId, kind }) => (
           <li className={styles.member} key={accountId}>
             <span className={styles['member-title']}>
-              <Typography variant="title5">{accountId}</Typography>
+              <Typography variant="title5">
+                {(accounts?.find((_account) => _account.address === accountId)
+                  ?.meta.name as string) ?? accountId}
+              </Typography>
               <Button
                 variant="icon"
                 size="xs"

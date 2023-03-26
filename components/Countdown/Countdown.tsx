@@ -19,6 +19,10 @@ export function Countdown({
 }: CountdownProps) {
   const countdown = useProposalCountdown(endBlock);
 
+  if (!countdown) {
+    return null;
+  }
+
   return (
     <span className={clsx(styles.container, styles[orientation])}>
       <Typography variant={typography}>{countdown}</Typography>

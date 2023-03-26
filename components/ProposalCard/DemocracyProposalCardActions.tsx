@@ -130,7 +130,8 @@ export function DemocracyProposalCardActions({
         {times && (
           <Typography variant="caption2">
             You have already <br /> seconded&nbsp;
-            <span className={styles.bold}>{times}</span> time(s)
+            <span className={styles.bold}>{times}</span>{' '}
+            {times === 1 ? 'time' : 'times'}
           </Typography>
         )}
         {proposal.status === 'Open' && (
