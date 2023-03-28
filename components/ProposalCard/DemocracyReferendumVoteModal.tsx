@@ -1,4 +1,4 @@
-import { ChangeEventHandler, useState } from 'react';
+import { ChangeEventHandler, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 
 import { formatDistance } from 'date-fns';
@@ -72,6 +72,10 @@ export function DemocracyReferendumVoteModal({
 
   const daoDemocracyContract = useDaoDemocracyContract();
 
+  useEffect(() => {
+    setVoteState(INITIAL_STATE);
+  }, [modalOpen]);
+
   const onInputChange: ChangeEventHandler = (e) => {
     const target = e.target as HTMLInputElement;
     const targetName = target.name;
@@ -95,7 +99,6 @@ export function DemocracyReferendumVoteModal({
     toast.success(
       <Notification title="Voted" body="You have voted." variant="success" />
     );
-    setVoteState(INITIAL_STATE);
     setModalOpen(false);
   };
 

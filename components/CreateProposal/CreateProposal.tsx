@@ -142,10 +142,13 @@ export function CreateProposal() {
     ]
   );
 
+  useEffect(() => {
+    setState(INITIAL_STATE);
+  }, [modalOpen]);
+
   const onSuccess = useCallback(() => {
     setProposalVotingAccess(null);
     setProposalType(null);
-    setState(INITIAL_STATE);
     setModalOpen(false);
     toast.success(
       <Notification
@@ -159,7 +162,6 @@ export function CreateProposal() {
   const handleCancelClick = () => {
     setProposalVotingAccess(null);
     setProposalType(null);
-    setState(INITIAL_STATE);
     setModalOpen(false);
   };
 

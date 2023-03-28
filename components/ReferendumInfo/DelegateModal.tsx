@@ -1,4 +1,4 @@
-import { ChangeEventHandler, useState } from 'react';
+import { ChangeEventHandler, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 
 import { formatDistance } from 'date-fns';
@@ -90,6 +90,10 @@ export function DelegateModal() {
     }));
   };
 
+  useEffect(() => {
+    setState(INITIAL_STATE);
+  }, [modalOpen]);
+
   const onInputChange: ChangeEventHandler = (e) => {
     const target = e.target as HTMLInputElement;
     const targetName = target.name;
@@ -104,6 +108,12 @@ export function DelegateModal() {
     }));
   };
 
+  const onFailed = () => {
+    toast.error(
+      <Notification title="Error" body="Delegation failed." variant="error" />
+    );
+  };
+
   const onSuccess = () => {
     toast.success(
       <Notification
@@ -112,7 +122,6 @@ export function DelegateModal() {
         variant="success"
       />
     );
-    setState(INITIAL_STATE);
     setModalOpen(false);
   };
 
@@ -243,6 +252,7 @@ export function DelegateModal() {
                   disabled={disabled}
                   tx={extrinsic}
                   onSuccess={onSuccess}
+                  onFailed={onFailed}
                 >
                   Submit delegation
                 </TxButton>

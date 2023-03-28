@@ -3,12 +3,16 @@ import * as Label from '@radix-ui/react-label';
 import { Typography } from 'components/ui-kit/Typography';
 import { RadioGroup, RadioGroupItem } from 'components/ui-kit/Radio';
 import { CircularProgress } from 'components/ui-kit/CircularProgress';
-import { ApproveOrigin, DaoGovernanceState, PeriodInputType } from './types';
+import {
+  ApproveOrigin,
+  DaoGovernanceState,
+  GovernancePeriodInputType
+} from './types';
 import { PeriodInput } from './PeriodInput';
 
 import styles from './CreateDAO.module.scss';
 
-const periodInputs: PeriodInputType[][] = [
+const periodInputs: GovernancePeriodInputType[][] = [
   [
     {
       title: 'Proposal Period',
