@@ -80,8 +80,10 @@ const initialDaoMembersState: DaoMembersState = {
 const initialDaoBountyState: DaoBountyState = {
   updatePeriod: '',
   awardDelayPeriod: '',
+  spendPeriod: '',
   updatePeriodType: ProposalPeriod.DAYS,
-  awardDelayPeriodType: ProposalPeriod.DAYS
+  awardDelayPeriodType: ProposalPeriod.DAYS,
+  spendPeriodType: ProposalPeriod.DAYS
 };
 
 export function CreateDAO() {
@@ -233,6 +235,10 @@ export function CreateDAO() {
       daoBounty.updatePeriod,
       daoBounty.updatePeriodType
     );
+    const spend_period = convertTimeToBlock(
+      daoBounty.spendPeriod,
+      daoBounty.spendPeriodType
+    );
 
     const proportion = daoGovernance.approveOrigin
       .split('/')
@@ -246,6 +252,7 @@ export function CreateDAO() {
         proposal_period,
         bounty_payout_delay,
         bounty_update_period,
+        spend_period,
         approve_origin: { type: 'AtLeast', proportion },
         governance: {
           GovernanceV1: {
@@ -383,7 +390,9 @@ export function CreateDAO() {
     !daoBounty.awardDelayPeriod ||
     !daoBounty.awardDelayPeriodType ||
     !daoBounty.updatePeriod ||
-    !daoBounty.updatePeriodType;
+    !daoBounty.updatePeriodType ||
+    !daoBounty.spendPeriod ||
+    !daoBounty.spendPeriodType;
 
   return (
     <div className={styles.container}>
