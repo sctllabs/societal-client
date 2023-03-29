@@ -259,17 +259,20 @@ export function CreateDAO() {
         bounty_update_period,
         spend_period,
         approve_origin: { type: 'AtLeast', proportion },
-        governance: {
-          GovernanceV1: {
-            enactment_period,
-            launch_period,
-            voting_period,
-            vote_locking_period,
-            fast_track_voting_period: 30,
-            cooloff_period,
-            minimum_deposit: 1
-          }
-        }
+        governance:
+          daoToken.type === 'Fungible Token'
+            ? {
+                GovernanceV1: {
+                  enactment_period,
+                  launch_period,
+                  voting_period,
+                  vote_locking_period,
+                  fast_track_voting_period: 30,
+                  cooloff_period,
+                  minimum_deposit: 1
+                }
+              }
+            : 'OwnershipWeightedVoting'
       }
     };
 
@@ -374,6 +377,18 @@ export function CreateDAO() {
     );
   };
 
+  const democracyComplete =
+    daoToken.type === 'Fungible Token'
+      ? daoGovernance.votingPeriodType &&
+        daoGovernance.votingPeriodType &&
+        daoGovernance.voteLockingPeriod &&
+        daoGovernance.voteLockingPeriodType &&
+        daoGovernance.enactmentPeriod &&
+        daoGovernance.enactmentPeriodType &&
+        daoGovernance.launchPeriod &&
+        daoGovernance.launchPeriodType
+      : true;
+
   const disabled =
     !daoInfo.name ||
     !daoInfo.purpose ||
@@ -386,14 +401,7 @@ export function CreateDAO() {
     !daoBasic.proposalPeriodType ||
     !daoBasic.spendPeriod ||
     !daoBasic.spendPeriodType ||
-    !daoGovernance.votingPeriodType ||
-    !daoGovernance.votingPeriodType ||
-    !daoGovernance.voteLockingPeriod ||
-    !daoGovernance.voteLockingPeriodType ||
-    !daoGovernance.enactmentPeriod ||
-    !daoGovernance.enactmentPeriodType ||
-    !daoGovernance.launchPeriod ||
-    !daoGovernance.launchPeriodType ||
+    !democracyComplete ||
     !daoBounty.awardDelayPeriod ||
     !daoBounty.awardDelayPeriodType ||
     !daoBounty.updatePeriod ||
@@ -418,7 +426,9 @@ export function CreateDAO() {
         <DaoToken state={daoToken} setState={setDaoToken} />
 
         <DaoBasic state={daoBasic} setState={setDaoBasic} />
-        <DaoGovernance state={daoGovernance} setState={setDaoGovernance} />
+        {daoToken.type === 'Fungible Token' && (
+          <DaoGovernance state={daoGovernance} setState={setDaoGovernance} />
+        )}
         <DaoBounty state={daoBounty} setState={setDaoBounty} />
 
         <div className={styles['create-proposal']}>

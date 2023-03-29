@@ -84,17 +84,19 @@ type CreateDaoToken = {
   metadata: CreateDaoTokenMetadata;
 };
 
-type DaoGovernance = {
-  GovernanceV1: {
-    enactment_period: number;
-    launch_period: number;
-    voting_period: number;
-    vote_locking_period: number;
-    fast_track_voting_period: number;
-    cooloff_period: number;
-    minimum_deposit: number;
-  };
-};
+type DaoGovernance =
+  | 'OwnershipWeightedVoting'
+  | {
+      GovernanceV1: {
+        enactment_period: number;
+        launch_period: number;
+        voting_period: number;
+        vote_locking_period: number;
+        fast_track_voting_period: number;
+        cooloff_period: number;
+        minimum_deposit: number;
+      };
+    };
 
 export type CreateDaoInput = {
   name: string;
