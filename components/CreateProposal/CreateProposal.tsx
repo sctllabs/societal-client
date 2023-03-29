@@ -40,6 +40,7 @@ import styles from './CreateProposal.module.scss';
 import { ProposalType } from './ProposalType';
 import { ProposalInputs } from './ProposalInputs';
 import { ProposalVotingAccess } from './ProposalVotingAccess';
+import { useDaoEthGovernanceContract } from 'hooks/useDaoEthGovernanceContract';
 
 const INITIAL_STATE: State = {
   amount: '',
@@ -66,14 +67,19 @@ export function CreateProposal() {
 
   const daoCollectiveContract = useDaoCollectiveContract();
   const daoDemocracyContract = useDaoDemocracyContract();
+  const daoEthGovernanceContract = useDaoEthGovernanceContract();
 
   const [state, setState] = useState<State>(INITIAL_STATE);
 
   const extrinsic = useMemo(() => {
-    if (proposalVotingAccess === ProposalVotingAccessEnum.Council) {
-      return api?.tx.daoCouncil.proposeWithMeta;
+    switch (proposalVotingAccess) {
+      case ProposalVotingAccessEnum.Council:
+        return api?.tx.daoCouncil.proposeWithMeta;
+      case ProposalVotingAccessEnum.Democracy:
+        api?.tx.daoDemocracy.proposeWithMeta;
+      case ProposalVotingAccessEnum.EthGovernance:
+        api?.tx.daoEthGovernance.proposeWithMeta;
     }
-    return api?.tx.daoDemocracy.proposeWithMeta;
   }, [api, proposalVotingAccess]);
 
   useEffect(() => {
@@ -178,16 +184,25 @@ export function CreateProposal() {
 
     const _tx = getProposalTx(currentDao);
 
-    if (proposalVotingAccess === ProposalVotingAccessEnum.Council) {
-      return [currentDao.id, _tx, LENGTH_BOUND, meta];
+    switch (proposalVotingAccess) {
+      case ProposalVotingAccessEnum.Council:
+        return [currentDao.id, _tx, LENGTH_BOUND, meta];
+      case ProposalVotingAccessEnum.Democracy:
+        return [
+          currentDao.id,
+          { Inline: _tx?.method.toHex() },
+          state.balance,
+          meta
+        ];
+      case ProposalVotingAccessEnum.EthGovernance:
+        return [
+          currentDao.id,
+          _tx,
+          LENGTH_BOUND,
+          metamaskAccount?._address,
+          meta
+        ];
     }
-
-    return [
-      currentDao.id,
-      { Inline: _tx?.method.toHex() },
-      state.balance,
-      meta
-    ];
   }, [
     currentDao,
     getProposalTx,
@@ -236,6 +251,18 @@ export function CreateProposal() {
             currentDao.id,
             _tx?.method.toHex(),
             state.balance,
+            meta
+          );
+      }
+      if (proposalVotingAccess === ProposalVotingAccessEnum.EthGovernance) {
+        console.log(metamaskAccount?._address);
+        console.log(_tx?.method.toHex());
+        await daoEthGovernanceContract
+          ?.connect(metamaskAccount)
+          .propose_with_meta(
+            currentDao.id,
+            _tx?.method.toHex(),
+            stringToHex(metamaskAccount?._address),
             meta
           );
       }
@@ -297,6 +324,7 @@ export function CreateProposal() {
             <div className={styles.content}>
               <div className={styles['proposal-settings']}>
                 <ProposalVotingAccess
+                  currentDao={currentDao}
                   setProposalVotingAccess={setProposalVotingAccess}
                 />
                 <ProposalType setProposalType={setProposalType} />

@@ -25,11 +25,15 @@ type GovernanceV1 = Readonly<{
   enactmentPeriod: number;
 }>;
 
+type OwnershipWeightedVoting = Readonly<{
+  __typename: 'OwnershipWeightedVoting';
+}>;
+
 type Policy = Readonly<{
   __typename: 'Policy';
   id: string;
   proposalPeriod: number;
-  governance: GovernanceV1;
+  governance: GovernanceV1 | OwnershipWeightedVoting;
 }>;
 
 type FungibleToken = Readonly<{

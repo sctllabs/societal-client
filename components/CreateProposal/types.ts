@@ -32,7 +32,25 @@ export enum ProposalEnum {
   PROPOSE_REMOVE_MEMBER = 'Propose Remove Member'
 }
 
+// export enum GovernanceV1 {
+//   Council = 'Council',
+//   Democracy = 'Governance V1'
+// }
+
+// export enum OwnershipWeightedVoting {
+//   Council = 'Council',
+//   EthGovernance = 'Ownership Weighted Voting'
+// }
+
+// export enum Some {
+//   GovernanceV1,
+//   EthGovernanceProposals
+// }
+
+// export type ProposalSelection = DemocracyProposals | EthGovernanceProposals;
+
 export enum ProposalVotingAccessEnum {
-  Council = 'Council Proposals',
-  Democracy = 'Governance/Democracy Proposals'
+  Council = 'Council',
+  Democracy = 'Governance V1',
+  EthGovernance = 'Ownership Weighted Voting'
 }
