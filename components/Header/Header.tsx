@@ -1,6 +1,6 @@
 import { useAtomValue } from 'jotai';
 import { currentAccountBalanceAtom } from 'store/account';
-import { currencySymbolAtom } from 'store/api';
+import { chainSymbolAtom } from 'store/api';
 
 import { formatBalance } from 'utils/formatBalance';
 
@@ -13,7 +13,7 @@ import styles from './Header.module.scss';
 
 export function Header() {
   const currentAccountBalance = useAtomValue(currentAccountBalanceAtom);
-  const currencySymbol = useAtomValue(currencySymbolAtom);
+  const currencySymbol = useAtomValue(chainSymbolAtom);
 
   return (
     <header className={styles.root}>

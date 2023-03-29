@@ -2,9 +2,19 @@ import { ChangeEventHandler, Dispatch, SetStateAction } from 'react';
 
 import { useAtomValue } from 'jotai';
 import { accountsAtom } from 'store/account';
+import { currentDaoAtom } from 'store/dao';
+import { tokenSymbolAtom } from 'store/token';
+import { chainSymbolAtom } from 'store/api';
 
 import type { KeyringPair } from '@polkadot/keyring/types';
 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from 'components/ui-kit/Select';
 import { Input } from 'components/ui-kit/Input';
 import { Typography } from 'components/ui-kit/Typography';
 import { MembersDropdown } from 'components/MembersDropdown';
@@ -17,13 +27,13 @@ import {
   State
 } from './types';
 import styles from './CreateProposal.module.scss';
-
-const MAX_INPUT_LENGTH = 500;
+import { bountiesAtom } from '../../store/bounty';
 
 type ProposalInputsProps = {
   proposalType: ProposalEnum | null;
   state: State;
   setState: Dispatch<SetStateAction<State>>;
+  setCurrency: Dispatch<SetStateAction<string | null>>;
   members: KeyringPair[];
   proposalVotingAccess: ProposalVotingAccessEnum | null;
 };
@@ -31,23 +41,28 @@ type ProposalInputsProps = {
 export function ProposalInputs({
   state,
   setState,
+  setCurrency,
   members,
   proposalType,
   proposalVotingAccess
 }: ProposalInputsProps) {
   const accounts = useAtomValue(accountsAtom);
+  const currentDao = useAtomValue(currentDaoAtom);
+  const tokenSymbol = useAtomValue(tokenSymbolAtom);
+  const chainSymbol = useAtomValue(chainSymbolAtom);
+  const bounties = useAtomValue(bountiesAtom);
 
   let _accounts: KeyringPair[] | undefined;
 
   switch (proposalType) {
-    case ProposalEnum.PROPOSE_ADD_MEMBER: {
+    case ProposalEnum.ADD_MEMBER: {
       _accounts = accounts?.filter(
         (_account) =>
           !members?.find((_member) => _member.address === _account.address)
       );
       break;
     }
-    case ProposalEnum.PROPOSE_REMOVE_MEMBER: {
+    case ProposalEnum.REMOVE_MEMBER: {
       _accounts = accounts?.filter((_account) =>
         members?.find((_member) => _member.address === _account.address)
       );
@@ -79,35 +94,92 @@ export function ProposalInputs({
     }));
   };
 
-  return (
-    <div className={styles['proposal-input-container']}>
-      <Input
-        name={InputName.TITLE}
-        label={InputLabel.TITLE}
-        value={state.title}
-        onChange={onInputChange}
-        maxLength={MAX_INPUT_LENGTH}
-        hint={
-          <Typography variant="caption3">{state.title.length}/500</Typography>
-        }
-        required
-      />
+  const onCurrencyValueChange = (currency: string) => setCurrency(currency);
 
-      <Input
-        name={InputName.DESCRIPTION}
-        label={InputLabel.DESCRIPTION}
-        value={state.description}
-        onChange={onInputChange}
-        maxLength={MAX_INPUT_LENGTH}
-        hint={
-          <Typography variant="caption3">
-            {state.description.length}/500
-          </Typography>
-        }
-        required
-      />
-      {(proposalType === ProposalEnum.PROPOSE_TRANSFER ||
-        proposalType === ProposalEnum.PROPOSE_TRANSFER_GOVERNANCE_TOKEN) && (
+  const onBountyValueChange = (bountyIndex: string) =>
+    setState((prevState) => ({ ...prevState, bountyIndex }));
+
+  return (
+    <>
+      {proposalType === ProposalEnum.BOUNTY_CURATOR && (
+        <div className={styles['proposal-input-transfer']}>
+          <MembersDropdown
+            accounts={_accounts}
+            onValueChange={onAccountValueChange}
+          >
+            <Input
+              onChange={onInputChange}
+              name={InputName.TARGET}
+              label={InputLabel.CURATOR}
+              value={
+                (accounts?.find((_account) => _account.address === state.target)
+                  ?.meta.name as string) ?? state.target
+              }
+              required
+            />
+          </MembersDropdown>
+
+          <Select onValueChange={onBountyValueChange}>
+            <SelectTrigger>
+              <SelectValue placeholder={InputLabel.BOUNTY_INDEX} />
+            </SelectTrigger>
+            <SelectContent>
+              {bounties?.map((bounty) => (
+                <SelectItem key={bounty.id} value={bounty.index.toString()}>
+                  <Typography variant="body2">{bounty.index}</Typography>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      )}
+      {(proposalType === ProposalEnum.BOUNTY ||
+        proposalType === ProposalEnum.BOUNTY_CURATOR) &&
+        chainSymbol && (
+          <div className={styles['proposal-input-bounty-amount']}>
+            <Input
+              name={InputName.AMOUNT}
+              label={
+                proposalType === ProposalEnum.BOUNTY
+                  ? InputLabel.AMOUNT
+                  : InputLabel.FEE
+              }
+              value={state.amount}
+              onChange={onInputChange}
+              type="tel"
+              required
+              endAdornment={
+                currentDao?.fungibleToken?.id && tokenSymbol ? (
+                  <Select
+                    defaultValue={chainSymbol}
+                    onValueChange={onCurrencyValueChange}
+                  >
+                    <SelectTrigger datatype="input">
+                      <SelectValue defaultValue={chainSymbol} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value={chainSymbol}>
+                        <Typography variant="body2">{chainSymbol}</Typography>
+                      </SelectItem>
+                      <SelectItem value={tokenSymbol}>
+                        <Typography variant="body2">{tokenSymbol}</Typography>
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                ) : (
+                  <Typography
+                    className={styles['select-currency']}
+                    variant="body2"
+                  >
+                    {chainSymbol}
+                  </Typography>
+                )
+              }
+            />
+          </div>
+        )}
+      {(proposalType === ProposalEnum.TRANSFER ||
+        proposalType === ProposalEnum.TRANSFER_GOVERNANCE_TOKEN) && (
         <div className={styles['proposal-input-transfer']}>
           <Input
             name={InputName.AMOUNT}
@@ -135,8 +207,8 @@ export function ProposalInputs({
           </MembersDropdown>
         </div>
       )}
-      {(proposalType === ProposalEnum.PROPOSE_ADD_MEMBER ||
-        proposalType === ProposalEnum.PROPOSE_REMOVE_MEMBER) && (
+      {(proposalType === ProposalEnum.ADD_MEMBER ||
+        proposalType === ProposalEnum.REMOVE_MEMBER) && (
         <div className={styles['proposal-input-member']}>
           <MembersDropdown
             accounts={_accounts}
@@ -167,6 +239,6 @@ export function ProposalInputs({
           />
         </div>
       )}
-    </div>
+    </>
   );
 }

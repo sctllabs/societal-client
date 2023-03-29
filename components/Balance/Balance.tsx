@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 
 import { useAtomValue } from 'jotai';
 import { currentDaoAtom } from 'store/dao';
-import { apiAtom, currencySymbolAtom } from 'store/api';
+import { apiAtom, chainSymbolAtom } from 'store/api';
 
 import { formatBalance } from 'utils/formatBalance';
 
@@ -15,7 +15,7 @@ import styles from './Balance.module.scss';
 
 export function Balance() {
   const api = useAtomValue(apiAtom);
-  const currency = useAtomValue(currencySymbolAtom);
+  const currency = useAtomValue(chainSymbolAtom);
   const [balance, setBalance] = useState<bigint | null>(null);
 
   const currentDao = useAtomValue(currentDaoAtom);

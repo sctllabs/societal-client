@@ -8,6 +8,7 @@ import { PreloaderToken } from './PreloaderToken';
 import { PreloaderCurrency } from './PreloaderCurrency';
 import { PreloaderDao } from './PreloaderDao';
 import { PreloaderAccountBalance } from './PreloaderAccountBalance';
+import { PreloaderBounties } from './PreloaderBounties';
 
 export function Preloader() {
   const router = useRouter();
@@ -24,6 +25,7 @@ export function Preloader() {
       <PreloaderAccountBalance />
       {daoIdExists && <PreloaderDao />}
       <PreloaderToken />
+      <PreloaderBounties />
     </>
   );
 }

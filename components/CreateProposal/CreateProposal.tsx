@@ -5,7 +5,7 @@ import { useDaoDemocracyContract } from 'hooks/useDaoDemocracyContract';
 import { useDaoEthGovernanceContract } from 'hooks/useDaoEthGovernanceContract';
 
 import { useAtomValue } from 'jotai';
-import { apiAtom, keyringAtom } from 'store/api';
+import { apiAtom, chainSymbolAtom, keyringAtom } from 'store/api';
 import {
   accountsAtom,
   metamaskAccountAtom,
@@ -36,18 +36,28 @@ import {
   DialogTrigger
 } from 'components/ui-kit/Dialog';
 
-import { ProposalEnum, ProposalVotingAccessEnum, State } from './types';
+import {
+  ProposalBasicState,
+  ProposalEnum,
+  ProposalVotingAccessEnum,
+  State
+} from './types';
 import styles from './CreateProposal.module.scss';
 import { ProposalType } from './ProposalType';
 import { ProposalInputs } from './ProposalInputs';
 import { ProposalVotingAccess } from './ProposalVotingAccess';
+import { ProposalBasicInputs } from './ProposalBasicInputs';
 
 const INITIAL_STATE: State = {
   amount: '',
-  description: '',
   target: '',
+  balance: '',
+  bountyIndex: ''
+};
+
+const INITIAL_BASIC_STATE: ProposalBasicState = {
   title: '',
-  balance: ''
+  description: ''
 };
 
 export function CreateProposal() {
@@ -56,20 +66,32 @@ export function CreateProposal() {
   const [proposalVotingAccess, setProposalVotingAccess] =
     useState<ProposalVotingAccessEnum | null>(null);
   const [proposalType, setProposalType] = useState<ProposalEnum | null>(null);
-
+  const [proposalBasicState, setProposalBasicState] =
+    useState(INITIAL_BASIC_STATE);
   const [members, setMembers] = useState<KeyringPair[]>([]);
+  const [currency, setCurrency] = useState<string | null>(null);
+
   const api = useAtomValue(apiAtom);
   const metamaskAccount = useAtomValue(metamaskAccountAtom);
   const substrateAccount = useAtomValue(substrateAccountAtom);
   const accounts = useAtomValue(accountsAtom);
   const keyring = useAtomValue(keyringAtom);
   const currentDao = useAtomValue(currentDaoAtom);
+  const chainSymbol = useAtomValue(chainSymbolAtom);
 
   const daoCollectiveContract = useDaoCollectiveContract();
   const daoDemocracyContract = useDaoDemocracyContract();
   const daoEthGovernanceContract = useDaoEthGovernanceContract();
 
   const [state, setState] = useState<State>(INITIAL_STATE);
+
+  useEffect(() => {
+    if (!chainSymbol) {
+      return;
+    }
+
+    setCurrency(chainSymbol);
+  }, [chainSymbol]);
 
   const extrinsic = useMemo(() => {
     switch (proposalVotingAccess) {
@@ -119,20 +141,49 @@ export function CreateProposal() {
       const amount = parseInt(state.amount, 10);
 
       switch (proposalType) {
-        case ProposalEnum.PROPOSE_ADD_MEMBER: {
+        case ProposalEnum.ADD_MEMBER: {
           return api?.tx.daoCouncilMembers.addMember(_currentDao.id, target);
         }
-        case ProposalEnum.PROPOSE_REMOVE_MEMBER: {
+        case ProposalEnum.REMOVE_MEMBER: {
           return api?.tx.daoCouncilMembers.removeMember(_currentDao.id, target);
         }
-        case ProposalEnum.PROPOSE_TRANSFER: {
+        case ProposalEnum.TRANSFER: {
           return api?.tx.daoTreasury.spend(_currentDao.id, amount, target);
         }
-        case ProposalEnum.PROPOSE_TRANSFER_GOVERNANCE_TOKEN: {
+        case ProposalEnum.TRANSFER_GOVERNANCE_TOKEN: {
           return api?.tx.daoTreasury.transferToken(
             currentDao?.id,
             amount,
             target
+          );
+        }
+        case ProposalEnum.BOUNTY: {
+          const description = stringToHex(
+            JSON.stringify({
+              title: proposalBasicState.title.trim(),
+              description: proposalBasicState.description.trim()
+            })
+          );
+          if (currency === chainSymbol) {
+            return api?.tx.daoBounties.createBounty(
+              currentDao?.id,
+              amount,
+              description
+            );
+          }
+          return api?.tx.daoBounties.createTokenBounty(
+            currentDao?.id,
+            currentDao?.fungibleToken.id,
+            amount,
+            description
+          );
+        }
+        case ProposalEnum.BOUNTY_CURATOR: {
+          return api?.tx.daoBounties.proposeCurator(
+            currentDao?.id,
+            state.bountyIndex,
+            target,
+            amount
           );
         }
         default: {
@@ -141,16 +192,24 @@ export function CreateProposal() {
       }
     },
     [
+      state.target,
+      state.amount,
+      state.bountyIndex,
+      proposalType,
       api?.tx.daoCouncilMembers,
       api?.tx.daoTreasury,
+      api?.tx.daoBounties,
       currentDao?.id,
-      proposalType,
-      state.amount,
-      state.target
+      currentDao?.fungibleToken.id,
+      proposalBasicState.title,
+      proposalBasicState.description,
+      currency,
+      chainSymbol
     ]
   );
 
   useEffect(() => {
+    setProposalBasicState(INITIAL_BASIC_STATE);
     setState(INITIAL_STATE);
   }, [modalOpen]);
 
@@ -179,8 +238,8 @@ export function CreateProposal() {
     }
     const meta = stringToHex(
       JSON.stringify({
-        title: state.title.trim(),
-        description: state.description.trim()
+        title: proposalBasicState.title.trim(),
+        description: proposalBasicState.description.trim()
       })
     );
 
@@ -213,20 +272,20 @@ export function CreateProposal() {
     getProposalTx,
     proposalVotingAccess,
     state.balance,
-    state.description,
-    state.title
+    proposalBasicState.description,
+    proposalBasicState.title
   ]);
 
   const disabled =
     !proposalVotingAccess ||
     !proposalType ||
-    !state.title ||
-    !state.description ||
-    ((proposalType === ProposalEnum.PROPOSE_TRANSFER ||
-      proposalType === ProposalEnum.PROPOSE_TRANSFER_GOVERNANCE_TOKEN) &&
+    !proposalBasicState.title ||
+    !proposalBasicState.description ||
+    ((proposalType === ProposalEnum.TRANSFER ||
+      proposalType === ProposalEnum.TRANSFER_GOVERNANCE_TOKEN) &&
       (!state.amount || !state.target)) ||
-    ((proposalType === ProposalEnum.PROPOSE_ADD_MEMBER ||
-      proposalType === ProposalEnum.PROPOSE_REMOVE_MEMBER) &&
+    ((proposalType === ProposalEnum.ADD_MEMBER ||
+      proposalType === ProposalEnum.REMOVE_MEMBER) &&
       !state.target);
 
   const handleProposeClick = async () => {
@@ -236,8 +295,8 @@ export function CreateProposal() {
 
     const meta = stringToHex(
       JSON.stringify({
-        title: state.title.trim(),
-        description: state.description.trim()
+        title: proposalBasicState.title.trim(),
+        description: proposalBasicState.description.trim()
       })
     );
 
@@ -331,13 +390,20 @@ export function CreateProposal() {
                 />
                 <ProposalType setProposalType={setProposalType} />
               </div>
-              <ProposalInputs
-                proposalVotingAccess={proposalVotingAccess}
-                proposalType={proposalType}
-                state={state}
-                setState={setState}
-                members={members}
-              />
+              <div className={styles['proposal-input-container']}>
+                <ProposalBasicInputs
+                  state={proposalBasicState}
+                  setState={setProposalBasicState}
+                />
+                <ProposalInputs
+                  setCurrency={setCurrency}
+                  proposalVotingAccess={proposalVotingAccess}
+                  proposalType={proposalType}
+                  state={state}
+                  setState={setState}
+                  members={members}
+                />
+              </div>
               <div className={styles['buttons-container']}>
                 <Button
                   variant="outlined"

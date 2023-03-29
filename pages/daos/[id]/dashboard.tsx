@@ -12,7 +12,7 @@ import { AccountTokenBalance } from 'components/AccountTokenBalance';
 
 import styles from 'styles/pages/dashboard.module.scss';
 
-export default function DaoDashboard() {
+export default function Dashboard() {
   const currentDao = useAtomValue(currentDaoAtom);
   const currentDaoLoading = useAtomValue(currentDaoLoadingAtom);
 

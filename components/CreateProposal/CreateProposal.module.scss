@@ -1,3 +1,5 @@
+@use "styles/colors";
+
 .container {
   display: flex;
   flex-direction: column;
@@ -129,4 +131,16 @@
 
 .balance {
   width: calc(50% - 2.5rem);
+}
+
+.proposal-input-bounty-amount {
+  width: calc(50% - 2.5rem);
+}
+
+.select-currency {
+  align-items: center;
+  background-color: #{colors.$grayscale-100};
+  display: inline-flex;
+  gap: 4px;
+  padding: 0 8px;
 }

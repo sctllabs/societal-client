@@ -1,9 +1,13 @@
 export type State = {
   amount: string;
   target: string;
-  description: string;
-  title: string;
   balance: string;
+  bountyIndex: string;
+};
+
+export type ProposalBasicState = {
+  title: string;
+  description: string;
 };
 
 export enum InputName {
@@ -22,14 +26,19 @@ export enum InputLabel {
   MEMBER = 'Choose a member',
   DESCRIPTION = 'Description',
   TITLE = 'Title',
-  DEPOSIT = 'Deposit'
+  DEPOSIT = 'Deposit',
+  FEE = 'Fee',
+  CURATOR = 'Choose a bounty curator',
+  BOUNTY_INDEX = 'Enter bounty index or choose from the list'
 }
 
 export enum ProposalEnum {
-  PROPOSE_TRANSFER = 'Propose Transfer',
-  PROPOSE_TRANSFER_GOVERNANCE_TOKEN = 'Propose Transfer Governance Token',
-  PROPOSE_ADD_MEMBER = 'Propose Add Member',
-  PROPOSE_REMOVE_MEMBER = 'Propose Remove Member'
+  TRANSFER = 'Transfer',
+  TRANSFER_GOVERNANCE_TOKEN = 'Transfer Governance Token',
+  ADD_MEMBER = 'Add Member',
+  REMOVE_MEMBER = 'Remove Member',
+  BOUNTY = 'Bounty',
+  BOUNTY_CURATOR = 'Bounty Curator'
 }
 
 export enum ProposalVotingAccessEnum {

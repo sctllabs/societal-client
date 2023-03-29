@@ -37,7 +37,7 @@
   align-items: center;
   display: flex;
   justify-content: space-between;
-  padding-left: 1.5rem;
+  padding-left: 24px;
   width: 100%;
 }
 
@@ -137,6 +137,7 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
+  margin-top: 28px;
 }
 
 .buttons-container {
@@ -229,7 +230,7 @@
 }
 
 .line {
-  background-color:  #{colors.$red-1};
+  background-color: #{colors.$red-1};
   display: block;
   height: 4px;
   margin: 0;
@@ -272,7 +273,7 @@
 }
 
 .approved {
- --referendum-background-color: #{rgba(colors.$green-1, 0.1)};
+  --referendum-background-color: #{rgba(colors.$green-1, 0.1)};
   --referendum-border-color: #{colors.$green-1};
 }
 
@@ -310,4 +311,23 @@
 
 .icon-completed {
   color: #{colors.$green-1};
+}
+
+.curator-container {
+  display: flex;
+  gap: 40px;
+  align-items: center;
+  margin-top: 12px;
+}
+
+.curator {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.bounty {
+  display: flex;
+  align-items: center;
+  gap: 12px
 }

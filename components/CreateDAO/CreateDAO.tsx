@@ -22,7 +22,7 @@ import { evmToAddress, isEthereumAddress } from '@polkadot/util-crypto';
 import { stringToHex } from '@polkadot/util';
 
 import type { Option, u32 } from '@polkadot/types';
-import type { CreateDaoInput, DaoCodec } from 'types';
+import type { CreateDaoInput, DaoCodec, TxFailedCallback } from 'types';
 
 import { Typography } from 'components/ui-kit/Typography';
 import { Button } from 'components/ui-kit/Button';
@@ -365,6 +365,16 @@ export function CreateDAO() {
     }
   };
 
+  const onFailed: TxFailedCallback = () => {
+    toast.error(
+      <Notification
+        title="Transaction declined"
+        body="Transaction was declined"
+        variant="error"
+      />
+    );
+  };
+
   const handleOnSuccess = async () => {
     daoCreatedRef.current = true;
     setProposedDaoId(nextDaoId);
@@ -435,6 +445,7 @@ export function CreateDAO() {
           {substrateAccount ? (
             <TxButton
               onSuccess={handleOnSuccess}
+              onFailed={onFailed}
               disabled={disabled}
               accountId={substrateAccount?.address}
               params={handleTransform}

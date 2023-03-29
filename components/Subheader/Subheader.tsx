@@ -33,6 +33,11 @@ const navigations: Navigation[] = [
     icon: 'governance',
     title: 'Governance',
     href: 'governance'
+  },
+  {
+    icon: 'treasury',
+    title: 'Treasury',
+    href: 'treasury'
   }
 ];
 

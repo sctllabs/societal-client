@@ -45,8 +45,31 @@ export enum ProposalType {
   AddMember = 'AddMember',
   RemoveMember = 'RemoveMember',
   Spend = 'Spend',
-  TransferToken = 'TransferToken'
+  TransferToken = 'TransferToken',
+  CreateBounty = 'CreateBounty',
+  CreateTokenBounty = 'CreateTokenBounty',
+  ProposeCurator = 'ProposeCurator'
 }
+
+export type ProposeCuratorProposal = Readonly<{
+  __typename: ProposalType.ProposeCurator;
+  bountyId: number;
+  curator: Account;
+  fee: bigint;
+}>;
+
+export type CreateBountyProposal = Readonly<{
+  __typename: ProposalType.CreateBounty;
+  value: string;
+  description: string;
+}>;
+
+export type CreateTokenBountyProposal = Readonly<{
+  __typename: ProposalType.CreateTokenBounty;
+  value: string;
+  description: string;
+  tokenId?: string;
+}>;
 
 export type AddMemberProposal = Readonly<{
   __typename: ProposalType.AddMember;
@@ -74,7 +97,10 @@ export type ProposalKind =
   | AddMemberProposal
   | RemoveMemberProposal
   | SpendProposal
-  | TransferProposal;
+  | TransferProposal
+  | CreateBountyProposal
+  | CreateTokenBountyProposal
+  | ProposeCuratorProposal;
 
 export type CouncilProposalStatus =
   | 'Open'

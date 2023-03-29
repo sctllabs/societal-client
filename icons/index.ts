@@ -90,6 +90,7 @@ import treasury from './treasury.svg';
 import userAdd from './user-add.svg';
 import userDelete from './user-delete.svg';
 import userFeed from './user-feed.svg';
+import userLock from './user-lock.svg';
 import userProfile from './user-profile.svg';
 import users from './users.svg';
 import viewBlock from './view-block.svg';
@@ -193,6 +194,7 @@ const icons = {
   'user-add': userAdd,
   'user-delete': userDelete,
   'user-feed': userFeed,
+  'user-lock': userLock,
   'user-profile': userProfile,
   users,
   'view-block': viewBlock,

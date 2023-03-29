@@ -2,16 +2,25 @@
 
 .trigger {
   align-items: center;
-  background-color: white;
-  border: 1px solid #{colors.$purple-2};
-  border-radius: 8px;
+  background-color: #{colors.$grayscale-100};
   cursor: pointer;
   display: inline-flex;
   gap: 4px;
-  height: 40px;
-  justify-content: space-between;
   padding: 0 8px;
+}
+
+.trigger-default {
+  border: 1px solid #{colors.$purple-2};
+  border-radius: 8px;
+  justify-content: space-between;
   width: 100%;
+  height: 40px;
+}
+
+.trigger-input {
+  align-items: center;
+  border: 0;
+  height: 24px;
 }
 
 .content {
