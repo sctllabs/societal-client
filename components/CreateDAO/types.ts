@@ -75,12 +75,20 @@ export type GovernancePeriodInputType = {
 export type DaoBountyState = {
   updatePeriod: string;
   awardDelayPeriod: string;
+  spendPeriod: string;
   updatePeriodType: ProposalPeriod;
   awardDelayPeriodType: ProposalPeriod;
+  spendPeriodType: ProposalPeriod;
 };
 
-export type BountyPeriodName = 'updatePeriod' | 'awardDelayPeriod';
-export type BountyPeriodTypeName = 'updatePeriodType' | 'awardDelayPeriodType';
+export type BountyPeriodName =
+  | 'updatePeriod'
+  | 'awardDelayPeriod'
+  | 'spendPeriod';
+export type BountyPeriodTypeName =
+  | 'updatePeriodType'
+  | 'awardDelayPeriodType'
+  | 'spendPeriodType';
 
 export type BountyPeriodInputType = {
   title: string;

@@ -5,22 +5,33 @@ import { PeriodInput } from './PeriodInput';
 
 import styles from './CreateDAO.module.scss';
 
-const periodInputs: BountyPeriodInputType[] = [
-  {
-    title: 'Bounty Update Period',
-    subtitle: 'Bounty duration. Can be extended by curator.',
-    label: 'Bounty Update Period',
-    periodName: 'updatePeriod',
-    periodTypeName: 'updatePeriodType'
-  },
-  {
-    title: 'Bounty Award Delay',
-    subtitle:
-      'The delay period for which bounty beneficiary need to wait before claim the payout.',
-    label: 'Bounty Award Delay',
-    periodName: 'awardDelayPeriod',
-    periodTypeName: 'awardDelayPeriodType'
-  }
+const periodInputs: BountyPeriodInputType[][] = [
+  [
+    {
+      title: 'Bounty Update Period',
+      subtitle: 'Bounty duration. Can be extended by curator.',
+      label: 'Bounty Update Period',
+      periodName: 'updatePeriod',
+      periodTypeName: 'updatePeriodType'
+    },
+    {
+      title: 'Bounty Award Delay',
+      subtitle:
+        'The delay period for which bounty beneficiary need to wait before claim the payout.',
+      label: 'Bounty Award Delay',
+      periodName: 'awardDelayPeriod',
+      periodTypeName: 'awardDelayPeriodType'
+    }
+  ],
+  [
+    {
+      title: 'Spend Period',
+      subtitle: 'Periodic treasury spend period used for bounties funding.',
+      label: 'Spend Period',
+      periodName: 'spendPeriod',
+      periodTypeName: 'spendPeriodType'
+    }
+  ]
 ];
 
 type DaoBountyProps = {
@@ -31,20 +42,25 @@ type DaoBountyProps = {
 export function DaoBounty({ state, setState }: DaoBountyProps) {
   return (
     <div>
-      <div className={styles['proposal-period-container']}>
-        {periodInputs.map((_periodInput) => (
-          <PeriodInput
-            key={_periodInput.title}
-            title={_periodInput.title}
-            subtitle={_periodInput.subtitle}
-            periodLabel={_periodInput.label}
-            periodName={_periodInput.periodName}
-            periodTypeName={_periodInput.periodTypeName}
-            state={state}
-            setState={setState}
-          />
-        ))}
-      </div>
+      {periodInputs.map((_periodInputs) => (
+        <div
+          key={`${_periodInputs[0].title}-${_periodInputs[1]?.title}`}
+          className={styles['proposal-period-container']}
+        >
+          {_periodInputs.map((_periodInput) => (
+            <PeriodInput
+              key={_periodInput.title}
+              title={_periodInput.title}
+              subtitle={_periodInput.subtitle}
+              periodLabel={_periodInput.label}
+              periodName={_periodInput.periodName}
+              periodTypeName={_periodInput.periodTypeName}
+              state={state}
+              setState={setState}
+            />
+          ))}
+        </div>
+      ))}
     </div>
   );
 }
