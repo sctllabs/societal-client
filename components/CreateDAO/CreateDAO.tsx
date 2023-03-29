@@ -29,6 +29,7 @@ import { Button } from 'components/ui-kit/Button';
 import { Notification } from 'components/ui-kit/Notifications';
 import { TxButton } from 'components/TxButton';
 import {
+  DaoBasicState,
   DaoBountyState,
   DaoGovernanceState,
   DaoInfoState,
@@ -44,6 +45,7 @@ import { DaoGovernance } from './DaoGovernance';
 
 import styles from './CreateDAO.module.scss';
 import { DaoBounty } from './DaoBounty';
+import { DaoBasic } from './DaoBasic';
 
 const initialDaoInfoState: DaoInfoState = {
   name: '',
@@ -59,13 +61,10 @@ const initialDaoTokenState: DaoTokenState = {
 };
 
 const initialDaoGovernanceState: DaoGovernanceState = {
-  approveOrigin: '1/2',
   enactmentPeriod: '',
   launchPeriod: '',
-  proposalPeriod: '',
   voteLockingPeriod: '',
   votingPeriod: '',
-  proposalPeriodType: ProposalPeriod.DAYS,
   enactmentPeriodType: ProposalPeriod.DAYS,
   launchPeriodType: ProposalPeriod.DAYS,
   voteLockingPeriodType: ProposalPeriod.DAYS,
@@ -80,9 +79,15 @@ const initialDaoMembersState: DaoMembersState = {
 const initialDaoBountyState: DaoBountyState = {
   updatePeriod: '',
   awardDelayPeriod: '',
-  spendPeriod: '',
   updatePeriodType: ProposalPeriod.DAYS,
-  awardDelayPeriodType: ProposalPeriod.DAYS,
+  awardDelayPeriodType: ProposalPeriod.DAYS
+};
+
+const initialDaoBasicState: DaoBasicState = {
+  approveOrigin: '1/2',
+  proposalPeriod: '',
+  spendPeriod: '',
+  proposalPeriodType: ProposalPeriod.DAYS,
   spendPeriodType: ProposalPeriod.DAYS
 };
 
@@ -100,6 +105,7 @@ export function CreateDAO() {
   const [daoBounty, setDaoBounty] = useState<DaoBountyState>(
     initialDaoBountyState
   );
+  const [daoBasic, setDaoBasic] = useState<DaoBasicState>(initialDaoBasicState);
   const api = useAtomValue(apiAtom);
   const keyring = useAtomValue(keyringAtom);
   const daos = useAtomValue(daosAtom);
@@ -203,9 +209,16 @@ export function CreateDAO() {
 
     const initial_balance = daoToken.quantity;
     const token_id = nextDaoId;
+    const proportion = daoBasic.approveOrigin
+      .split('/')
+      .map((x) => parseInt(x, 10));
     const proposal_period = convertTimeToBlock(
-      daoGovernance.proposalPeriod,
-      daoGovernance.proposalPeriodType
+      daoBasic.proposalPeriod,
+      daoBasic.proposalPeriodType
+    );
+    const spend_period = convertTimeToBlock(
+      daoBasic.spendPeriod,
+      daoBasic.spendPeriodType
     );
     const enactment_period = convertTimeToBlock(
       daoGovernance.enactmentPeriod,
@@ -235,14 +248,6 @@ export function CreateDAO() {
       daoBounty.updatePeriod,
       daoBounty.updatePeriodType
     );
-    const spend_period = convertTimeToBlock(
-      daoBounty.spendPeriod,
-      daoBounty.spendPeriodType
-    );
-
-    const proportion = daoGovernance.approveOrigin
-      .split('/')
-      .map((x) => parseInt(x, 10));
 
     const data: CreateDaoInput = {
       name: daoInfo.name.trim(),
@@ -376,9 +381,11 @@ export function CreateDAO() {
       (!daoToken.name || !daoToken.symbol)) ||
     (daoToken.type === TokenType.ETH_TOKEN && !daoToken.address) ||
     !daoMembers.role ||
-    !daoGovernance.proposalPeriod ||
-    !daoGovernance.proposalPeriodType ||
-    !daoGovernance.approveOrigin ||
+    !daoBasic.approveOrigin ||
+    !daoBasic.proposalPeriod ||
+    !daoBasic.proposalPeriodType ||
+    !daoBasic.spendPeriod ||
+    !daoBasic.spendPeriodType ||
     !daoGovernance.votingPeriodType ||
     !daoGovernance.votingPeriodType ||
     !daoGovernance.voteLockingPeriod ||
@@ -390,9 +397,7 @@ export function CreateDAO() {
     !daoBounty.awardDelayPeriod ||
     !daoBounty.awardDelayPeriodType ||
     !daoBounty.updatePeriod ||
-    !daoBounty.updatePeriodType ||
-    !daoBounty.spendPeriod ||
-    !daoBounty.spendPeriodType;
+    !daoBounty.updatePeriodType;
 
   return (
     <div className={styles.container}>
@@ -412,6 +417,7 @@ export function CreateDAO() {
 
         <DaoToken state={daoToken} setState={setDaoToken} />
 
+        <DaoBasic state={daoBasic} setState={setDaoBasic} />
         <DaoGovernance state={daoGovernance} setState={setDaoGovernance} />
         <DaoBounty state={daoBounty} setState={setDaoBounty} />
 
