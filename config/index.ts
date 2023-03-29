@@ -1,5 +1,7 @@
 import assert from 'assert';
 
+export { awsConfig } from './aws';
+
 export enum Environment {
   development = 'development',
   staging = 'staging',
@@ -8,6 +10,7 @@ export enum Environment {
 
 export type AppConfig = {
   appName: string;
+  appDomain: string;
   networkName: string;
   providerSocket: string;
   customRPCMethods?: object;
@@ -27,6 +30,7 @@ export type AppConfig = {
 };
 
 const appName = process.env.NEXT_PUBLIC_APP_NAME;
+const appDomain = process.env.NEXT_PUBLIC_APP_DOMAIN;
 const networkName = process.env.NEXT_PUBLIC_NETWORK_NAME;
 const providerSocket = process.env.NEXT_PUBLIC_PROVIDER_SOCKET;
 const rpcURL = process.env.NEXT_PUBLIC_RPC_URL;
@@ -51,6 +55,7 @@ const httpApiUri = process.env.NEXT_PUBLIC_HTTP_API_URI;
 const wsApiUri = process.env.NEXT_PUBLIC_WS_API_URI;
 
 assert(appName, 'APP_NAME was not provided.');
+assert(appDomain, 'APP_DOMAIN was not provided.');
 assert(networkName, 'NETWORK_NAME was not provided.');
 assert(providerSocket, 'PROVIDER_SOCKET was not provided.');
 assert(rpcURL, 'RPC_URL was not provided.');
@@ -96,6 +101,7 @@ const expectedBlockTimeInSeconds = parseInt(
 
 export const appConfig: AppConfig = {
   appName,
+  appDomain,
   networkName,
   providerSocket,
   chainId,
