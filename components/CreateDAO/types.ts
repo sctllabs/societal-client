@@ -4,9 +4,6 @@ export type DaoMembersState = {
 };
 
 export type DaoGovernanceState = {
-  approveOrigin: keyof typeof ApproveOrigin;
-  proposalPeriod: string;
-  proposalPeriodType: ProposalPeriod;
   votingPeriod: string;
   votingPeriodType: ProposalPeriod;
   enactmentPeriod: string;
@@ -50,15 +47,17 @@ export enum TokenType {
 
 export type Role = 'Council';
 
+export type BasicPeriodName = 'proposalPeriod' | 'spendPeriod';
+
+export type BasicPeriodTypeName = 'proposalPeriodType' | 'spendPeriodType';
+
 export type GovernancePeriodName =
-  | 'proposalPeriod'
   | 'votingPeriod'
   | 'enactmentPeriod'
   | 'voteLockingPeriod'
   | 'launchPeriod';
 
 export type GovernancePeriodTypeName =
-  | 'proposalPeriodType'
   | 'votingPeriodType'
   | 'enactmentPeriodType'
   | 'voteLockingPeriodType'
@@ -72,23 +71,31 @@ export type GovernancePeriodInputType = {
   periodTypeName: GovernancePeriodTypeName;
 };
 
-export type DaoBountyState = {
-  updatePeriod: string;
-  awardDelayPeriod: string;
+export type BasicPeriodInputType = {
+  title: string;
+  subtitle: string;
+  label: string;
+  periodName: BasicPeriodName;
+  periodTypeName: BasicPeriodTypeName;
+};
+
+export type DaoBasicState = {
+  approveOrigin: keyof typeof ApproveOrigin;
+  proposalPeriod: string;
+  proposalPeriodType: ProposalPeriod;
   spendPeriod: string;
-  updatePeriodType: ProposalPeriod;
-  awardDelayPeriodType: ProposalPeriod;
   spendPeriodType: ProposalPeriod;
 };
 
-export type BountyPeriodName =
-  | 'updatePeriod'
-  | 'awardDelayPeriod'
-  | 'spendPeriod';
-export type BountyPeriodTypeName =
-  | 'updatePeriodType'
-  | 'awardDelayPeriodType'
-  | 'spendPeriodType';
+export type DaoBountyState = {
+  updatePeriod: string;
+  awardDelayPeriod: string;
+  updatePeriodType: ProposalPeriod;
+  awardDelayPeriodType: ProposalPeriod;
+};
+
+export type BountyPeriodName = 'updatePeriod' | 'awardDelayPeriod';
+export type BountyPeriodTypeName = 'updatePeriodType' | 'awardDelayPeriodType';
 
 export type BountyPeriodInputType = {
   title: string;

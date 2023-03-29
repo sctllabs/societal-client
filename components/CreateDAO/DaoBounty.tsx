@@ -22,15 +22,6 @@ const periodInputs: BountyPeriodInputType[][] = [
       periodName: 'awardDelayPeriod',
       periodTypeName: 'awardDelayPeriodType'
     }
-  ],
-  [
-    {
-      title: 'Spend Period',
-      subtitle: 'Periodic treasury spend period used for bounties funding.',
-      label: 'Spend Period',
-      periodName: 'spendPeriod',
-      periodTypeName: 'spendPeriodType'
-    }
   ]
 ];
 
