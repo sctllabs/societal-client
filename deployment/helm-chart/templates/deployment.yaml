@@ -55,6 +55,8 @@ spec:
               name: societal-client-configmap
           - configMapRef:
               name: {{ .Release.Name }}-version
+          - secretRef:
+              name: aws-secret
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}

@@ -1,5 +1,8 @@
+process.env.AWS_BUCKET = 'societal-dev'
+process.env.AWS_REGION = 'us-east-1'
 process.env.NEXT_PUBLIC_PROVIDER_SOCKET = 'ws://127.0.0.1:9944';
 process.env.NEXT_PUBLIC_APP_NAME = 'client';
+process.env.NEXT_PUBLIC_APP_DOMAIN = 'localhost';
 process.env.NEXT_PUBLIC_CHAIN_ID = '1516';
 process.env.NEXT_PUBLIC_RPC_URL = 'http://127.0.0.1:9933';
 process.env.NEXT_PUBLIC_DAO_PRECOMPILE_CONTRACT_ADDRESS =
