@@ -201,6 +201,7 @@ export function CouncilProposalActions({
   };
 
   const disabled = proposal.status !== 'Open';
+  const disabledFinish = proposal.status === 'Executed';
   const ayes = data?.councilVoteHistories.filter(
     (_vote) => _vote.approvedVote
   ).length;
@@ -266,7 +267,8 @@ export function CouncilProposalActions({
 
         <Typography variant="caption2">{ayes || 0}</Typography>
       </span>
-      {ayes !== undefined &&
+      {proposal.status !== 'Executed' &&
+        ayes !== undefined &&
         nays !== undefined &&
         (ayes >= proposal.voteThreshold || nays >= proposal.voteThreshold) && (
           <>
@@ -274,7 +276,7 @@ export function CouncilProposalActions({
             <span className={styles['proposal-vote-button-container']}>
               {metamaskAccount ? (
                 <Button
-                  disabled={disabled}
+                  disabled={disabledFinish}
                   variant="ghost"
                   className={styles['button-vote']}
                   onClick={handleProposalFinish}
@@ -283,7 +285,7 @@ export function CouncilProposalActions({
                 </Button>
               ) : (
                 <TxButton
-                  disabled={disabled}
+                  disabled={disabledFinish}
                   accountId={substrateAccount?.address}
                   tx={api?.tx.daoCouncil.close}
                   params={[

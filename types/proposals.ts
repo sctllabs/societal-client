@@ -54,7 +54,7 @@ export enum ProposalType {
 export type ProposeCuratorProposal = Readonly<{
   __typename: ProposalType.ProposeCurator;
   bountyId: number;
-  curator: Account;
+  curator: string;
   fee: bigint;
 }>;
 

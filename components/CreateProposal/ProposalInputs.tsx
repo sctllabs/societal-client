@@ -1,10 +1,12 @@
-import { ChangeEventHandler, Dispatch, SetStateAction } from 'react';
+import { ChangeEventHandler, Dispatch, SetStateAction, Fragment } from 'react';
+import { format } from 'date-fns';
 
 import { useAtomValue } from 'jotai';
 import { accountsAtom } from 'store/account';
 import { currentDaoAtom } from 'store/dao';
 import { tokenSymbolAtom } from 'store/token';
 import { chainSymbolAtom } from 'store/api';
+import { bountiesAtom } from 'store/bounty';
 
 import type { KeyringPair } from '@polkadot/keyring/types';
 
@@ -12,6 +14,7 @@ import {
   Select,
   SelectContent,
   SelectItem,
+  SelectSeparator,
   SelectTrigger,
   SelectValue
 } from 'components/ui-kit/Select';
@@ -27,7 +30,6 @@ import {
   State
 } from './types';
 import styles from './CreateProposal.module.scss';
-import { bountiesAtom } from '../../store/bounty';
 
 type ProposalInputsProps = {
   proposalType: ProposalEnum | null;
@@ -121,14 +123,59 @@ export function ProposalInputs({
 
           <Select onValueChange={onBountyValueChange}>
             <SelectTrigger>
-              <SelectValue placeholder={InputLabel.BOUNTY_INDEX} />
+              <SelectValue placeholder={InputLabel.BOUNTY_INDEX}>
+                <Typography variant="title5">
+                  Bounty Index - {state.bountyIndex}
+                </Typography>
+              </SelectValue>
             </SelectTrigger>
             <SelectContent>
-              {bounties?.map((bounty) => (
-                <SelectItem key={bounty.id} value={bounty.index.toString()}>
-                  <Typography variant="body2">{bounty.index}</Typography>
-                </SelectItem>
-              ))}
+              {bounties?.map((bounty, index) => {
+                const { title, description } = bounty.description
+                  ? JSON.parse(bounty.description)
+                  : { title: '', description: '' };
+                const date = format(new Date(bounty.createdAt), 'dd MMMM yyyy');
+
+                return (
+                  <Fragment key={bounty.id}>
+                    <SelectItem
+                      className={styles['select-bounty-item']}
+                      value={bounty.index.toString()}
+                    >
+                      <div className={styles['select-bounty-container']}>
+                        <span>
+                          <Typography variant="title5">{title}</Typography>
+                          <Typography variant="body2">{description}</Typography>
+                        </span>
+                        <div className={styles['select-bounty-items']}>
+                          <span className={styles['bounty-item']}>
+                            <Typography variant="caption2">
+                              Bounty Index
+                            </Typography>
+                            <Typography variant="title5">
+                              {bounty.index}
+                            </Typography>
+                          </span>
+                          <span className={styles['bounty-item']}>
+                            <Typography variant="caption2">Amount</Typography>
+                            <Typography variant="title5">
+                              {bounty.value}{' '}
+                              {bounty.nativeToken ? chainSymbol : tokenSymbol}
+                            </Typography>
+                          </span>
+                          <span className={styles['bounty-item']}>
+                            <Typography variant="caption2">Approved</Typography>
+                            <Typography variant="title5">{date}</Typography>
+                          </span>
+                        </div>
+                      </div>
+                    </SelectItem>
+                    {bounties && index !== bounties.length - 1 && (
+                      <SelectSeparator />
+                    )}
+                  </Fragment>
+                );
+              })}
             </SelectContent>
           </Select>
         </div>
@@ -149,7 +196,8 @@ export function ProposalInputs({
               type="tel"
               required
               endAdornment={
-                currentDao?.fungibleToken?.id && tokenSymbol ? (
+                proposalType === ProposalEnum.BOUNTY &&
+                (currentDao?.fungibleToken?.id && tokenSymbol ? (
                   <Select
                     defaultValue={chainSymbol}
                     onValueChange={onCurrencyValueChange}
@@ -173,7 +221,7 @@ export function ProposalInputs({
                   >
                     {chainSymbol}
                   </Typography>
-                )
+                ))
               }
             />
           </div>

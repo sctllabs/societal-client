@@ -29,7 +29,7 @@ export enum InputLabel {
   DEPOSIT = 'Deposit',
   FEE = 'Fee',
   CURATOR = 'Choose a bounty curator',
-  BOUNTY_INDEX = 'Enter bounty index or choose from the list'
+  BOUNTY_INDEX = 'Select bounty from the list'
 }
 
 export enum ProposalEnum {
