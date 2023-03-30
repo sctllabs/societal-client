@@ -32,6 +32,7 @@ import { Countdown } from 'components/Countdown';
 import { CouncilProposalActions } from './CouncilProposalCardActions';
 import { DemocracyProposalCardActions } from './DemocracyProposalCardActions';
 import { DemocracyReferendumCardActions } from './DemocracyReferendumCardActions';
+import { EthGovernanceProposalActions } from './EthGovernanceProposalCardActions';
 
 import styles from './ProposalCard.module.scss';
 
@@ -244,6 +245,9 @@ export function ProposalCard({ proposal }: ProposalCardProps) {
             )}
           {proposal.__typename === 'CouncilProposal' && (
             <CouncilProposalActions proposal={proposal} />
+          )}
+          {proposal.__typename === 'EthGovernanceProposal' && (
+            <EthGovernanceProposalActions proposal={proposal} />
           )}
         </div>
       </div>
