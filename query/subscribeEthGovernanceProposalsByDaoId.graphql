@@ -1,0 +1,38 @@
+subscription SubscribeEthGovernanceProposalsByDaoId($daoId: String!) {
+  ethGovernanceProposals(
+    where: { dao: { id_eq: $daoId } }
+    orderBy: blockNum_DESC
+    limit: 100
+  ) {
+    id
+    hash
+    index
+    status
+    blockNum
+    voteThreshold
+    meta
+    dao {
+      id
+    }
+    account {
+      id
+    }
+    kind {
+      __typename
+      ... on AddMember {
+        who
+      }
+      ... on RemoveMember {
+        who
+      }
+      ... on Spend {
+        beneficiary
+        amount
+      }
+      ... on TransferToken {
+        beneficiary
+        amount
+      }
+    }
+  }
+}

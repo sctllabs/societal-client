@@ -8,7 +8,7 @@ import { apiAtom } from 'store/api';
 
 import { ConvictionOptions, ConvictionToEth } from 'constants/conviction';
 import { useDaoDemocracyContract } from 'hooks/useDaoDemocracyContract';
-import type { DemocracyReferendumMeta } from 'types';
+import type { DemocracyReferendumMeta, GovernanceV1 } from 'types';
 
 import { Notification } from 'components/ui-kit/Notifications';
 import {
@@ -188,8 +188,9 @@ export function DemocracyReferendumVoteModal({
                   ([convictionOption, convictionValue]) => {
                     const duration =
                       ConvictionToEth[convictionValue] *
-                      (currentDao?.policy.governance.enactmentPeriod.valueOf() ||
-                        0) *
+                      ((
+                        currentDao?.policy.governance as GovernanceV1
+                      ).enactmentPeriod.valueOf() || 0) *
                       appConfig.expectedBlockTimeInSeconds *
                       1000;
 

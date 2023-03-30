@@ -1,0 +1,10 @@
+subscription SubscribeEthGovernanceVotesByProposalId($proposalId: String!) {
+  councilVoteHistories(where: { proposal: { id_eq: $proposalId } }, limit: 50) {
+    id
+    aye
+    balance
+    account {
+      id
+    }
+  }
+}

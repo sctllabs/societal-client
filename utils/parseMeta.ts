@@ -4,5 +4,13 @@ type MetaData = {
 };
 
 export function parseMeta(meta?: string): MetaData | null {
-  return meta ? JSON.parse(meta) : null;
+  if (!meta) {
+    return null;
+  }
+
+  try {
+    return JSON.parse(meta);
+  } catch (e) {
+    return null;
+  }
 }

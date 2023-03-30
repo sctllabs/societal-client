@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-toastify';
 import { useDaoCollectiveContract } from 'hooks/useDaoCollectiveContract';
 import { useDaoDemocracyContract } from 'hooks/useDaoDemocracyContract';
+import { useDaoEthGovernanceContract } from 'hooks/useDaoEthGovernanceContract';
 
 import { useAtomValue } from 'jotai';
 import { apiAtom, keyringAtom } from 'store/api';
@@ -40,7 +41,6 @@ import styles from './CreateProposal.module.scss';
 import { ProposalType } from './ProposalType';
 import { ProposalInputs } from './ProposalInputs';
 import { ProposalVotingAccess } from './ProposalVotingAccess';
-import { useDaoEthGovernanceContract } from 'hooks/useDaoEthGovernanceContract';
 
 const INITIAL_STATE: State = {
   amount: '',
@@ -76,9 +76,11 @@ export function CreateProposal() {
       case ProposalVotingAccessEnum.Council:
         return api?.tx.daoCouncil.proposeWithMeta;
       case ProposalVotingAccessEnum.Democracy:
-        api?.tx.daoDemocracy.proposeWithMeta;
+        return api?.tx.daoDemocracy.proposeWithMeta;
       case ProposalVotingAccessEnum.EthGovernance:
-        api?.tx.daoEthGovernance.proposeWithMeta;
+        return api?.tx.daoEthGovernance.proposeWithMeta;
+      default:
+        return api?.tx.daoCouncil.proposeWithMeta;
     }
   }, [api, proposalVotingAccess]);
 
@@ -202,9 +204,12 @@ export function CreateProposal() {
           metamaskAccount?._address,
           meta
         ];
+      default:
+        return [currentDao.id, _tx, LENGTH_BOUND, meta];
     }
   }, [
     currentDao,
+    metamaskAccount,
     getProposalTx,
     proposalVotingAccess,
     state.balance,
@@ -255,8 +260,6 @@ export function CreateProposal() {
           );
       }
       if (proposalVotingAccess === ProposalVotingAccessEnum.EthGovernance) {
-        console.log(metamaskAccount?._address);
-        console.log(_tx?.method.toHex());
         await daoEthGovernanceContract
           ?.connect(metamaskAccount)
           .propose_with_meta(

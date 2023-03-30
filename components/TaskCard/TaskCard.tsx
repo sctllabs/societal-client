@@ -14,6 +14,7 @@ import type {
   AddMemberProposal,
   CouncilProposalMeta,
   DemocracyProposalMeta,
+  EthGovernanceProposalMeta,
   RemoveMemberProposal,
   SpendProposal,
   TransferProposal
@@ -28,7 +29,10 @@ import { Countdown } from 'components/Countdown';
 import styles from './TaskCard.module.scss';
 
 export interface TaskCardProps {
-  proposal: CouncilProposalMeta | DemocracyProposalMeta;
+  proposal:
+    | CouncilProposalMeta
+    | DemocracyProposalMeta
+    | EthGovernanceProposalMeta;
   currentBlock: number | null;
 }
 
@@ -61,6 +65,22 @@ export function TaskCard({ proposal, currentBlock }: TaskCardProps) {
   const meta = parseMeta(proposal.meta);
   const title = meta?.title;
   const description = meta?.description;
+
+  let proposalLabel = null;
+  switch (proposal.__typename) {
+    case 'DemocracyProposal':
+      proposalLabel = 'DemocracyProposal';
+
+      break;
+    case 'EthGovernanceProposal':
+      proposalLabel = 'Ownership Weighted';
+
+      break;
+    default:
+      proposalLabel = 'Council';
+
+      break;
+  }
 
   return (
     <Card className={styles.card}>
@@ -102,11 +122,7 @@ export function TaskCard({ proposal, currentBlock }: TaskCardProps) {
                       : 'dark-blue'
                   }
                 >
-                  <Typography variant="title6">
-                    {proposal.__typename === 'DemocracyProposal'
-                      ? 'Democracy'
-                      : 'Council'}
-                  </Typography>
+                  <Typography variant="title6">{proposalLabel}</Typography>
                 </Chip>
               </span>
             </div>

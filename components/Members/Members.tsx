@@ -29,7 +29,17 @@ export function Members() {
     }
     let unsubscribe: any | null = null;
 
+    const members: { [key: string]: {} } = {};
+    currentDao?.council.forEach((account) => {
+      members[account] = {
+        accountId: account,
+        kind: ['Council']
+      };
+    });
+
     if (!currentDao || !currentDao.fungibleToken) {
+      setDaoMembers(Object.values(members as any));
+
       return undefined;
     }
 
@@ -38,15 +48,6 @@ export function Members() {
     // TODO: use paging here
     api.query.assets.account
       .entries(tokenId, (_assetBalances: [StorageKey, AssetBalance][]) => {
-        const members: { [key: string]: {} } = {};
-
-        currentDao?.council.forEach((account) => {
-          members[account] = {
-            accountId: account,
-            kind: ['Council']
-          };
-        });
-
         _assetBalances.forEach(([key, value]) => {
           const [, accountId] = key.toHuman() as any;
           if (accountId === currentDao.account.id) {

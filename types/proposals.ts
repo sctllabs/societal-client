@@ -5,6 +5,10 @@ export type SubscribeCouncilProposalsByDaoId = {
   readonly councilProposals: CouncilProposalMeta[];
 };
 
+export type SubscribeEthGovernanceProposalsByDaoId = {
+  readonly ethGovernanceProposals: EthGovernanceProposalMeta[];
+};
+
 export type SubscribeDemocracyProposalsByDaoId = {
   readonly democracyProposals: DemocracyProposalMeta[];
 };
@@ -80,6 +84,8 @@ export type CouncilProposalStatus =
   | 'Closed'
   | 'Expired';
 
+export type EthGovernanceProposalStatus = CouncilProposalStatus;
+
 export type DemocracyProposalStatus = 'Open' | 'Referendum';
 
 export type DemocracyReferendumStatus =
@@ -105,6 +111,13 @@ export type CouncilProposalMeta = ProposalMeta & {
   __typename: 'CouncilProposal';
 };
 
+export type EthGovernanceProposalMeta = ProposalMeta & {
+  hash: string;
+  status: EthGovernanceProposalStatus;
+  voteThreshold: bigint;
+  __typename: 'EthGovernanceProposal';
+};
+
 export type DemocracyProposalMeta = ProposalMeta & {
   deposit: string;
   status: DemocracyProposalStatus;
@@ -127,5 +140,13 @@ export type CouncilVoteHistory = Readonly<{
   votedNo: number;
   votedYes: number;
   councillor: Account;
-  __typename: 'VoteHistory';
+  __typename: 'CouncilVoteHistory';
+}>;
+
+export type EthGovernanceVoteHistory = Readonly<{
+  id: string;
+  aye: boolean;
+  balance: number;
+  account: Account;
+  __typename: 'EthGovernanceVoteHistory';
 }>;

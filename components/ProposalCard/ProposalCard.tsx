@@ -15,6 +15,8 @@ import type {
   CouncilProposalMeta,
   DemocracyProposalMeta,
   DemocracyReferendumMeta,
+  EthGovernanceProposalMeta,
+  GovernanceV1,
   RemoveMemberProposal,
   SpendProposal,
   TransferProposal
@@ -37,7 +39,8 @@ export interface ProposalCardProps {
   proposal:
     | CouncilProposalMeta
     | DemocracyProposalMeta
-    | DemocracyReferendumMeta;
+    | DemocracyReferendumMeta
+    | EthGovernanceProposalMeta;
 }
 
 type ProposalStatus =
@@ -84,10 +87,8 @@ export function ProposalCard({ proposal }: ProposalCardProps) {
       return null;
     }
 
-    const {
-      proposalPeriod,
-      governance: { votingPeriod }
-    } = currentDao.policy;
+    const { proposalPeriod, governance } = currentDao.policy;
+    const { votingPeriod } = governance as GovernanceV1;
 
     const end =
       proposal.__typename === 'DemocracyReferendum'

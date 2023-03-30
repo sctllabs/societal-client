@@ -6,13 +6,16 @@ import { apiAtom } from 'store/api';
 
 import { useSubscription } from '@apollo/client';
 import SUBSCRIBE_COUNCIL_PROPOSALS_BY_DAO_ID from 'query/subscribeCouncilProposalsByDaoId.graphql';
+import SUBSCRIBE_ETH_GOVERNANCE_PROPOSALS_BY_DAO_ID from 'query/subscribeEthGovernanceProposalsByDaoId.graphql';
 import SUBSCRIBE_DEMOCRACY_PROPOSALS_BY_DAO_ID from 'query/subscribeDemocracyProposalsByDaoId.graphql';
 
 import type {
   CouncilProposalMeta,
   DemocracyProposalMeta,
+  EthGovernanceProposalMeta,
   SubscribeCouncilProposalsByDaoId,
-  SubscribeDemocracyProposalsByDaoId
+  SubscribeDemocracyProposalsByDaoId,
+  SubscribeEthGovernanceProposalsByDaoId
 } from 'types';
 import type { u32 } from '@polkadot/types';
 
@@ -57,6 +60,14 @@ export function TaskBoard() {
       }
     );
 
+  const { data: ethGovernanceProposalsData } =
+    useSubscription<SubscribeEthGovernanceProposalsByDaoId>(
+      SUBSCRIBE_ETH_GOVERNANCE_PROPOSALS_BY_DAO_ID,
+      {
+        variables: { daoId: currentDao?.id }
+      }
+    );
+
   useEffect(() => {
     (async () => {
       const _currentBlock = (
@@ -73,9 +84,14 @@ export function TaskBoard() {
   const handleFilterClick: MouseEventHandler<HTMLButtonElement> = (e) =>
     setFilter((e.target as HTMLButtonElement).innerText as FilterVariant);
 
-  const proposals: (CouncilProposalMeta | DemocracyProposalMeta)[] = [
+  const proposals: (
+    | CouncilProposalMeta
+    | DemocracyProposalMeta
+    | EthGovernanceProposalMeta
+  )[] = [
     ...(councilProposalsData?.councilProposals ?? []),
-    ...(democracyProposalsData?.democracyProposals ?? [])
+    ...(democracyProposalsData?.democracyProposals ?? []),
+    ...(ethGovernanceProposalsData?.ethGovernanceProposals ?? [])
   ].sort((a, b) => b.blockNum - a.blockNum);
 
   return (

@@ -8,9 +8,9 @@ import {
   SelectTrigger,
   SelectValue
 } from 'components/ui-kit/Select';
+import { Dao } from 'types';
 
 import { InputLabel, ProposalVotingAccessEnum } from './types';
-import { Dao } from 'types';
 
 type ProposalVotingAccessProps = {
   currentDao: Dao | null;
@@ -34,19 +34,16 @@ export function ProposalVotingAccess({
       </SelectTrigger>
       <SelectContent>
         {Object.entries(ProposalVotingAccessEnum)
-          .filter(([_proposalKey, _proposalValue]) => {
-            if (
-              currentDao?.policy.governance.__typename ===
-              'OwnershipWeightedVoting'
-            ) {
-              return _proposalKey !== 'Democracy';
-            } else if (
-              currentDao?.policy.governance.__typename === 'GovernanceV1'
-            ) {
-              return _proposalKey !== 'OwnershipWeightedVoting';
+          .filter(([_proposalKey]) => {
+            const govType = currentDao?.policy.governance.__typename;
+            switch (govType) {
+              case 'OwnershipWeightedVoting':
+                return _proposalKey !== 'Democracy';
+              case 'GovernanceV1':
+                return _proposalKey !== 'OwnershipWeightedVoting';
+              default:
+                return true;
             }
-
-            return true;
           })
           .map(([_proposalKey, _proposalValue]) => (
             <SelectItem value={_proposalValue} key={_proposalKey}>
