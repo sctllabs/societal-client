@@ -327,7 +327,6 @@ export function CreateProposal() {
             <div className={styles.content}>
               <div className={styles['proposal-settings']}>
                 <ProposalVotingAccess
-                  currentDao={currentDao}
                   setProposalVotingAccess={setProposalVotingAccess}
                 />
                 <ProposalType setProposalType={setProposalType} />

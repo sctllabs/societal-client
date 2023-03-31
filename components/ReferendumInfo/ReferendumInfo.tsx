@@ -112,7 +112,7 @@ export function ReferendumInfo() {
         />
       )}
 
-      {accountTokenBalance && (
+      {accountTokenBalance ? (
         <div className={styles['item-container']}>
           <Typography variant="caption2">Locked balance</Typography>
           <span className={styles.balance}>
@@ -131,7 +131,7 @@ export function ReferendumInfo() {
             seconded or voted for proposals.
           </Typography>
         </div>
-      )}
+      ) : null}
       {delegation && (
         <div className={styles['item-container']}>
           <div className={styles['undelegate-container']}>

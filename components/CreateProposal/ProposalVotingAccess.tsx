@@ -1,5 +1,8 @@
 import { Dispatch, SetStateAction } from 'react';
 
+import { useAtomValue } from 'jotai';
+import { currentDaoAtom } from 'store/dao';
+
 import { Typography } from 'components/ui-kit/Typography';
 import {
   Select,
@@ -8,21 +11,20 @@ import {
   SelectTrigger,
   SelectValue
 } from 'components/ui-kit/Select';
-import { Dao } from 'types';
 
 import { InputLabel, ProposalVotingAccessEnum } from './types';
 
 type ProposalVotingAccessProps = {
-  currentDao: Dao | null;
   setProposalVotingAccess: Dispatch<
     SetStateAction<ProposalVotingAccessEnum | null>
   >;
 };
 
 export function ProposalVotingAccess({
-  currentDao,
   setProposalVotingAccess
 }: ProposalVotingAccessProps) {
+  const currentDao = useAtomValue(currentDaoAtom);
+
   const onProposalVotingAccessValueChange = (
     _proposalKind: ProposalVotingAccessEnum
   ) => setProposalVotingAccess(_proposalKind);

@@ -1,5 +1,9 @@
 subscription SubscribeEthGovernanceVotesByProposalId($proposalId: String!) {
-  councilVoteHistories(where: { proposal: { id_eq: $proposalId } }, limit: 50) {
+  ethGovernanceVoteHistories(
+    where: { proposal: { id_eq: $proposalId } },
+    orderBy: blockNum_DESC,
+    limit: 50
+  ) {
     id
     aye
     balance
