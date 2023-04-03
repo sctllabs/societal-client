@@ -101,6 +101,7 @@ export function ReferendumInfo() {
               ? currentDao.policy.governance.votingPeriod
               : currentDao.policy.governance.launchPeriod
           }
+          startingPoint={currentDao.blockNum}
           currentBlock={currentBlock}
         />
       )}

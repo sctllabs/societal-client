@@ -8,6 +8,7 @@ import styles from './CountodnwReferendum.module.scss';
 type CountdownReferendumProps = {
   launchPeriod: number;
   currentBlock: number;
+  startingPoint: number;
   active: boolean;
 };
 
@@ -16,9 +17,14 @@ const timeframes = ['Days', 'Hours', 'Minutes', 'Seconds'];
 export function CountdownReferendum({
   launchPeriod,
   currentBlock,
+  startingPoint,
   active
 }: CountdownReferendumProps) {
-  const countdown = useReferendumCountdown(currentBlock, launchPeriod);
+  const countdown = useReferendumCountdown(
+    currentBlock,
+    launchPeriod,
+    startingPoint
+  );
 
   return (
     <div className={styles.container}>
