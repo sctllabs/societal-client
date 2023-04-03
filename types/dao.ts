@@ -18,18 +18,22 @@ export type DaoNameAndId = {
   name: string;
 };
 
-type GovernanceV1 = Readonly<{
+export type GovernanceV1 = Readonly<{
   __typename: 'GovernanceV1';
   launchPeriod: number;
   votingPeriod: number;
   enactmentPeriod: number;
 }>;
 
+type OwnershipWeightedVoting = Readonly<{
+  __typename: 'OwnershipWeightedVoting';
+}>;
+
 type Policy = Readonly<{
   __typename: 'Policy';
   id: string;
   proposalPeriod: number;
-  governance: GovernanceV1;
+  governance: GovernanceV1 | OwnershipWeightedVoting;
 }>;
 
 type FungibleToken = Readonly<{

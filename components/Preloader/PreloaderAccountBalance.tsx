@@ -12,6 +12,9 @@ import { evmToAddress } from '@polkadot/util-crypto';
 import type { AccountInfo, AssetBalance } from '@polkadot/types/interfaces';
 import type { Option } from '@polkadot/types';
 import { AssetAccount } from 'types';
+import { ethers } from 'ethers';
+import erc20Abi from 'abis/erc20.abi.json';
+import { appConfig } from 'config';
 
 export function PreloaderAccountBalance() {
   const api = useAtomValue(apiAtom);
@@ -103,6 +106,30 @@ export function PreloaderAccountBalance() {
           // eslint-disable-next-line no-console
           console.error(e);
         });
+    } else if (currentDao.ethTokenAddress) {
+      const provider = new ethers.providers.InfuraProvider(
+        appConfig.tokenNetwork,
+        appConfig.tokenApiKey
+      );
+
+      const contract = new ethers.Contract(
+        currentDao.ethTokenAddress,
+        erc20Abi,
+        provider
+      );
+
+      (async () => {
+        try {
+          const [balance] = await Promise.all([
+            contract.balanceOf(metamaskAccount?._address)
+          ]);
+
+          setCurrentAccountTokenBalance(BigInt(balance._hex));
+        } catch (e) {
+          // eslint-disable-next-line no-console
+          console.error(e);
+        }
+      })();
     }
 
     return () => unsubscribe && unsubscribe();

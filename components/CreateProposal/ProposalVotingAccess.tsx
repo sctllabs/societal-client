@@ -1,5 +1,8 @@
 import { Dispatch, SetStateAction } from 'react';
 
+import { useAtomValue } from 'jotai';
+import { currentDaoAtom } from 'store/dao';
+
 import { Typography } from 'components/ui-kit/Typography';
 import {
   Select,
@@ -20,6 +23,8 @@ type ProposalVotingAccessProps = {
 export function ProposalVotingAccess({
   setProposalVotingAccess
 }: ProposalVotingAccessProps) {
+  const currentDao = useAtomValue(currentDaoAtom);
+
   const onProposalVotingAccessValueChange = (
     _proposalKind: ProposalVotingAccessEnum
   ) => setProposalVotingAccess(_proposalKind);
@@ -30,13 +35,23 @@ export function ProposalVotingAccess({
         <SelectValue placeholder={InputLabel.PROPOSAL_VOTING_ACCESS} />
       </SelectTrigger>
       <SelectContent>
-        {Object.entries(ProposalVotingAccessEnum).map(
-          ([_proposalKey, _proposalValue]) => (
+        {Object.entries(ProposalVotingAccessEnum)
+          .filter(([_proposalKey]) => {
+            const govType = currentDao?.policy.governance.__typename;
+            switch (govType) {
+              case 'OwnershipWeightedVoting':
+                return _proposalKey !== 'Democracy';
+              case 'GovernanceV1':
+                return _proposalKey !== 'OwnershipWeightedVoting';
+              default:
+                return true;
+            }
+          })
+          .map(([_proposalKey, _proposalValue]) => (
             <SelectItem value={_proposalValue} key={_proposalKey}>
               <Typography variant="button2">{_proposalValue}</Typography>
             </SelectItem>
-          )
-        )}
+          ))}
       </SelectContent>
     </Select>
   );

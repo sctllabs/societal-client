@@ -36,6 +36,7 @@ import {
 import { TxButton } from 'components/TxButton';
 
 import { appConfig } from 'config';
+import { GovernanceV1 } from 'types';
 
 import styles from './ReferendumInfo.module.scss';
 
@@ -210,8 +211,9 @@ export function DelegateModal() {
                   ([convictionOption, convictionValue]) => {
                     const duration =
                       ConvictionToEth[convictionValue] *
-                      (currentDao?.policy.governance.enactmentPeriod.valueOf() ||
-                        0) *
+                      ((
+                        currentDao?.policy.governance as GovernanceV1
+                      ).enactmentPeriod.valueOf() || 0) *
                       appConfig.expectedBlockTimeInSeconds *
                       1000;
 

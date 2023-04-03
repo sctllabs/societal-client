@@ -10,10 +10,9 @@ import { Icon } from 'components/ui-kit/Icon';
 import { Chip } from 'components/ui-kit/Chip';
 
 import { apiAtom } from 'store/api';
-import { AssetBalance } from '@polkadot/types/interfaces';
 import { StorageKey } from '@polkadot/types';
 
-import type { AccountDaoMember } from 'types';
+import type { AccountDaoMember, AssetAccount } from 'types';
 
 import styles from './Members.module.scss';
 
@@ -29,7 +28,18 @@ export function Members() {
     }
     let unsubscribe: any | null = null;
 
+    const members: { [key: string]: AccountDaoMember } = {};
+    currentDao?.council.forEach((account) => {
+      members[account] = {
+        __typename: 'AccountDaoMember',
+        accountId: account,
+        kind: ['Council']
+      };
+    });
+
     if (!currentDao || !currentDao.fungibleToken) {
+      setDaoMembers(Object.values(members));
+
       return undefined;
     }
 
@@ -37,26 +47,16 @@ export function Members() {
 
     // TODO: use paging here
     api.query.assets.account
-      .entries(tokenId, (_assetBalances: [StorageKey, AssetBalance][]) => {
-        const members: { [key: string]: {} } = {};
-
-        currentDao?.council.forEach((account) => {
-          members[account] = {
-            accountId: account,
-            kind: ['Council']
-          };
-        });
-
-        _assetBalances.forEach(([key, value]) => {
+      .entries(tokenId, (_assetBalances: [StorageKey, AssetAccount][]) => {
+        _assetBalances.forEach(([key, tokenBalance]) => {
           const [, accountId] = key.toHuman() as any;
           if (accountId === currentDao.account.id) {
             return;
           }
 
-          const tokenBalance = value.toHuman();
-
           if (!members[accountId]) {
             members[accountId] = {
+              __typename: 'AccountDaoMember',
               accountId,
               kind: ['TokenHolder'],
               tokenBalance
@@ -72,7 +72,7 @@ export function Members() {
           };
         });
 
-        setDaoMembers(Object.values(members as any));
+        setDaoMembers(Object.values(members));
       })
       .then((unsub) => {
         unsubscribe = unsub;

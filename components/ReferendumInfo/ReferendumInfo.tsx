@@ -14,7 +14,12 @@ import { currentReferendumAtom } from 'store/referendum';
 import { maskAddress } from 'utils/maskAddress';
 import { formatBalance } from 'utils/formatBalance';
 import { evmToAddress } from '@polkadot/util-crypto';
-import type { Conviction, DemocracyDelegation } from 'types';
+import type {
+  AssetAccount,
+  Conviction,
+  DemocracyDelegation,
+  GovernanceV1
+} from 'types';
 import type { Voting } from '@polkadot/types/interfaces';
 
 import { Card } from 'components/ui-kit/Card';
@@ -86,6 +91,8 @@ export function ReferendumInfo() {
 
   const isReferendumActive = !!currentReferendum;
 
+  const governance = currentDao?.policy.governance as GovernanceV1;
+
   return (
     <Card className={styles.card}>
       <Typography variant="title2">
@@ -93,27 +100,29 @@ export function ReferendumInfo() {
           ? 'Until the end of the referendum'
           : 'The next referendum will start in'}
       </Typography>
-      {currentBlock && currentDao?.policy.governance.launchPeriod && (
+      {currentBlock && governance.launchPeriod && (
         <CountdownReferendum
           active={isReferendumActive}
           launchPeriod={
             isReferendumActive
-              ? currentDao.policy.governance.votingPeriod
-              : currentDao.policy.governance.launchPeriod
+              ? governance.votingPeriod
+              : governance.launchPeriod
           }
           startingPoint={currentDao.blockNum}
           currentBlock={currentBlock}
         />
       )}
 
-      {accountTokenBalance && (
+      {accountTokenBalance ? (
         <div className={styles['item-container']}>
           <Typography variant="caption2">Locked balance</Typography>
           <span className={styles.balance}>
             <Typography variant="title1">
               {formatBalance(
-                accountTokenBalance.reservedBalance.toBigInt() +
-                  accountTokenBalance.frozenBalance.toBigInt()
+                (
+                  accountTokenBalance as AssetAccount
+                ).reservedBalance.toBigInt() +
+                  (accountTokenBalance as AssetAccount).frozenBalance.toBigInt()
               )}
             </Typography>
             <Typography variant="title2">{tokenSymbol}</Typography>
@@ -123,7 +132,7 @@ export function ReferendumInfo() {
             seconded or voted for proposals.
           </Typography>
         </div>
-      )}
+      ) : null}
       {delegation && (
         <div className={styles['item-container']}>
           <div className={styles['undelegate-container']}>

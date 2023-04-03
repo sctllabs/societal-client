@@ -33,6 +33,7 @@ export enum ProposalEnum {
 }
 
 export enum ProposalVotingAccessEnum {
-  Council = 'Council Proposals',
-  Democracy = 'Governance/Democracy Proposals'
+  Council = 'Council',
+  Democracy = 'Governance V1',
+  EthGovernance = 'Ownership Weighted Voting'
 }

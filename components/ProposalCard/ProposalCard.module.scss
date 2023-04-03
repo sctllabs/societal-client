@@ -126,6 +126,13 @@
   gap: 6px;
 }
 
+.eth-governance-proposal-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 36px;
+  padding: 20px 32px 20px 32px;
+}
+
 .proposal-center-container {
   display: flex;
   flex-direction: column;

@@ -7,14 +7,17 @@ import { currentReferendumAtom } from 'store/referendum';
 
 import { useSubscription } from '@apollo/client';
 import SUBSCRIBE_COUNCIL_PROPOSALS_BY_DAO_ID from 'query/subscribeCouncilProposalsByDaoId.graphql';
+import SUBSCRIBE_ETH_GOVERNANCE_PROPOSALS_BY_DAO_ID from 'query/subscribeEthGovernanceProposalsByDaoId.graphql';
 import SUBSCRIBE_DEMOCRACY_PROPOSALS_BY_DAO_ID from 'query/subscribeDemocracyProposalsByDaoId.graphql';
 import SUBSCRIBE_LAST_REFERENDUM from 'query/subscribeLastDemocracyReferendum.graphql';
 
 import type {
   CouncilProposalStatus,
   SubscribeCouncilProposalsByDaoId,
+  SubscribeEthGovernanceProposalsByDaoId,
   SubscribeDemocracyProposalsByDaoId,
-  SubscribeDemocracyReferendums
+  SubscribeDemocracyReferendums,
+  EthGovernanceProposalStatus
 } from 'types';
 
 import { Card } from 'components/ui-kit/Card';
@@ -38,6 +41,14 @@ export function Proposals() {
   const { data: councilProposalsData } =
     useSubscription<SubscribeCouncilProposalsByDaoId>(
       SUBSCRIBE_COUNCIL_PROPOSALS_BY_DAO_ID,
+      {
+        variables: { daoId: currentDao?.id }
+      }
+    );
+
+  const { data: ethGovernanceProposalsData } =
+    useSubscription<SubscribeEthGovernanceProposalsByDaoId>(
+      SUBSCRIBE_ETH_GOVERNANCE_PROPOSALS_BY_DAO_ID,
       {
         variables: { daoId: currentDao?.id }
       }
@@ -94,6 +105,19 @@ export function Proposals() {
             }
             return x;
           }) ?? []),
+          ...(ethGovernanceProposalsData?.ethGovernanceProposals.map((x) => {
+            if (
+              currentDao &&
+              currentBlock &&
+              x.blockNum + currentDao.policy.proposalPeriod < currentBlock
+            ) {
+              return {
+                ...x,
+                status: 'Expired' as EthGovernanceProposalStatus
+              };
+            }
+            return x;
+          }) ?? []),
           ...(democracyProposalsData?.democracyProposals ?? [])
         ].sort((a, b) => b.blockNum - a.blockNum)
       : referendumsData?.democracyReferendums.map((referendum) => ({
@@ -114,11 +138,17 @@ export function Proposals() {
           className={styles.tabs}
         >
           <TabsList>
-            {tabOptions.map((tabOption) => (
-              <TabsTrigger value={tabOption} key={tabOption} asChild>
-                <Typography variant="title2">{tabOption}</Typography>
-              </TabsTrigger>
-            ))}
+            {tabOptions
+              .filter((tabOption) =>
+                currentDao?.policy.governance.__typename !== 'GovernanceV1'
+                  ? tabOption !== 'Referendum'
+                  : true
+              )
+              .map((tabOption) => (
+                <TabsTrigger value={tabOption} key={tabOption} asChild>
+                  <Typography variant="title2">{tabOption}</Typography>
+                </TabsTrigger>
+              ))}
           </TabsList>
         </Tabs>
         <Button variant="text" className={styles['history-button']} disabled>

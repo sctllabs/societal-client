@@ -84,4 +84,6 @@ export const disconnectAccountsAtom = atom(null, (_get, _set) => {
 });
 
 export const currentAccountBalanceAtom = atom<bigint | null>(null);
-export const currentAccountTokenBalanceAtom = atom<AssetAccount | null>(null);
+export const currentAccountTokenBalanceAtom = atom<
+  AssetAccount | bigint | null
+>(null);

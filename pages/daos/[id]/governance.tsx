@@ -1,5 +1,5 @@
 import { useAtomValue } from 'jotai';
-import { currentDaoLoadingAtom } from 'store/dao';
+import { currentDaoAtom, currentDaoLoadingAtom } from 'store/dao';
 
 import { Proposals } from 'components/Proposals';
 import { ReferendumInfo } from 'components/ReferendumInfo';
@@ -8,6 +8,7 @@ import styles from 'styles/pages/governance.module.scss';
 
 export default function DaoGovernance() {
   const currentDaoLoading = useAtomValue(currentDaoLoadingAtom);
+  const currentDao = useAtomValue(currentDaoAtom);
 
   if (currentDaoLoading) {
     // TODO @asanzyb create a loader
@@ -17,7 +18,9 @@ export default function DaoGovernance() {
   return (
     <div className={styles.container}>
       <Proposals />
-      <ReferendumInfo />
+      {currentDao?.policy.governance.__typename === 'GovernanceV1' && (
+        <ReferendumInfo />
+      )}
     </div>
   );
 }

@@ -1,0 +1,14 @@
+subscription SubscribeEthGovernanceVotesByProposalId($proposalId: String!) {
+  ethGovernanceVoteHistories(
+    where: { proposal: { id_eq: $proposalId } },
+    orderBy: blockNum_DESC,
+    limit: 50
+  ) {
+    id
+    aye
+    balance
+    account {
+      id
+    }
+  }
+}
