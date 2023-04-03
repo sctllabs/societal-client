@@ -46,10 +46,11 @@ export function useProposalCountdown(value: number) {
 
 export function useReferendumCountdown(
   currentBlock: number,
-  launchPeriod: number
+  launchPeriod: number,
+  startingPoint: number
 ) {
   const [state, setState] = useState(
-    (launchPeriod - (currentBlock % launchPeriod)) *
+    (launchPeriod - ((currentBlock - startingPoint) % launchPeriod)) *
       appConfig.expectedBlockTimeInSeconds *
       1000
   );
