@@ -65,12 +65,12 @@ jobs:
         id: env
         run: |
           cp .env.example .env.local
-          cp ".env.${{ needs.get-environment.outputs.environment }}" .env.local
+          cp ".env.${{ needs.get-environment.outputs.environment }}" .env.local || true
 
       - name: Set Environment
         run: |
           cat ".github/env.common" >>$GITHUB_ENV
-          cat ".github/env.${{ needs.get-environment.outputs.environment }}" >>$GITHUB_ENV
+          cat ".github/env.${{ needs.get-environment.outputs.environment }}" >>$GITHUB_ENV || true
 
       # Login to Docker hub using the credentials stored in the repository secrets
       - name: Log in to Docker Hub
