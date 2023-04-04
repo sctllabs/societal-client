@@ -6,56 +6,56 @@
 }
 
 .step {
+  align-items: center;
   color: #{colors.$grayscale-55};
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 14px;
   flex-grow: 1;
+  gap: 14px;
+  justify-content: flex-end;
   position: relative;
 
   &:not(:first-child):before {
-    content: '';
     border: 1px solid #{colors.$grayscale-55};
-    position: absolute;
-    width: calc(50% - 7px);
-    top: 7px;
+    content: '';
     left: 0px;
+    position: absolute;
+    top: 7px;
+    width: calc(50% - 7px);
     z-index: 0;
   }
 
   &:not(:last-child):after {
-    content: '';
-    z-index: 0;
     border: 1px solid #{colors.$grayscale-55};
+    content: '';
     position: absolute;
-    width: calc(50% - 7px);
-    top: 7px;
     right: 0;
+    top: 7px;
+    width: calc(50% - 7px);
+    z-index: 0;
   }
 }
 
 .active-step {
-  gap: 12px;
   color: #{colors.$grayscale-0};
+  gap: 12px;
 }
 
 
 .icon {
-  z-index: 1;
   color: #{colors.$purple-3};
-  width: 12px;
   height: 12px;
+  width: 12px;
+  z-index: 1;
 }
 
 .icon-active {
-  width: 16px;
   height: 16px;
+  width: 16px;
 }
 
 .shallow {
-  color: transparent;
   border: 1px solid #7760D2;
   border-radius: 50%;
+  color: transparent;
 }

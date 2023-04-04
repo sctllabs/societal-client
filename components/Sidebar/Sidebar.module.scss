@@ -26,13 +26,13 @@
 }
 
 .link {
-  color: #{colors.$grayscale-0};
-  height: 44px;
-  width: 44px;
-  display: flex;
-  justify-content: center;
   align-items: center;
   border-radius: 4px;
+  color: #{colors.$grayscale-0};
+  display: flex;
+  height: 44px;
+  justify-content: center;
+  width: 44px;
 
   &:hover {
     box-shadow: inset 0px 0px 12px rgba(102, 78, 200, 0.05);
@@ -48,8 +48,8 @@
   border-bottom: 0.0625rem solid var(--sidebar-container-border-color);
 
   display: flex;
-  gap: 16px;
   flex-direction: column;
+  gap: 16px;
   justify-content: center;
   margin: 10px;
   padding-bottom: 20px;

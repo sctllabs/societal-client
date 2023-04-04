@@ -47,7 +47,7 @@ export function CuratorBounties() {
     window.addEventListener('click', eventClick);
 
     return () => window.removeEventListener('click', eventClick);
-  }, []);
+  }, [setSelectedCuratorBounty]);
 
   return (
     <div className={styles.container}>

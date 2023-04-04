@@ -314,20 +314,20 @@
 }
 
 .curator-container {
+  align-items: center;
   display: flex;
   gap: 40px;
-  align-items: center;
   margin-top: 12px;
 }
 
 .curator {
+  align-items: center;
   display: flex;
   gap: 12px;
-  align-items: center;
 }
 
 .bounty {
-  display: flex;
   align-items: center;
+  display: flex;
   gap: 12px
 }

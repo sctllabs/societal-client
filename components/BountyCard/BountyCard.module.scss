@@ -23,11 +23,6 @@
   width: 8px;
 }
 
-.status-icon {
-  height: 8px;
-  width: 8px;
-}
-
 .icon-active {
   color: #{colors.$blue-1};
 }
@@ -41,9 +36,9 @@
 }
 
 .title-container {
+  align-items: center;
   display: flex;
   gap: 6px;
-  align-items: center;
 }
 
 .content {
@@ -54,10 +49,10 @@
 }
 
 .logo {
-  height: 24px;
-  width: 24px;
   border-radius: 2px;
+  height: 24px;
   margin-right: 4px;
+  width: 24px;
 }
 
 .additional-info-container {
@@ -65,18 +60,18 @@
 }
 
 .value {
-  position: absolute;
   bottom: 0;
+  position: absolute;
   right: 0;
 }
 
 .actions-container {
+  align-items: center;
   border-top: 5px solid #{colors.$grayscale-30};
   display: flex;
   height: 64px;
-  align-items: center;
-  padding: 20px;
   justify-content: space-between;
+  padding: 20px;
 }
 
 .buttons-container {
