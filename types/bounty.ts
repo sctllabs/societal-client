@@ -1,4 +1,5 @@
 import { Account } from './account';
+import { Dao } from './dao';
 
 export type BountyStatus =
   | 'Created'
@@ -26,9 +27,14 @@ export type BountyMeta = {
   blockNum: number;
   beneficiary: Account | null;
   curator: Account | null;
+  dao: Pick<Dao, 'name' | 'id' | 'policy'>;
   __typename: 'Bounty';
 };
 
 export type SubscribeBountiesByDaoId = {
+  bounties: BountyMeta[];
+};
+
+export type SubscribeBountiesByCuratorId = {
   bounties: BountyMeta[];
 };

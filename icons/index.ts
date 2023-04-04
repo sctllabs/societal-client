@@ -58,6 +58,7 @@ import priority from './priority.svg';
 import privateIcon from './private-icon.svg';
 import proposalsAdd from './proposals-add.svg';
 import proposals from './proposals.svg';
+import refresh from './refresh.svg';
 import search from './search.svg';
 import send from './send.svg';
 import settings from './settings.svg';
@@ -162,6 +163,7 @@ const icons = {
   'private-icon': privateIcon,
   'proposals-add': proposalsAdd,
   proposals,
+  refresh,
   search,
   send,
   settings,

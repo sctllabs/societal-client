@@ -122,7 +122,7 @@ export function ProposalInputs({
           </MembersDropdown>
 
           <Select onValueChange={onBountyValueChange}>
-            <SelectTrigger>
+            <SelectTrigger disabled={!bounties?.length}>
               <SelectValue placeholder={InputLabel.BOUNTY_INDEX}>
                 <Typography variant="title5">
                   Bounty Index - {state.bountyIndex}

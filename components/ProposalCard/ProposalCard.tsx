@@ -219,7 +219,7 @@ export function ProposalCard({ proposal }: ProposalCardProps) {
               <span className={styles['proposal-transfer-info']}>
                 <Typography variant="caption3">Fee</Typography>
                 <Typography variant="title5">
-                  {formatBalance(proposal.kind.fee)} {tokenSymbol}
+                  {formatBalance(proposal.kind.fee)}
                 </Typography>
               </span>
             </div>

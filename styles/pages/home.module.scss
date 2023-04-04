@@ -1,3 +1,19 @@
 .container {
   margin: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  position: relative;
+}
+
+.content {
+  display: flex;
+  gap: 44px;
+}
+
+.left-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  flex-grow: 3;
 }

@@ -48,7 +48,7 @@ export function Bounties() {
         ) : (
           <Card className={styles['proposals-empty-card']}>
             <Typography variant="caption2" className={styles.caption}>
-              You don&apos;t have any&nbsp; bounties yet
+              You don&apos;t have any bounties yet
             </Typography>
           </Card>
         )}

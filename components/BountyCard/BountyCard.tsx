@@ -3,7 +3,6 @@ import clsx from 'clsx';
 import { formatDistance } from 'date-fns';
 
 import { useAtomValue } from 'jotai';
-import { currentDaoAtom } from 'store/dao';
 import { chainSymbolAtom, currentBlockAtom } from 'store/api';
 import { tokenSymbolAtom } from 'store/token';
 
@@ -14,6 +13,7 @@ import { Typography } from 'components/ui-kit/Typography';
 import { Icon } from 'components/ui-kit/Icon';
 import { Avatar } from 'components/ui-kit/Avatar';
 
+import { BountyCardActions } from './BountyCardActions';
 import styles from './BountyCard.module.scss';
 
 export type BountyCardProps = {
@@ -21,7 +21,6 @@ export type BountyCardProps = {
 };
 
 export function BountyCard({ bounty }: BountyCardProps) {
-  const currentDao = useAtomValue(currentDaoAtom);
   const currentBlock = useAtomValue(currentBlockAtom);
   const tokenSymbol = useAtomValue(tokenSymbolAtom);
   const currencySymbol = useAtomValue(chainSymbolAtom);
@@ -37,6 +36,12 @@ export function BountyCard({ bounty }: BountyCardProps) {
       case 'CuratorProposed': {
         return 'Active';
       }
+      case 'CuratorAccepted': {
+        return 'Active';
+      }
+      case 'CuratorUnassigned': {
+        return 'Active';
+      }
       default: {
         return 'Completed';
       }
@@ -44,7 +49,7 @@ export function BountyCard({ bounty }: BountyCardProps) {
   }, [bounty.status]);
 
   const countdown = useMemo(() => {
-    if (!currentDao || !currentBlock) {
+    if (!currentBlock) {
       return null;
     }
 
@@ -55,13 +60,18 @@ export function BountyCard({ bounty }: BountyCardProps) {
     return (
       <Countdown
         endBlock={
-          bounty.blockNum + currentDao.policy.bountyUpdatePeriod - currentBlock
+          bounty.blockNum + bounty.dao.policy.bountyUpdatePeriod - currentBlock
         }
         orientation="horizontal"
         typography="value5"
       />
     );
-  }, [bounty.blockNum, bounty.status, currentBlock, currentDao]);
+  }, [
+    bounty.blockNum,
+    bounty.dao.policy.bountyUpdatePeriod,
+    bounty.status,
+    currentBlock
+  ]);
 
   const distance = formatDistance(new Date(bounty.createdAt), new Date());
   const { title, description } = bounty.description
@@ -85,17 +95,14 @@ export function BountyCard({ bounty }: BountyCardProps) {
         </div>
         {countdown}
       </div>
-
       <div className={styles.content}>
         <div className={styles['title-container']}>
-          {currentDao && (
-            <Avatar
-              className={styles.logo}
-              value={currentDao.name}
-              radius="standard"
-            />
-          )}
-          <Typography variant="title7">{currentDao?.name}</Typography>
+          <Avatar
+            className={styles.logo}
+            value={bounty.dao.name}
+            radius="standard"
+          />
+          <Typography variant="title7">{bounty.dao.name}</Typography>
           <Typography variant="caption2" className={styles.distance}>
             Added {distance} ago
           </Typography>
@@ -104,12 +111,13 @@ export function BountyCard({ bounty }: BountyCardProps) {
           <Typography variant="title3">{title}</Typography>
           <Typography variant="body2">{description}</Typography>
         </div>
-        <div className={styles['actions-container']}>
+        <div className={styles['additional-info-container']}>
           <Typography className={styles.value} variant="title2">
             {bounty.value} {bounty.nativeToken ? currencySymbol : tokenSymbol}
           </Typography>
         </div>
       </div>
+      <BountyCardActions bounty={bounty} />
     </Card>
   );
 }

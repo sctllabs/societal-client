@@ -9,11 +9,13 @@ import { PreloaderCurrency } from './PreloaderCurrency';
 import { PreloaderDao } from './PreloaderDao';
 import { PreloaderAccountBalance } from './PreloaderAccountBalance';
 import { PreloaderBounties } from './PreloaderBounties';
+import { PreloaderCuratorBounties } from './PreloaderCuratorBounties';
 
 export function Preloader() {
   const router = useRouter();
 
   const daoIdExists = router.query.id && typeof router.query.id === 'string';
+  const isHomePage = router.asPath === '/home';
 
   return (
     <>
@@ -25,7 +27,8 @@ export function Preloader() {
       <PreloaderAccountBalance />
       {daoIdExists && <PreloaderDao />}
       <PreloaderToken />
-      <PreloaderBounties />
+      {daoIdExists && <PreloaderBounties />}
+      {isHomePage && <PreloaderCuratorBounties />}
     </>
   );
 }

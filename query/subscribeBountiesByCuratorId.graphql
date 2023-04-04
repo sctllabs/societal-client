@@ -1,8 +1,8 @@
-subscription SubscribeBountiesByDaoId($daoId: String!) {
+subscription SubscribeBountiesByCuratorId($curatorId: String!) {
   bounties(
-    where: { dao: { id_eq: $daoId } }
-    orderBy: blockNum_DESC
+    where: { curator: { id_eq: $curatorId } }
     limit: 100
+    orderBy: blockNum_DESC
   ) {
     id
     index

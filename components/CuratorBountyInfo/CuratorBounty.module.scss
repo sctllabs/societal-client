@@ -1,0 +1,69 @@
+@use "styles/colors";
+
+.card {
+  height: 100%;
+  flex-grow: 2;
+  padding: 0;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid #{colors.$grayscale-95};
+}
+
+.content {
+  padding: 20px 24px;
+}
+
+.description {
+  margin-top: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.award-container {
+  border-top: 1px solid #{colors.$purple-5};
+  padding: 10px 24px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 46px;
+  align-items: center;
+  width: 100%;
+}
+
+.dialog-description {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.dialog-content {
+  width: 33%;
+}
+
+.pending {
+  padding: 14px 80px;
+  background: rgba(240, 152, 25, 0.1);
+  border-width: 1px 0px 0px 1px;
+  border-style: solid;
+  border-color: #{colors.$orange-2};
+  border-radius: 8px 0px 0px 0px;
+}
+
+.success {
+  padding: 14px 80px;
+  background: rgba(86, 171, 47, 0.1);
+  border-width: 1px 0px 0px 1px;
+  border-style: solid;
+  border-color: #{colors.$green-1};
+  border-radius: 8px 0px 0px 0px;
+}
+
+.bottom-container {
+  display: flex;
+  justify-content: flex-end;
+}
