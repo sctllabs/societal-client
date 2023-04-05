@@ -5,6 +5,7 @@ import { useAtomValue } from 'jotai';
 import { currentDaoAtom } from 'store/dao';
 import { tokenSymbolAtom } from 'store/token';
 import { accountsAtom } from 'store/account';
+import { chainSymbolAtom } from 'store/api';
 
 import { getProposalSettings } from 'utils/getProposalSettings';
 import { maskAddress } from 'utils/maskAddress';
@@ -15,6 +16,7 @@ import type {
   CouncilProposalMeta,
   DemocracyProposalMeta,
   EthGovernanceProposalMeta,
+  ProposeCuratorProposal,
   RemoveMemberProposal,
   SpendProposal,
   TransferProposal
@@ -58,6 +60,7 @@ export function TaskCard({ proposal, currentBlock }: TaskCardProps) {
 
   const currentDao = useAtomValue(currentDaoAtom);
   const tokenSymbol = useAtomValue(tokenSymbolAtom);
+  const chainSymbol = useAtomValue(chainSymbolAtom);
   const accounts = useAtomValue(accountsAtom);
 
   const { proposalTitle, icon } = getProposalSettings(proposal.kind);
@@ -66,7 +69,7 @@ export function TaskCard({ proposal, currentBlock }: TaskCardProps) {
   const title = meta?.title;
   const description = meta?.description;
 
-  let proposalLabel = null;
+  let proposalLabel;
   switch (proposal.__typename) {
     case 'DemocracyProposal':
       proposalLabel = 'Democracy Proposal';
@@ -191,6 +194,39 @@ export function TaskCard({ proposal, currentBlock }: TaskCardProps) {
                             | RemoveMemberProposal
                         ).who
                     )?.meta.name as string) ?? maskAddress(proposal.kind.who)}
+                  </Typography>
+                </span>
+              </span>
+            )}
+            {(proposal.kind.__typename === 'CreateBounty' ||
+              proposal.kind.__typename === 'CreateTokenBounty') && (
+              <span className={styles['proposal-item-info']}>
+                <Typography variant="caption3">Value</Typography>
+                <span className={styles['proposal-item']}>
+                  <Icon name="treasury" size="xs" />
+                  <Typography variant="title5">
+                    {formatBalance(BigInt(proposal.kind.value))}
+                  </Typography>
+                  <Typography variant="body2">
+                    {proposal.kind.__typename === 'CreateBounty'
+                      ? chainSymbol
+                      : tokenSymbol}
+                  </Typography>
+                </span>
+              </span>
+            )}
+            {proposal.kind.__typename === 'ProposeCurator' && (
+              <span className={styles['proposal-item-info']}>
+                <Typography variant="caption2">Curator</Typography>
+                <span className={styles['proposal-item']}>
+                  <Icon name="user-profile" size="xs" />
+                  <Typography variant="title5">
+                    {(accounts?.find(
+                      (_account) =>
+                        _account.address ===
+                        (proposal.kind as ProposeCuratorProposal).curator
+                    )?.meta.name as string) ??
+                      maskAddress(proposal.kind.curator)}
                   </Typography>
                 </span>
               </span>

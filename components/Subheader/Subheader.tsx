@@ -36,8 +36,8 @@ const navigations: Navigation[] = [
   },
   {
     icon: 'treasury',
-    title: 'Treasury',
-    href: 'treasury'
+    title: 'Bounties',
+    href: 'bounties'
   }
 ];
 
@@ -102,7 +102,7 @@ export function Subheader() {
           ))}
         </div>
         <div className={styles['right-container']}>
-          <CreateProposal />
+          <CreateProposal icon="proposals-add" title="Create Proposal" />
         </div>
       </div>
     </div>

@@ -5,7 +5,7 @@ import clsx from 'clsx';
 
 import styles from './Button.module.scss';
 
-type ButtonVariants =
+export type ButtonVariant =
   | 'filled'
   | 'outlined'
   | 'text'
@@ -14,12 +14,12 @@ type ButtonVariants =
   | 'icon'
   | 'nav'
   | 'vote';
-type ButtonColors = 'primary' | 'destructive' | 'success';
-type ButtonSize = 'xs' | 'sm' | 'md' | 'lg';
+export type ButtonColor = 'primary' | 'destructive' | 'success';
+export type ButtonSize = 'xs' | 'sm' | 'md' | 'lg';
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: ButtonVariants;
-  color?: ButtonColors;
+  variant?: ButtonVariant;
+  color?: ButtonColor;
   size?: ButtonSize;
   fullWidth?: boolean;
   icon?: boolean;

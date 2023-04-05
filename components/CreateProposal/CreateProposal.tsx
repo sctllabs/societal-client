@@ -23,11 +23,11 @@ import type { AccountId } from '@polkadot/types/interfaces';
 import type { KeyringPair } from '@polkadot/keyring/types';
 import type { Dao, TxFailedCallback } from 'types';
 
-import { Button } from 'components/ui-kit/Button';
+import { Button, ButtonColor, ButtonVariant } from 'components/ui-kit/Button';
 import { Typography } from 'components/ui-kit/Typography';
 import { TxButton } from 'components/TxButton';
 import { Notification } from 'components/ui-kit/Notifications';
-import { Icon } from 'components/ui-kit/Icon';
+import { Icon, IconNamesType } from 'components/ui-kit/Icon';
 import {
   Dialog,
   DialogContent,
@@ -48,11 +48,20 @@ import { ProposalInputs } from './ProposalInputs';
 import { ProposalVotingAccess } from './ProposalVotingAccess';
 import { ProposalBasicInputs } from './ProposalBasicInputs';
 
+type CreateProposalProps = {
+  proposalType?: ProposalEnum;
+  bountyIndex?: string;
+  title?: string;
+  icon?: IconNamesType;
+  buttonVariant?: ButtonVariant;
+  buttonColor?: ButtonColor;
+};
+
 const INITIAL_STATE: State = {
   amount: '',
   target: '',
   balance: '',
-  bountyIndex: ''
+  bountyIndex: undefined
 };
 
 const INITIAL_BASIC_STATE: ProposalBasicState = {
@@ -60,14 +69,24 @@ const INITIAL_BASIC_STATE: ProposalBasicState = {
   description: ''
 };
 
-export function CreateProposal() {
+export function CreateProposal({
+  proposalType: _proposalType,
+  bountyIndex,
+  title,
+  icon,
+  buttonVariant,
+  buttonColor
+}: CreateProposalProps) {
   const [modalOpen, setModalOpen] = useState(false);
 
   const [proposalVotingAccess, setProposalVotingAccess] =
     useState<ProposalVotingAccessEnum | null>(null);
-  const [proposalType, setProposalType] = useState<ProposalEnum | null>(null);
+  const [proposalType, setProposalType] = useState<ProposalEnum | undefined>(
+    undefined
+  );
   const [proposalBasicState, setProposalBasicState] =
     useState(INITIAL_BASIC_STATE);
+  const [state, setState] = useState<State>(INITIAL_STATE);
   const [members, setMembers] = useState<KeyringPair[]>([]);
   const [currency, setCurrency] = useState<string | null>(null);
 
@@ -82,8 +101,6 @@ export function CreateProposal() {
   const daoCollectiveContract = useDaoCollectiveContract();
   const daoDemocracyContract = useDaoDemocracyContract();
   const daoEthGovernanceContract = useDaoEthGovernanceContract();
-
-  const [state, setState] = useState<State>(INITIAL_STATE);
 
   useEffect(() => {
     if (!chainSymbol) {
@@ -186,6 +203,12 @@ export function CreateProposal() {
             amount
           );
         }
+        case ProposalEnum.BOUNTY_UNASSIGN_CURATOR: {
+          return api?.tx.daoBounties.unassignCurator(
+            currentDao?.id,
+            state.bountyIndex
+          );
+        }
         default: {
           throw new Error('No such extrinsic method exists.');
         }
@@ -209,13 +232,14 @@ export function CreateProposal() {
   );
 
   useEffect(() => {
+    setProposalType(_proposalType);
     setProposalBasicState(INITIAL_BASIC_STATE);
-    setState(INITIAL_STATE);
-  }, [modalOpen]);
+    setState({ ...INITIAL_STATE, bountyIndex });
+  }, [_proposalType, bountyIndex, modalOpen]);
 
   const onSuccess = useCallback(() => {
     setProposalVotingAccess(null);
-    setProposalType(null);
+    setProposalType(undefined);
     setModalOpen(false);
     toast.success(
       <Notification
@@ -228,7 +252,7 @@ export function CreateProposal() {
 
   const handleCancelClick = () => {
     setProposalVotingAccess(null);
-    setProposalType(null);
+    setProposalType(undefined);
     setModalOpen(false);
   };
 
@@ -286,7 +310,9 @@ export function CreateProposal() {
       (!state.amount || !state.target)) ||
     ((proposalType === ProposalEnum.ADD_MEMBER ||
       proposalType === ProposalEnum.REMOVE_MEMBER) &&
-      !state.target);
+      !state.target) ||
+    (proposalType === ProposalEnum.BOUNTY_UNASSIGN_CURATOR &&
+      state.bountyIndex === undefined);
 
   const handleProposeClick = async () => {
     if (!metamaskAccount || !keyring || !currentDao) {
@@ -368,10 +394,10 @@ export function CreateProposal() {
   return (
     <Dialog open={modalOpen} onOpenChange={setModalOpen}>
       <DialogTrigger asChild>
-        <Button>
+        <Button color={buttonColor} variant={buttonVariant}>
           <span className={styles['button-content']}>
-            <Icon name="proposals-add" size="sm" />
-            <Typography variant="button1">Create Proposal</Typography>
+            {icon && <Icon name={icon} size="sm" />}
+            <Typography variant="button1">{title}</Typography>
           </span>
         </Button>
       </DialogTrigger>
@@ -388,7 +414,10 @@ export function CreateProposal() {
                 <ProposalVotingAccess
                   setProposalVotingAccess={setProposalVotingAccess}
                 />
-                <ProposalType setProposalType={setProposalType} />
+                <ProposalType
+                  proposalType={proposalType}
+                  setProposalType={setProposalType}
+                />
               </div>
               <div className={styles['proposal-input-container']}>
                 <ProposalBasicInputs

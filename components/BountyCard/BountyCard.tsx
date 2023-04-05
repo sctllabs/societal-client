@@ -118,9 +118,12 @@ export function BountyCard({ bounty }: BountyCardProps) {
             <Typography variant="body2">{description}</Typography>
           </div>
           <div className={styles['additional-info-container']}>
-            <Typography className={styles.value} variant="title2">
-              {bounty.value} {bounty.nativeToken ? currencySymbol : tokenSymbol}
-            </Typography>
+            <div className={styles.value}>
+              <Typography variant="title2">{bounty.value}</Typography>
+              <Typography variant="body2">
+                {bounty.nativeToken ? currencySymbol : tokenSymbol}
+              </Typography>
+            </div>
           </div>
         </div>
         <BountyCardActions bounty={bounty} />

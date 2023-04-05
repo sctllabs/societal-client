@@ -54,8 +54,8 @@ type ProposalStatus =
   | 'Started';
 
 export function ProposalCard({ proposal }: ProposalCardProps) {
-  const accounts = useAtomValue(accountsAtom);
   const { proposalTitle, icon } = getProposalSettings(proposal.kind);
+  const accounts = useAtomValue(accountsAtom);
   const currentDao = useAtomValue(currentDaoAtom);
   const currentBlock = useAtomValue(currentBlockAtom);
   const chainSymbol = useAtomValue(chainSymbolAtom);
