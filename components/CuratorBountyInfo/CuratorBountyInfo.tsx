@@ -209,7 +209,8 @@ export function CuratorBountyInfo() {
       activeStep = 1;
       break;
     }
-    case 'CuratorAccepted': {
+    case 'CuratorAccepted':
+    case 'Extended': {
       activeStep = 2;
       break;
     }
@@ -231,7 +232,9 @@ export function CuratorBountyInfo() {
     <Card className={styles.card}>
       <div className={styles.header}>
         <Typography variant="title5">Info</Typography>
-        {extendButton}
+        {(bounty.status === 'CuratorAccepted' ||
+          bounty.status === 'Extended') &&
+          extendButton}
       </div>
       <div className={styles.content}>
         <div className={styles.stepper}>
@@ -243,7 +246,8 @@ export function CuratorBountyInfo() {
         </div>
       </div>
       <div className={styles['bottom-container']}>
-        {bounty.status === 'CuratorAccepted' && (
+        {(bounty.status === 'CuratorAccepted' ||
+          bounty.status === 'Extended') && (
           <div className={styles['award-container']}>
             <Typography variant="value3">
               {bounty.value} {bounty.nativeToken ? chainSymbol : tokenSymbol}

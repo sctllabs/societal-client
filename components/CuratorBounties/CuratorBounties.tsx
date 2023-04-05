@@ -15,6 +15,14 @@ export function CuratorBounties() {
     selectedCuratorBountyAtom
   );
 
+  useEffect(() => {
+    if (!curatorBounties || !curatorBounties.length) {
+      return;
+    }
+
+    setSelectedCuratorBounty(curatorBounties[0].id);
+  }, [curatorBounties, setSelectedCuratorBounty]);
+
   const handleSelect = (id: string | null) => {
     setSelectedCuratorBounty(id);
   };
@@ -40,7 +48,7 @@ export function CuratorBounties() {
   useEffect(() => {
     const eventClick = (e: MouseEvent) => {
       if ((e.target as HTMLElement).getElementsByTagName('ul').length > 0) {
-        setSelectedCuratorBounty(null);
+        // setSelectedCuratorBounty(null);
       }
     };
 

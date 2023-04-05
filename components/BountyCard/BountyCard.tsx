@@ -27,19 +27,12 @@ export function BountyCard({ bounty }: BountyCardProps) {
 
   const bountyStatus = useMemo(() => {
     switch (bounty.status) {
-      case 'Created': {
-        return 'Active';
-      }
-      case 'BecameActive': {
-        return 'Active';
-      }
-      case 'CuratorProposed': {
-        return 'Active';
-      }
-      case 'CuratorAccepted': {
-        return 'Active';
-      }
-      case 'CuratorUnassigned': {
+      case 'Created':
+      case 'BecameActive':
+      case 'CuratorProposed':
+      case 'CuratorAccepted':
+      case 'CuratorUnassigned':
+      case 'Extended': {
         return 'Active';
       }
       default: {

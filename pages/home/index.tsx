@@ -41,7 +41,12 @@ export default function HomePage() {
             >
               <TabsList>
                 {tabOptions.map((tabOption) => (
-                  <TabsTrigger value={tabOption} key={tabOption} asChild>
+                  <TabsTrigger
+                    value={tabOption}
+                    key={tabOption}
+                    asChild
+                    disabled={tabOption === 'Proposal Calendar'}
+                  >
                     <Typography variant="title2">{tabOption}</Typography>
                   </TabsTrigger>
                 ))}
