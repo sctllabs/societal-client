@@ -7,7 +7,6 @@ export interface CardProps {
   children?: ReactNode;
   dropdown?: boolean;
   className?: string;
-  active?: boolean;
   onClick?: MouseEventHandler;
   onKeyDown?: KeyboardEventHandler;
 }
@@ -16,18 +15,13 @@ export function Card({
   children,
   className,
   dropdown,
-  active,
   onClick,
   onKeyDown,
   ...otherProps
 }: CardProps) {
   return (
     <div
-      className={clsx(
-        styles.root,
-        { [styles.dropdown]: dropdown, [styles.active]: active },
-        className
-      )}
+      className={clsx(styles.root, { [styles.dropdown]: dropdown }, className)}
       onClick={onClick}
       onKeyDown={onKeyDown}
       role="presentation"

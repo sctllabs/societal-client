@@ -80,49 +80,51 @@ export function BountyCard({ bounty }: BountyCardProps) {
     : { title: '', description: '' };
 
   return (
-    <Card
-      className={styles.card}
-      active={bounty.id === selectedDaoBounty}
-      onClick={() => handleSelect(bounty.id)}
+    <div
+      className={clsx(styles.bounty, {
+        [styles.active]: bounty.id === selectedDaoBounty
+      })}
     >
-      <div className={styles.header}>
-        <div className={styles['status-container']}>
-          <Icon
-            name="circle"
-            className={clsx(
-              styles['status-icon'],
-              styles[
-                bountyStatus === 'Active' ? 'icon-active' : 'icon-completed'
-              ]
-            )}
-          />
-          <Typography variant="title7">{bountyStatus}</Typography>
+      <Card className={styles.card} onClick={() => handleSelect(bounty.id)}>
+        <div className={styles.header}>
+          <div className={styles['status-container']}>
+            <Icon
+              name="circle"
+              className={clsx(
+                styles['status-icon'],
+                styles[
+                  bountyStatus === 'Active' ? 'icon-active' : 'icon-completed'
+                ]
+              )}
+            />
+            <Typography variant="title7">{bountyStatus}</Typography>
+          </div>
+          {countdown}
         </div>
-        {countdown}
-      </div>
-      <div className={styles.content}>
-        <div className={styles['title-container']}>
-          <Avatar
-            className={styles.logo}
-            value={bounty.dao.name}
-            radius="standard"
-          />
-          <Typography variant="title7">{bounty.dao.name}</Typography>
-          <Typography variant="caption2" className={styles.distance}>
-            Added {distance} ago
-          </Typography>
+        <div className={styles.content}>
+          <div className={styles['title-container']}>
+            <Avatar
+              className={styles.logo}
+              value={bounty.dao.name}
+              radius="standard"
+            />
+            <Typography variant="title7">{bounty.dao.name}</Typography>
+            <Typography variant="caption2" className={styles.distance}>
+              Added {distance} ago
+            </Typography>
+          </div>
+          <div className={styles['description-container']}>
+            <Typography variant="title3">{title}</Typography>
+            <Typography variant="body2">{description}</Typography>
+          </div>
+          <div className={styles['additional-info-container']}>
+            <Typography className={styles.value} variant="title2">
+              {bounty.value} {bounty.nativeToken ? currencySymbol : tokenSymbol}
+            </Typography>
+          </div>
         </div>
-        <div className={styles['description-container']}>
-          <Typography variant="title3">{title}</Typography>
-          <Typography variant="body2">{description}</Typography>
-        </div>
-        <div className={styles['additional-info-container']}>
-          <Typography className={styles.value} variant="title2">
-            {bounty.value} {bounty.nativeToken ? currencySymbol : tokenSymbol}
-          </Typography>
-        </div>
-      </div>
-      <BountyCardActions bounty={bounty} />
-    </Card>
+        <BountyCardActions bounty={bounty} />
+      </Card>
+    </div>
   );
 }
