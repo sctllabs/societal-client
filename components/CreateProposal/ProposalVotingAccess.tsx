@@ -42,7 +42,7 @@ export function ProposalVotingAccess({
               case 'OwnershipWeightedVoting':
                 return _proposalKey !== 'Democracy';
               case 'GovernanceV1':
-                return _proposalKey !== 'OwnershipWeightedVoting';
+                return _proposalKey !== 'EthGovernance';
               default:
                 return true;
             }
