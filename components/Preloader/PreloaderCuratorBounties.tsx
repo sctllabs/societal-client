@@ -5,9 +5,9 @@ import { metamaskAccountAtom, substrateAccountAtom } from 'store/account';
 import { curatorBountiesAtom } from 'store/bounty';
 
 import { useSubscription } from '@apollo/client';
-import SUBSCRIBE_BOUNTIES_BY_CURATOR_ID from 'query/subscribeBountiesByCuratorId.graphql';
+import SUBSCRIBE_BOUNTIES_BY_CURATOR_ID_OR_BENEFICIARY_ID from 'query/subscribeBountiesByCuratorIdOrBeneficiaryId.graphql';
 
-import type { SubscribeBountiesByCuratorId } from 'types';
+import type { SubscribeBountiesByCuratorIdOrBeneficiaryId } from 'types';
 
 export function PreloaderCuratorBounties() {
   const substrateAccount = useAtomValue(substrateAccountAtom);
@@ -24,8 +24,8 @@ export function PreloaderCuratorBounties() {
     return null;
   }, [metamaskAccount, substrateAccount]);
 
-  const { data } = useSubscription<SubscribeBountiesByCuratorId>(
-    SUBSCRIBE_BOUNTIES_BY_CURATOR_ID,
+  const { data } = useSubscription<SubscribeBountiesByCuratorIdOrBeneficiaryId>(
+    SUBSCRIBE_BOUNTIES_BY_CURATOR_ID_OR_BENEFICIARY_ID,
     {
       variables: { curatorId: accountId, beneficiaryId: accountId }
     }
