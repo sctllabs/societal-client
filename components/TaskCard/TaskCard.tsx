@@ -69,7 +69,7 @@ export function TaskCard({ proposal, currentBlock }: TaskCardProps) {
   let proposalLabel = null;
   switch (proposal.__typename) {
     case 'DemocracyProposal':
-      proposalLabel = 'DemocracyProposal';
+      proposalLabel = 'Democracy Proposal';
 
       break;
     case 'EthGovernanceProposal':
