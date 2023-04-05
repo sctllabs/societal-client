@@ -1,12 +1,13 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
-import { useAtomValue } from 'jotai';
-import { bountiesAtom } from 'store/bounty';
+import { useAtom, useAtomValue } from 'jotai';
+import { bountiesAtom, selectedDaoBountyAtom } from 'store/bounty';
 
 import { Tabs, TabsList, TabsTrigger } from 'components/ui-kit/Tabs';
 import { Typography } from 'components/ui-kit/Typography';
 import { BountyCard } from 'components/BountyCard';
 import { Card } from 'components/ui-kit/Card';
+import { DaoBountyInfo } from 'components/DaoBountyInfo';
 
 import styles from './Bounties.module.scss';
 
@@ -18,6 +19,16 @@ export function Bounties() {
   const bounties = useAtomValue(bountiesAtom);
 
   const onTabValueChange = (value: string) => setTab(value as TabOption);
+
+  const [, setSelectedDaoBounty] = useAtom(selectedDaoBountyAtom);
+
+  useEffect(() => {
+    if (!bounties || !bounties.length) {
+      return;
+    }
+
+    setSelectedDaoBounty(bounties[0].id);
+  }, [bounties, setSelectedDaoBounty]);
 
   return (
     <div className={styles.container}>
@@ -37,21 +48,24 @@ export function Bounties() {
         </Tabs>
       </div>
 
-      <div className={styles['content-container']}>
-        {bounties ? (
-          bounties.map((bounty) => (
-            <BountyCard
-              key={`${bounty.__typename}-${bounty.id}`}
-              bounty={bounty}
-            />
-          ))
-        ) : (
-          <Card className={styles['proposals-empty-card']}>
-            <Typography variant="caption2" className={styles.caption}>
-              You don&apos;t have any bounties yet
-            </Typography>
-          </Card>
-        )}
+      <div className={styles.content}>
+        <div className={styles['content-container']}>
+          {bounties ? (
+            bounties.map((bounty) => (
+              <BountyCard
+                key={`${bounty.__typename}-${bounty.id}`}
+                bounty={bounty}
+              />
+            ))
+          ) : (
+            <Card className={styles['proposals-empty-card']}>
+              <Typography variant="caption2" className={styles.caption}>
+                You don&apos;t have any bounties yet
+              </Typography>
+            </Card>
+          )}
+        </div>
+        <DaoBountyInfo />
       </div>
     </div>
   );

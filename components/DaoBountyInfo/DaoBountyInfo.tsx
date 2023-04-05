@@ -3,7 +3,7 @@ import { ChangeEventHandler, useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-toastify';
 
 import { useAtomValue } from 'jotai';
-import { curatorBountiesAtom, selectedCuratorBountyAtom } from 'store/bounty';
+import { bountiesAtom, selectedDaoBountyAtom } from 'store/bounty';
 import {
   accountsAtom,
   metamaskAccountAtom,
@@ -31,7 +31,9 @@ import { MembersDropdown } from 'components/MembersDropdown';
 import { Input } from 'components/ui-kit/Input';
 import { Stepper } from 'components/ui-kit/Stepper';
 
-import styles from './CuratorBounty.module.scss';
+import styles from './DaoBounty.module.scss';
+
+// TODO: avoid copy-pasting!!!
 
 const steps = [
   'Proposal Phase',
@@ -41,10 +43,10 @@ const steps = [
   'Claimed'
 ];
 
-export function CuratorBountyInfo() {
+export function DaoBountyInfo() {
   const api = useAtomValue(apiAtom);
-  const curatorBounties = useAtomValue(curatorBountiesAtom);
-  const selectedCuratorBounty = useAtomValue(selectedCuratorBountyAtom);
+  const bounties = useAtomValue(bountiesAtom);
+  const selectedDaoBounty = useAtomValue(selectedDaoBountyAtom);
   const metamaskAccount = useAtomValue(metamaskAccountAtom);
   const substrateAccount = useAtomValue(substrateAccountAtom);
   const chainSymbol = useAtomValue(chainSymbolAtom);
@@ -56,9 +58,7 @@ export function CuratorBountyInfo() {
 
   const handleModalOpen = (value: boolean) => setModalOpen(value);
 
-  const bounty = curatorBounties?.find(
-    (_bounty) => _bounty.id === selectedCuratorBounty
-  );
+  const bounty = bounties?.find((_bounty) => _bounty.id === selectedDaoBounty);
 
   const onSuccess = () => {
     toast.success(
@@ -198,6 +198,7 @@ export function CuratorBountyInfo() {
       activeStep = 0;
       break;
     }
+
     case 'CuratorUnassigned':
     case 'CuratorProposed': {
       activeStep = 1;
