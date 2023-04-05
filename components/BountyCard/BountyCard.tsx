@@ -2,9 +2,10 @@ import { useMemo } from 'react';
 import clsx from 'clsx';
 import { formatDistance } from 'date-fns';
 
-import { useAtomValue } from 'jotai';
+import { useAtom, useAtomValue } from 'jotai';
 import { chainSymbolAtom, currentBlockAtom } from 'store/api';
 import { tokenSymbolAtom } from 'store/token';
+import { selectedDaoBountyAtom } from 'store/bounty';
 
 import type { BountyMeta } from 'types';
 import { Card } from 'components/ui-kit/Card';
@@ -24,6 +25,13 @@ export function BountyCard({ bounty }: BountyCardProps) {
   const currentBlock = useAtomValue(currentBlockAtom);
   const tokenSymbol = useAtomValue(tokenSymbolAtom);
   const currencySymbol = useAtomValue(chainSymbolAtom);
+  const [selectedDaoBounty, setSelectedDaoBounty] = useAtom(
+    selectedDaoBountyAtom
+  );
+
+  const handleSelect = (id: string | null) => {
+    setSelectedDaoBounty(id);
+  };
 
   const bountyStatus = useMemo(() => {
     switch (bounty.status) {
@@ -72,7 +80,11 @@ export function BountyCard({ bounty }: BountyCardProps) {
     : { title: '', description: '' };
 
   return (
-    <Card className={styles.card}>
+    <Card
+      className={styles.card}
+      active={bounty.id === selectedDaoBounty}
+      onClick={() => handleSelect(bounty.id)}
+    >
       <div className={styles.header}>
         <div className={styles['status-container']}>
           <Icon
