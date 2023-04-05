@@ -10,15 +10,8 @@
   border-radius: var(--card-border-radius);
   box-shadow: -0px 12px 32px var(--card-box-shadow-color);
   padding: var(--card-padding);
-  border: 1px solid transparent;
-  border-radius: 8px;
-  cursor: pointer
 }
 
 .dropdown {
   box-shadow: none;
-}
-
-.active {
-  border-color: #{colors.$purple-2};
 }
