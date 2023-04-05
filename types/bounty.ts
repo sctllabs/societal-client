@@ -35,6 +35,6 @@ export type SubscribeBountiesByDaoId = {
   bounties: BountyMeta[];
 };
 
-export type SubscribeBountiesByCuratorId = {
+export type SubscribeBountiesByCuratorIdOrBeneficiaryId = {
   bounties: BountyMeta[];
 };
