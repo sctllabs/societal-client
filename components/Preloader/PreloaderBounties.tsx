@@ -20,9 +20,10 @@ export function PreloaderBounties() {
     }
   );
 
-  useEffect(() => {
-    setBounties(data?.bounties);
-  }, [data?.bounties, setBounties]);
+  useEffect(
+    () => setBounties(data?.bounties || null),
+    [data?.bounties, setBounties]
+  );
 
   return null;
 }

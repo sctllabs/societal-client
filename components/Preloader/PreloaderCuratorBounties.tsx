@@ -32,7 +32,7 @@ export function PreloaderCuratorBounties() {
   );
 
   useEffect(() => {
-    setCuratorBounties(data?.bounties);
+    setCuratorBounties(data?.bounties || null);
   }, [data?.bounties, setCuratorBounties]);
 
   return null;
