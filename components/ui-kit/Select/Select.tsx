@@ -15,11 +15,18 @@ export const SelectValue = SelectPrimitive.Value;
 export const SelectTrigger = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Trigger>,
   React.ComponentPropsWithoutRef<typeof SelectPrimitive.Trigger>
->(function SelectTrigger({ asChild, className, children, ...props }, ref) {
+>(function SelectTrigger(
+  { datatype, asChild, className, children, ...props },
+  ref
+) {
   return (
     <SelectPrimitive.Trigger
       ref={ref}
-      className={clsx(styles.trigger, className)}
+      className={clsx(
+        styles.trigger,
+        styles[`trigger-${datatype ?? 'default'}`],
+        className
+      )}
       asChild={asChild}
       {...props}
     >

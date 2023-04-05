@@ -3,7 +3,8 @@ import clsx from 'clsx';
 import { useAtomValue } from 'jotai';
 import { accountsAtom } from 'store/account';
 import { currentDaoAtom } from 'store/dao';
-import { currentBlockAtom } from 'store/api';
+import { chainSymbolAtom, currentBlockAtom } from 'store/api';
+import { tokenSymbolAtom } from 'store/token';
 
 import { getProposalSettings } from 'utils/getProposalSettings';
 import { parseMeta } from 'utils/parseMeta';
@@ -17,6 +18,7 @@ import type {
   DemocracyReferendumMeta,
   EthGovernanceProposalMeta,
   GovernanceV1,
+  ProposeCuratorProposal,
   RemoveMemberProposal,
   SpendProposal,
   TransferProposal
@@ -56,6 +58,8 @@ export function ProposalCard({ proposal }: ProposalCardProps) {
   const { proposalTitle, icon } = getProposalSettings(proposal.kind);
   const currentDao = useAtomValue(currentDaoAtom);
   const currentBlock = useAtomValue(currentBlockAtom);
+  const chainSymbol = useAtomValue(chainSymbolAtom);
+  const tokenSymbol = useAtomValue(tokenSymbolAtom);
 
   const proposalStatus: ProposalStatus = useMemo(() => {
     switch (proposal.status) {
@@ -108,6 +112,16 @@ export function ProposalCard({ proposal }: ProposalCardProps) {
     );
   }, [currentBlock, currentDao, proposal]);
 
+  const currency = useMemo(() => {
+    if (proposal.kind.__typename === 'CreateBounty') {
+      return chainSymbol;
+    }
+    if (proposal.kind.__typename === 'CreateTokenBounty') {
+      return tokenSymbol ?? chainSymbol;
+    }
+    return null;
+  }, [chainSymbol, proposal.kind.__typename, tokenSymbol]);
+
   return (
     <Card className={styles.card}>
       <div className={styles.header}>
@@ -158,6 +172,25 @@ export function ProposalCard({ proposal }: ProposalCardProps) {
           )}
         </div>
 
+        {proposal.kind.__typename === 'ProposeCurator' && (
+          <div className={styles['curator-container']}>
+            <div className={styles.curator}>
+              <Typography variant="caption2">Curator:</Typography>
+              <Typography variant="title5">
+                {(accounts?.find(
+                  (_account) =>
+                    _account.address ===
+                    (proposal.kind as ProposeCuratorProposal).curator
+                )?.meta.name as string) ?? maskAddress(proposal.kind.curator)}
+              </Typography>
+            </div>
+            <div className={styles.bounty}>
+              <Typography variant="caption2">Bounty index:</Typography>
+              <Typography variant="body2">{proposal.kind.bountyId}</Typography>
+            </div>
+          </div>
+        )}
+
         <div className={styles['proposal-bottom-container']}>
           <div className={styles['proposal-item-container']}>
             <Typography variant="caption2">Proposer&nbsp;</Typography>
@@ -170,6 +203,27 @@ export function ProposalCard({ proposal }: ProposalCardProps) {
               </Typography>
             </span>
           </div>
+          {(proposal.kind.__typename === 'CreateBounty' ||
+            proposal.kind.__typename === 'CreateTokenBounty') && (
+            <div className={styles['proposal-item-container']}>
+              <span className={styles['proposal-transfer-info']}>
+                <Typography variant="caption3">Amount</Typography>
+                <Typography variant="title5">
+                  {formatBalance(BigInt(proposal.kind.value))} {currency}
+                </Typography>
+              </span>
+            </div>
+          )}
+          {proposal.kind.__typename === 'ProposeCurator' && (
+            <div className={styles['proposal-item-container']}>
+              <span className={styles['proposal-transfer-info']}>
+                <Typography variant="caption3">Fee</Typography>
+                <Typography variant="title5">
+                  {formatBalance(proposal.kind.fee)}
+                </Typography>
+              </span>
+            </div>
+          )}
 
           {(proposal.kind.__typename === 'TransferToken' ||
             proposal.kind.__typename === 'Spend') && (
@@ -225,24 +279,23 @@ export function ProposalCard({ proposal }: ProposalCardProps) {
             </div>
           )}
 
-          {proposal.__typename === 'DemocracyProposal' &&
-            seconds.length > 0 && (
-              <div className={styles['proposal-item-container']}>
-                <Typography variant="title7">
-                  235 users seconded this proposal
-                </Typography>
-                <span className={styles['seconded-container']}>
-                  <span className={styles['profile-pictures']}>
-                    {Array.from(Array(10).keys()).map((x) => (
-                      <Icon key={x} name="user-profile" size="sm" />
-                    ))}
-                  </span>
-                  <Button variant="text" className={styles['button-see-all']}>
-                    <Typography variant="button1">See all</Typography>
-                  </Button>
+          {proposal.__typename === 'DemocracyProposal' && seconds.length > 0 && (
+            <div className={styles['proposal-item-container']}>
+              <Typography variant="title7">
+                235 users seconded this proposal
+              </Typography>
+              <span className={styles['seconded-container']}>
+                <span className={styles['profile-pictures']}>
+                  {Array.from(Array(10).keys()).map((x) => (
+                    <Icon key={x} name="user-profile" size="sm" />
+                  ))}
                 </span>
-              </div>
-            )}
+                <Button variant="text" className={styles['button-see-all']}>
+                  <Typography variant="button1">See all</Typography>
+                </Button>
+              </span>
+            </div>
+          )}
           {proposal.__typename === 'CouncilProposal' && (
             <CouncilProposalActions proposal={proposal} />
           )}

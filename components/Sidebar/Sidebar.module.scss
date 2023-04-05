@@ -20,24 +20,42 @@
 }
 
 .logo {
-  height: 2.75rem;
+  height: 44px;
   position: relative;
-  width: 2.75rem;
+  width: 44px;
 }
 
-.logo-container {
-  --sidebar-logo-container-width: #{variables.$sidebar-width};
-  --sidebar-logo-container-height: #{variables.$header-height};
+.link {
+  align-items: center;
+  border-radius: 4px;
+  color: #{colors.$grayscale-0};
+  display: flex;
+  height: 44px;
+  justify-content: center;
+  width: 44px;
+
+  &:hover {
+    box-shadow: inset 0px 0px 12px rgba(102, 78, 200, 0.05);
+  }
+}
+
+.active {
+  box-shadow: inset 0px 0px 12px rgba(102, 78, 200, 0.2);
+}
+
+.main-container {
   align-items: center;
   border-bottom: 0.0625rem solid var(--sidebar-container-border-color);
 
   display: flex;
-  height: var(--sidebar-logo-container-height);
+  flex-direction: column;
+  gap: 16px;
   justify-content: center;
-  width: var(--sidebar-logo-container-width);
+  margin: 10px;
+  padding-bottom: 20px;
 }
 
-.center-container {
+.daos-container {
   align-items: center;
   display: flex;
   flex-direction: column;

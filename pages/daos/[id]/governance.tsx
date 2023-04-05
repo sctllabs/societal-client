@@ -6,7 +6,7 @@ import { ReferendumInfo } from 'components/ReferendumInfo';
 
 import styles from 'styles/pages/governance.module.scss';
 
-export default function DaoGovernance() {
+export default function Governance() {
   const currentDaoLoading = useAtomValue(currentDaoLoadingAtom);
   const currentDao = useAtomValue(currentDaoAtom);
 

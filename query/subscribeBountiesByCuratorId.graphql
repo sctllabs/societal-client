@@ -1,0 +1,43 @@
+subscription SubscribeBountiesByCuratorId($curatorId: String!) {
+  bounties(
+    where: { curator: { id_eq: $curatorId } }
+    limit: 100
+    orderBy: blockNum_DESC
+  ) {
+    id
+    index
+    status
+    nativeToken
+    description
+    value
+    unlockAt
+    updateDue
+    fee
+    payout
+    createdAt
+    blockNum
+    beneficiary {
+      id
+    }
+    curator {
+      id
+    }
+    dao {
+      id
+      name
+      policy {
+        proposalPeriod
+        bountyUpdatePeriod
+        bountyPayoutDelay
+        governance {
+          ... on GovernanceV1 {
+            __typename
+            launchPeriod
+            votingPeriod
+            enactmentPeriod
+          }
+        }
+      }
+    }
+  }
+}

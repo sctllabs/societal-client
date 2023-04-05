@@ -33,6 +33,20 @@ subscription SubscribeCouncilProposalsByDaoId($daoId: String!) {
         beneficiary
         amount
       }
+      ... on CreateBounty {
+        value
+        description
+      }
+      ... on CreateTokenBounty {
+        value
+        description
+        tokenId
+      }
+      ... on ProposeCurator {
+        bountyId
+        curator
+        fee
+      }
     }
   }
 }

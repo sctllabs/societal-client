@@ -1,0 +1,105 @@
+@use "styles/colors";
+
+.card {
+  padding: 0;
+}
+
+.header {
+  align-items: center;
+  border-bottom: 1px solid #{colors.$grayscale-30};
+  display: flex;
+  justify-content: space-between;
+  padding: 16px 20px;
+}
+
+.status-container {
+  align-items: center;
+  display: flex;
+  gap: 4px;
+}
+
+.status-icon {
+  height: 8px;
+  width: 8px;
+}
+
+.icon-active {
+  color: #{colors.$blue-1};
+}
+
+.icon-completed {
+  color: #{colors.$green-1};
+}
+
+.distance {
+  color: #{colors.$grayscale-35};
+}
+
+.title-container {
+  align-items: center;
+  display: flex;
+  gap: 6px;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px 20px;
+}
+
+.logo {
+  border-radius: 2px;
+  height: 24px;
+  margin-right: 4px;
+  width: 24px;
+}
+
+.additional-info-container {
+  position: relative;
+}
+
+.value {
+  bottom: 0;
+  position: absolute;
+  right: 0;
+}
+
+.actions-container {
+  align-items: center;
+  border-top: 5px solid #{colors.$grayscale-30};
+  display: flex;
+  height: 64px;
+  justify-content: space-between;
+  padding: 20px;
+}
+
+.buttons-container {
+  display: flex;
+  gap: 12px;
+}
+
+.democracy-modal-deposit-container {
+  background: #{colors.$purple-6};
+  border-radius: 8px;
+  display: flex;
+  padding: 6px 16px;
+}
+
+.democracy-modal-deposit {
+  align-items: center;
+  display: flex;
+  gap: 6px;
+}
+
+.dialog-description {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.dialog-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}

@@ -96,6 +96,7 @@ export function Proposals() {
             if (
               currentDao &&
               currentBlock &&
+              x.status === 'Open' &&
               x.blockNum + currentDao.policy.proposalPeriod < currentBlock
             ) {
               return {

@@ -8,6 +8,8 @@ subscription SubscribeDaoById($id: String!) {
     blockNum
     policy {
       proposalPeriod
+      bountyUpdatePeriod
+      bountyPayoutDelay
       governance {
         ... on GovernanceV1 {
           __typename

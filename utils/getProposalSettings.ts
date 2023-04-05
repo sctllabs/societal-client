@@ -5,7 +5,9 @@ export enum ProposalEnum {
   TRANSFER = 'Transfer',
   TRANSFER_GOVERNANCE_TOKEN = 'Transfer Governance Token',
   ADD_MEMBER = 'Add Member',
-  REMOVE_MEMBER = 'Remove Member'
+  REMOVE_MEMBER = 'Remove Member',
+  BOUNTY = 'Bounty',
+  BOUNTY_CURATOR = 'Bounty Curator'
 }
 
 type ProposalSettings = {
@@ -39,6 +41,24 @@ export function getProposalSettings(
       return {
         proposalTitle: ProposalEnum.TRANSFER_GOVERNANCE_TOKEN,
         icon: 'token'
+      };
+    }
+    case 'CreateBounty': {
+      return {
+        proposalTitle: ProposalEnum.BOUNTY,
+        icon: 'task'
+      };
+    }
+    case 'CreateTokenBounty': {
+      return {
+        proposalTitle: ProposalEnum.BOUNTY,
+        icon: 'task'
+      };
+    }
+    case 'ProposeCurator': {
+      return {
+        proposalTitle: ProposalEnum.BOUNTY_CURATOR,
+        icon: 'user-lock'
       };
     }
     default: {

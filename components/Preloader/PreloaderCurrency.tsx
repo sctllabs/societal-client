@@ -1,10 +1,10 @@
 import { useEffect } from 'react';
 import { useAtomValue, useSetAtom } from 'jotai';
-import { apiAtom, currencySymbolAtom } from 'store/api';
+import { apiAtom, chainSymbolAtom } from 'store/api';
 
 export function PreloaderCurrency() {
   const api = useAtomValue(apiAtom);
-  const setCurrencySymbol = useSetAtom(currencySymbolAtom);
+  const setCurrencySymbol = useSetAtom(chainSymbolAtom);
 
   useEffect(() => {
     if (!api) {

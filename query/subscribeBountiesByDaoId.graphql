@@ -1,0 +1,43 @@
+subscription SubscribeBountiesByDaoId($daoId: String!) {
+  bounties(
+    where: { dao: { id_eq: $daoId } }
+    orderBy: blockNum_DESC
+    limit: 100
+  ) {
+    id
+    index
+    status
+    nativeToken
+    description
+    value
+    unlockAt
+    updateDue
+    fee
+    payout
+    createdAt
+    blockNum
+    beneficiary {
+      id
+    }
+    curator {
+      id
+    }
+    dao {
+      id
+      name
+      policy {
+        proposalPeriod
+        bountyUpdatePeriod
+        bountyPayoutDelay
+        governance {
+          ... on GovernanceV1 {
+            __typename
+            launchPeriod
+            votingPeriod
+            enactmentPeriod
+          }
+        }
+      }
+    }
+  }
+}

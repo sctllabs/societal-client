@@ -34,6 +34,8 @@ type Policy = Readonly<{
   id: string;
   proposalPeriod: number;
   governance: GovernanceV1 | OwnershipWeightedVoting;
+  bountyUpdatePeriod: number;
+  bountyPayoutDelay: number;
 }>;
 
 type FungibleToken = Readonly<{

@@ -1,0 +1,29 @@
+@use "styles/colors";
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.item {
+
+  border: 1px solid transparent;
+  border-radius: 8px;
+  cursor: pointer;
+
+  &:hover {
+    border-color: #{colors.$purple-5};
+  }
+}
+
+.active {
+
+  border-color: #{colors.$purple-2};
+}

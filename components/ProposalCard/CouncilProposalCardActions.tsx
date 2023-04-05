@@ -20,7 +20,8 @@ import {
 import type {
   CouncilProposalMeta,
   SubscribeCouncilVotesByProposalId,
-  TxCallback
+  TxCallback,
+  TxFailedCallback
 } from 'types';
 
 import { TxButton } from 'components/TxButton';
@@ -189,7 +190,18 @@ export function CouncilProposalActions({
     );
   };
 
+  const onFailed: TxFailedCallback = () => {
+    toast.error(
+      <Notification
+        title="Transaction declined"
+        body="Transaction was declined."
+        variant="error"
+      />
+    );
+  };
+
   const disabled = proposal.status !== 'Open';
+  const disabledFinish = proposal.status === 'Executed';
   const ayes = data?.councilVoteHistories.filter(
     (_vote) => _vote.approvedVote
   ).length;
@@ -218,6 +230,7 @@ export function CouncilProposalActions({
             params={[proposal.dao.id, proposal.hash, proposal.index, false]}
             className={styles['button-vote']}
             onSuccess={onNayVoteSuccess}
+            onFailed={onFailed}
           >
             <Icon name="vote-no" />
           </TxButton>
@@ -246,6 +259,7 @@ export function CouncilProposalActions({
             variant="ghost"
             className={styles['button-vote']}
             onSuccess={onAyeVoteSuccess}
+            onFailed={onFailed}
           >
             <Icon name="vote-yes" />
           </TxButton>
@@ -253,7 +267,7 @@ export function CouncilProposalActions({
 
         <Typography variant="caption2">{ayes || 0}</Typography>
       </span>
-      {!disabled &&
+      {proposal.status !== 'Executed' &&
         ayes !== undefined &&
         nays !== undefined &&
         (ayes >= proposal.voteThreshold || nays >= proposal.voteThreshold) && (
@@ -262,7 +276,7 @@ export function CouncilProposalActions({
             <span className={styles['proposal-vote-button-container']}>
               {metamaskAccount ? (
                 <Button
-                  disabled={disabled}
+                  disabled={disabledFinish}
                   variant="ghost"
                   className={styles['button-vote']}
                   onClick={handleProposalFinish}
@@ -271,7 +285,7 @@ export function CouncilProposalActions({
                 </Button>
               ) : (
                 <TxButton
-                  disabled={disabled}
+                  disabled={disabledFinish}
                   accountId={substrateAccount?.address}
                   tx={api?.tx.daoCouncil.close}
                   params={[
@@ -284,6 +298,7 @@ export function CouncilProposalActions({
                   variant="ghost"
                   className={styles['button-vote']}
                   onSuccess={onFinishSuccess}
+                  onFailed={onFailed}
                 >
                   <Icon name="send" />
                 </TxButton>
