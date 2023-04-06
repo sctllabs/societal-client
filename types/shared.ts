@@ -1,1 +1,1 @@
-export type Href = 'dashboard' | 'governance' | 'treasury';
+export type Href = 'dashboard' | 'governance' | 'treasury' | 'bounties';

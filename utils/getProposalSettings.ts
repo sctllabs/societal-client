@@ -7,7 +7,8 @@ export enum ProposalEnum {
   ADD_MEMBER = 'Add Member',
   REMOVE_MEMBER = 'Remove Member',
   BOUNTY = 'Bounty',
-  BOUNTY_CURATOR = 'Bounty Curator'
+  BOUNTY_CURATOR = 'Bounty Curator',
+  UNASSIGN_CURATOR = 'Unassign Bounty Curator'
 }
 
 type ProposalSettings = {
@@ -59,6 +60,12 @@ export function getProposalSettings(
       return {
         proposalTitle: ProposalEnum.BOUNTY_CURATOR,
         icon: 'user-lock'
+      };
+    }
+    case 'UnassignCurator': {
+      return {
+        proposalTitle: ProposalEnum.UNASSIGN_CURATOR,
+        icon: 'user-delete'
       };
     }
     default: {

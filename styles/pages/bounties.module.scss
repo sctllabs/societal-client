@@ -1,0 +1,19 @@
+.container {
+  display: flex;
+  gap: 40px;
+  padding: 40px;
+}
+
+.content {
+  display: flex;
+  gap: 44px;
+  flex-grow: 5;
+}
+
+.empty-card {
+  align-items: center;
+  justify-content: center;
+  display: flex;
+  flex-grow: 1;
+  height: 100%;
+}

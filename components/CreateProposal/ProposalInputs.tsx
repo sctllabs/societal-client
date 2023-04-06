@@ -32,7 +32,7 @@ import {
 import styles from './CreateProposal.module.scss';
 
 type ProposalInputsProps = {
-  proposalType: ProposalEnum | null;
+  proposalType: ProposalEnum | undefined;
   state: State;
   setState: Dispatch<SetStateAction<State>>;
   setCurrency: Dispatch<SetStateAction<string | null>>;
@@ -103,25 +103,32 @@ export function ProposalInputs({
 
   return (
     <>
-      {proposalType === ProposalEnum.BOUNTY_CURATOR && (
+      {(proposalType === ProposalEnum.BOUNTY_CURATOR ||
+        proposalType === ProposalEnum.BOUNTY_UNASSIGN_CURATOR) && (
         <div className={styles['proposal-input-transfer']}>
-          <MembersDropdown
-            accounts={_accounts}
-            onValueChange={onAccountValueChange}
-          >
-            <Input
-              onChange={onInputChange}
-              name={InputName.TARGET}
-              label={InputLabel.CURATOR}
-              value={
-                (accounts?.find((_account) => _account.address === state.target)
-                  ?.meta.name as string) ?? state.target
-              }
-              required
-            />
-          </MembersDropdown>
+          {proposalType === ProposalEnum.BOUNTY_CURATOR && (
+            <MembersDropdown
+              accounts={_accounts}
+              onValueChange={onAccountValueChange}
+            >
+              <Input
+                onChange={onInputChange}
+                name={InputName.TARGET}
+                label={InputLabel.CURATOR}
+                value={
+                  (accounts?.find(
+                    (_account) => _account.address === state.target
+                  )?.meta.name as string) ?? state.target
+                }
+                required
+              />
+            </MembersDropdown>
+          )}
 
-          <Select onValueChange={onBountyValueChange}>
+          <Select
+            defaultValue={state.bountyIndex}
+            onValueChange={onBountyValueChange}
+          >
             <SelectTrigger disabled={!bounties?.length}>
               <SelectValue placeholder={InputLabel.BOUNTY_INDEX}>
                 <Typography variant="title5">

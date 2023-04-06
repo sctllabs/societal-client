@@ -47,6 +47,9 @@ subscription SubscribeCouncilProposalsByDaoId($daoId: String!) {
         curator
         fee
       }
+      ... on UnassignCurator {
+        bountyId
+      }
     }
   }
 }

@@ -2,7 +2,7 @@ export type State = {
   amount: string;
   target: string;
   balance: string;
-  bountyIndex: string;
+  bountyIndex: string | undefined;
 };
 
 export type ProposalBasicState = {
@@ -38,7 +38,8 @@ export enum ProposalEnum {
   ADD_MEMBER = 'Add Member',
   REMOVE_MEMBER = 'Remove Member',
   BOUNTY = 'Bounty',
-  BOUNTY_CURATOR = 'Bounty Curator'
+  BOUNTY_CURATOR = 'Bounty Curator',
+  BOUNTY_UNASSIGN_CURATOR = 'Unassign Bounty Curator'
 }
 
 export enum ProposalVotingAccessEnum {

@@ -48,8 +48,14 @@ export enum ProposalType {
   TransferToken = 'TransferToken',
   CreateBounty = 'CreateBounty',
   CreateTokenBounty = 'CreateTokenBounty',
-  ProposeCurator = 'ProposeCurator'
+  ProposeCurator = 'ProposeCurator',
+  UnassignCurator = 'UnassignCurator'
 }
+
+export type UnassignCuratorProposal = Readonly<{
+  __typename: ProposalType.UnassignCurator;
+  bountyId: 0;
+}>;
 
 export type ProposeCuratorProposal = Readonly<{
   __typename: ProposalType.ProposeCurator;
@@ -100,7 +106,8 @@ export type ProposalKind =
   | TransferProposal
   | CreateBountyProposal
   | CreateTokenBountyProposal
-  | ProposeCuratorProposal;
+  | ProposeCuratorProposal
+  | UnassignCuratorProposal;
 
 export type CouncilProposalStatus =
   | 'Open'

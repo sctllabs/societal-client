@@ -15,17 +15,24 @@ import {
 import { InputLabel, ProposalEnum } from './types';
 
 type ProposalTypeProps = {
-  setProposalType: Dispatch<SetStateAction<ProposalEnum | null>>;
+  proposalType: ProposalEnum | undefined;
+  setProposalType: Dispatch<SetStateAction<ProposalEnum | undefined>>;
 };
 
-export function ProposalType({ setProposalType }: ProposalTypeProps) {
+export function ProposalType({
+  proposalType,
+  setProposalType
+}: ProposalTypeProps) {
   const currentDao = useAtomValue(currentDaoAtom);
 
   const onProposalTypeValueChange = (_proposalType: ProposalEnum) =>
     setProposalType(_proposalType);
 
   return (
-    <Select onValueChange={onProposalTypeValueChange}>
+    <Select
+      defaultValue={proposalType}
+      onValueChange={onProposalTypeValueChange}
+    >
       <SelectTrigger>
         <SelectValue placeholder={InputLabel.PROPOSAL_TYPE} />
       </SelectTrigger>

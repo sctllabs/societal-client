@@ -100,9 +100,15 @@
   gap: 6px;
 }
 
+.proposal-item-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
 .proposal-bottom-container {
   align-items: center;
   display: flex;
-  gap: 8px;
-  justify-content: space-between;
+  gap: 80px;
+  justify-content: flex-start;
 }

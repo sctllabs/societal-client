@@ -20,6 +20,8 @@ import {
   DialogTitle,
   DialogTrigger
 } from 'components/ui-kit/Dialog';
+import { CreateProposal } from 'components/CreateProposal';
+import { ProposalEnum } from 'components/CreateProposal/types';
 
 import styles from './BountyCard.module.scss';
 
@@ -138,13 +140,27 @@ export function BountyCardActions({ bounty }: BountyCardActionsProps) {
 
   if (
     bounty.status !== 'CuratorProposed' &&
-    bounty.status !== 'CuratorAccepted'
+    bounty.status !== 'CuratorAccepted' &&
+    bounty.status !== 'Created' &&
+    bounty.status !== 'CuratorUnassigned' &&
+    bounty.status !== 'BecameActive'
   ) {
     return null;
   }
 
   return (
     <div className={styles['actions-container']}>
+      {(bounty.status === 'Created' ||
+        bounty.status === 'CuratorUnassigned' ||
+        bounty.status === 'BecameActive') && (
+        <div className={styles['assign-curator']}>
+          <CreateProposal
+            title="Propose Curator"
+            bountyIndex={bounty.index.toString()}
+            proposalType={ProposalEnum.BOUNTY_CURATOR}
+          />
+        </div>
+      )}
       {bounty.status === 'CuratorProposed' &&
         bounty.curator?.id === accountAddress && (
           <>
@@ -195,14 +211,25 @@ export function BountyCardActions({ bounty }: BountyCardActionsProps) {
               </Dialog>
             </div>
           </>
+        )}{' '}
+      {(bounty.status === 'CuratorProposed' ||
+        bounty.status === 'CuratorAccepted') &&
+        bounty.curator?.id !== accountAddress && (
+          <div className={styles['assign-curator']}>
+            <CreateProposal
+              proposalType={ProposalEnum.BOUNTY_UNASSIGN_CURATOR}
+              bountyIndex={bounty.index.toString()}
+              buttonColor="destructive"
+              buttonVariant="outlined"
+              title="Unassign Curator"
+            />
+          </div>
         )}
       {bounty.status === 'CuratorAccepted' &&
         bounty.curator?.id === accountAddress && (
-          <div>
-            <Typography variant="body2">
-              You are a designated curator for this bounty
-            </Typography>
-          </div>
+          <Typography variant="body2">
+            You are a designated curator for this bounty
+          </Typography>
         )}
     </div>
   );
