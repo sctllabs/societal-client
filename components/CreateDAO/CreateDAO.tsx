@@ -131,8 +131,8 @@ export function CreateDAO() {
 
     toast.success(
       <Notification
-        title="You've successfully created a new DAO"
-        body="You can create new DAO and perform other actions."
+        title="You've successfully created a new community"
+        body="You can create new community and perform other actions."
         variant="success"
       />
     );
@@ -347,7 +347,7 @@ export function CreateDAO() {
       toast.success(
         <Notification
           title="Transaction created"
-          body="DAO will be created soon."
+          body="Community will be created soon."
           variant="success"
         />
       );
@@ -381,7 +381,7 @@ export function CreateDAO() {
     toast.success(
       <Notification
         title="Transaction created"
-        body="DAO will be created soon."
+        body="Community will be created soon."
         variant="success"
       />
     );
@@ -421,13 +421,13 @@ export function CreateDAO() {
     <div className={styles.container}>
       <Link href="/" className={styles['cancel-button']}>
         <Button variant="outlined" color="destructive" size="sm">
-          Cancel DAO creation
+          Cancel creation
         </Button>
       </Link>
 
       <div className={styles.content}>
         <Typography variant="h1" className={styles.title}>
-          Create DAO
+          Create A Tokenized Community
         </Typography>
 
         <DaoInfo state={daoInfo} setState={setDaoInfo} />
@@ -452,7 +452,7 @@ export function CreateDAO() {
               tx={api?.tx.dao.createDao}
               className={styles['create-button']}
             >
-              Create DAO
+              Create
             </TxButton>
           ) : (
             <Button
@@ -460,7 +460,7 @@ export function CreateDAO() {
               disabled={disabled}
               className={styles['create-button']}
             >
-              Create DAO
+              Create
             </Button>
           )}
         </div>

@@ -14,7 +14,7 @@ enum InputName {
 }
 
 enum InputLabel {
-  NAME = '* DAO Name',
+  NAME = '* Community Name',
   PURPOSE = '* Purpose'
 }
 
@@ -37,7 +37,7 @@ export function DaoInfo({ state, setState }: DaoInfoProps) {
 
   return (
     <div className={styles.info}>
-      <Typography variant="h3">DAO Info</Typography>
+      <Typography variant="h3">Community Info</Typography>
       <Input
         name={InputName.NAME}
         label={InputLabel.NAME}
