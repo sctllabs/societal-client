@@ -18,7 +18,7 @@ export function About() {
   return (
     <Card className={styles.card}>
       <div className={styles.info}>
-        <Typography variant="title4">About DAO</Typography>
+        <Typography variant="title4">About</Typography>
         <Typography variant="body2">{purpose}</Typography>
       </div>
     </Card>
