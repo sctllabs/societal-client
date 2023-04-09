@@ -113,14 +113,24 @@ export function ProposalCard({ proposal }: ProposalCardProps) {
   }, [currentBlock, currentDao, proposal]);
 
   const currency = useMemo(() => {
-    if (proposal.kind.__typename === 'CreateBounty') {
-      return chainSymbol;
+    switch (proposal.kind.__typename) {
+      case 'CreateBounty': {
+        return chainSymbol;
+      }
+      case 'CreateTokenBounty': {
+        return tokenSymbol;
+      }
+      case 'Spend': {
+        return chainSymbol;
+      }
+      case 'TransferToken': {
+        return tokenSymbol;
+      }
+      default: {
+        return null;
+      }
     }
-    if (proposal.kind.__typename === 'CreateTokenBounty') {
-      return tokenSymbol ?? chainSymbol;
-    }
-    return null;
-  }, [chainSymbol, proposal.kind.__typename, tokenSymbol]);
+  }, [proposal.kind.__typename, chainSymbol, tokenSymbol]);
 
   return (
     <Card className={styles.card}>
@@ -209,7 +219,7 @@ export function ProposalCard({ proposal }: ProposalCardProps) {
               <span className={styles['proposal-transfer-info']}>
                 <Typography variant="caption3">Amount</Typography>
                 <Typography variant="title5">
-                  {formatBalance(BigInt(proposal.kind.value))} {currency}
+                  {formatBalance(proposal.kind.value)} {currency}
                 </Typography>
               </span>
             </div>

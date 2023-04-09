@@ -16,7 +16,7 @@ import styles from './Balance.module.scss';
 export function Balance() {
   const api = useAtomValue(apiAtom);
   const currency = useAtomValue(chainSymbolAtom);
-  const [balance, setBalance] = useState<bigint | null>(null);
+  const [balance, setBalance] = useState<string | null>(null);
 
   const currentDao = useAtomValue(currentDaoAtom);
 
@@ -29,7 +29,7 @@ export function Balance() {
 
     api?.query.system
       .account(currentDao.account.id, ({ data: { free } }: AccountInfo) =>
-        setBalance(free.toBigInt())
+        setBalance(free.toString())
       )
       .then((unsub) => {
         unsubscribe = unsub;
