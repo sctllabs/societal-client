@@ -42,7 +42,7 @@ export function ProposalType({
             const govType = currentDao?.policy.governance.__typename;
             switch (govType) {
               case 'OwnershipWeightedVoting':
-                return _proposalKey !== 'PROPOSE_TRANSFER_GOVERNANCE_TOKEN';
+                return _proposalKey !== 'TRANSFER_GOVERNANCE_TOKEN';
               default:
                 return true;
             }

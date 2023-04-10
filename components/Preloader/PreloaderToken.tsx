@@ -86,7 +86,9 @@ export function PreloaderToken() {
       )
       .then((unsub) => {
         unsubscribe = unsub;
-      });
+      })
+      // eslint-disable-next-line no-console
+      .catch(console.error);
 
     return () => unsubscribe && unsubscribe();
   }, [api, currentDao, setToken]);
