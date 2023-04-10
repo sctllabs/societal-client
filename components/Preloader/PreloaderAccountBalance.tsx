@@ -49,7 +49,7 @@ export function PreloaderAccountBalance() {
 
     api?.query.system
       .account(accountAddress, (accountInfo: AccountInfo) =>
-        setCurrentAccountBalance(accountInfo.data.free.toBigInt())
+        setCurrentAccountBalance(accountInfo.data.free.toString())
       )
       .then((unsub) => {
         unsubscribe = unsub;
@@ -124,7 +124,7 @@ export function PreloaderAccountBalance() {
             contract.balanceOf(metamaskAccount?._address)
           ]);
 
-          setCurrentAccountTokenBalance(BigInt(balance._hex));
+          setCurrentAccountTokenBalance(balance._hex);
         } catch (e) {
           // eslint-disable-next-line no-console
           console.error(e);

@@ -103,3 +103,28 @@
   flex-direction: column;
   gap: 40px;
 }
+
+.tabs {
+  margin-bottom: 24px;
+}
+
+.collapsible {
+  display: flex;
+  flex-direction: column-reverse;
+}
+
+.collapsible-trigger {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.collapsible-text {
+  color: #{colors.$grayscale-70};
+}
+
+.preview {
+  display: flex;
+  justify-content: space-between;
+}

@@ -21,6 +21,7 @@ import code from './code.svg';
 import copy from './copy.svg';
 import dao from './dao.svg';
 import dashboard from './dashboard.svg';
+import database from './database.svg';
 import defi from './defi.svg';
 import edit from './edit.svg';
 import expand from './expand.svg';
@@ -80,11 +81,13 @@ import socialTiktok from './social-tiktok.svg';
 import socialTwitch from './social-twitch.svg';
 import socialTwitter from './social-twitter.svg';
 import socialYoutube from './social-youtube.svg';
+import spinner from './spinner.svg';
 import taskAdd from './task-add.svg';
 import task from './task.svg';
 import tax from './tax.svg';
 import tick from './tick.svg';
 import token from './token.svg';
+import toolkit from './toolkit.svg';
 import transfer from './transfer.svg';
 import trash from './trash.svg';
 import treasury from './treasury.svg';
@@ -126,6 +129,7 @@ const icons = {
   copy,
   dao,
   dashboard,
+  database,
   defi,
   edit,
   expand,
@@ -185,11 +189,13 @@ const icons = {
   'social-twitch': socialTwitch,
   'social-twitter': socialTwitter,
   'social-youtube': socialYoutube,
+  spinner,
   'task-add': taskAdd,
   task,
   tax,
   tick,
   token,
+  toolkit,
   transfer,
   trash,
   treasury,

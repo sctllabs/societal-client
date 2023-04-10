@@ -85,6 +85,26 @@ export function TaskCard({ proposal, currentBlock }: TaskCardProps) {
       break;
   }
 
+  const currency = useMemo(() => {
+    switch (proposal.kind.__typename) {
+      case 'CreateBounty': {
+        return chainSymbol;
+      }
+      case 'CreateTokenBounty': {
+        return tokenSymbol;
+      }
+      case 'Spend': {
+        return chainSymbol;
+      }
+      case 'TransferToken': {
+        return tokenSymbol;
+      }
+      default: {
+        return null;
+      }
+    }
+  }, [proposal.kind.__typename, chainSymbol, tokenSymbol]);
+
   return (
     <Card className={styles.card}>
       <div className={styles.header}>
@@ -158,7 +178,7 @@ export function TaskCard({ proposal, currentBlock }: TaskCardProps) {
                     <Typography variant="title5">
                       {formatBalance(proposal.kind.amount)}
                     </Typography>
-                    <Typography variant="body2">{tokenSymbol}</Typography>
+                    <Typography variant="body2">{currency}</Typography>
                   </span>
                 </span>
                 <span className={styles['proposal-item-info']}>
@@ -205,7 +225,7 @@ export function TaskCard({ proposal, currentBlock }: TaskCardProps) {
                 <span className={styles['proposal-item']}>
                   <Icon name="treasury" size="xs" />
                   <Typography variant="title5">
-                    {formatBalance(BigInt(proposal.kind.value))}
+                    {formatBalance(proposal.kind.value)}
                   </Typography>
                   <Typography variant="body2">
                     {proposal.kind.__typename === 'CreateBounty'

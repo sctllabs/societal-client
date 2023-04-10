@@ -61,7 +61,7 @@ export type ProposeCuratorProposal = Readonly<{
   __typename: ProposalType.ProposeCurator;
   bountyId: number;
   curator: string;
-  fee: bigint;
+  fee: string;
 }>;
 
 export type CreateBountyProposal = Readonly<{
@@ -90,12 +90,12 @@ export type RemoveMemberProposal = Readonly<{
 export type SpendProposal = Readonly<{
   __typename: ProposalType.Spend;
   beneficiary: string;
-  amount: bigint;
+  amount: string;
 }>;
 
 export type TransferProposal = Readonly<{
   __typename: ProposalType.TransferToken;
-  amount: bigint;
+  amount: string;
   beneficiary: string;
 }>;
 
@@ -147,7 +147,7 @@ export type CouncilProposalMeta = ProposalMeta & {
 export type EthGovernanceProposalMeta = ProposalMeta & {
   hash: string;
   status: EthGovernanceProposalStatus;
-  voteThreshold: bigint;
+  voteThreshold: string;
   __typename: 'EthGovernanceProposal';
 };
 

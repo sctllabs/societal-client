@@ -1,6 +1,8 @@
 import { useAtomValue } from 'jotai';
 import { tokenAtom, tokenLoadingAtom } from 'store/token';
 
+import { formatBalance } from 'utils/formatBalance';
+
 import { Typography } from 'components/ui-kit/Typography';
 import { Card } from 'components/ui-kit/Card';
 import { Chip } from 'components/ui-kit/Chip';
@@ -27,10 +29,7 @@ export function Token() {
           </div>
 
           <Typography variant="title1">
-            {token.quantity &&
-              Intl.NumberFormat('en-US', { minimumFractionDigits: 2 }).format(
-                parseFloat(token.quantity)
-              )}
+            {token.quantity && formatBalance(token.quantity)}
           </Typography>
         </>
       )}
