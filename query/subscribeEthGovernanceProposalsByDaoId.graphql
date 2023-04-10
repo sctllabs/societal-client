@@ -11,6 +11,7 @@ subscription SubscribeEthGovernanceProposalsByDaoId($daoId: String!) {
     blockNum
     voteThreshold
     meta
+    executed
     dao {
       id
     }

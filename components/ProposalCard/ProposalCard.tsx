@@ -51,7 +51,8 @@ type ProposalStatus =
   | 'Completed'
   | 'Expired'
   | 'Referendum'
-  | 'Started';
+  | 'Started'
+  | 'Failed';
 
 export function ProposalCard({ proposal }: ProposalCardProps) {
   const { proposalTitle, icon } = getProposalSettings(proposal.kind);
@@ -75,11 +76,14 @@ export function ProposalCard({ proposal }: ProposalCardProps) {
       case 'Started': {
         return 'Started';
       }
+      case 'Executed': {
+        return proposal.executed ? 'Completed' : 'Failed';
+      }
       default: {
         return 'Completed';
       }
     }
-  }, [proposal.status]);
+  }, [proposal]);
 
   const meta = parseMeta(proposal.meta);
   const title = meta?.title;

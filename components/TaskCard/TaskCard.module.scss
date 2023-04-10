@@ -76,6 +76,10 @@
   color: #{colors.$green-1};
 }
 
+.icon-failed {
+  color: #{colors.$red-1};
+}
+
 .proposal-transfer-container {
   display: flex;
   flex-direction: column;
