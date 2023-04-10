@@ -223,7 +223,7 @@ export function CreateProposal({
       api?.tx.daoTreasury,
       api?.tx.daoBounties,
       currentDao?.id,
-      currentDao?.fungibleToken.id,
+      currentDao?.fungibleToken?.id,
       proposalBasicState.title,
       proposalBasicState.description,
       currency,
