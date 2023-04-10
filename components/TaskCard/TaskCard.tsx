@@ -38,7 +38,7 @@ export interface TaskCardProps {
   currentBlock: number | null;
 }
 
-type TaskStatus = 'Active' | 'Completed' | 'Expired' | 'Referendum';
+type TaskStatus = 'Active' | 'Completed' | 'Expired' | 'Referendum' | 'Failed';
 
 export function TaskCard({ proposal, currentBlock }: TaskCardProps) {
   const taskStatus: TaskStatus = useMemo(() => {
@@ -52,11 +52,14 @@ export function TaskCard({ proposal, currentBlock }: TaskCardProps) {
       case 'Expired': {
         return 'Expired';
       }
+      case 'Executed': {
+        return proposal.executed ? 'Completed' : 'Failed';
+      }
       default: {
         return 'Completed';
       }
     }
-  }, [proposal.status]);
+  }, [proposal]);
 
   const currentDao = useAtomValue(currentDaoAtom);
   const tokenSymbol = useAtomValue(tokenSymbolAtom);
@@ -113,7 +116,7 @@ export function TaskCard({ proposal, currentBlock }: TaskCardProps) {
             name="circle"
             className={clsx(
               styles['status-icon'],
-              styles[taskStatus === 'Active' ? 'icon-active' : 'icon-completed']
+              styles[`icon-${taskStatus.toLowerCase()}`]
             )}
           />
           <Typography variant="title7">{taskStatus}</Typography>
