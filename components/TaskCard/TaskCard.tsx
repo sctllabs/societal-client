@@ -72,21 +72,16 @@ export function TaskCard({ proposal, currentBlock }: TaskCardProps) {
   const title = meta?.title;
   const description = meta?.description;
 
-  let proposalLabel;
-  switch (proposal.__typename) {
-    case 'DemocracyProposal':
-      proposalLabel = 'Democracy Proposal';
-
-      break;
-    case 'EthGovernanceProposal':
-      proposalLabel = 'Ownership Weighted';
-
-      break;
-    default:
-      proposalLabel = 'Council';
-
-      break;
-  }
+  const proposalLabel = useMemo(() => {
+    switch (proposal.__typename) {
+      case 'DemocracyProposal':
+        return 'Democracy Proposal';
+      case 'EthGovernanceProposal':
+        return 'Ownership Weighted';
+      default:
+        return 'Council';
+    }
+  }, [proposal.__typename]);
 
   const currency = useMemo(() => {
     switch (proposal.kind.__typename) {

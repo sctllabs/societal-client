@@ -136,6 +136,33 @@ export function ProposalCard({ proposal }: ProposalCardProps) {
     }
   }, [proposal.kind.__typename, chainSymbol, tokenSymbol]);
 
+  const blockNumber = useMemo(
+    () =>
+      proposal.__typename === 'EthGovernanceProposal'
+        ? proposal.blockNum
+        : null,
+    [proposal]
+  );
+
+  const voteThreshold = useMemo(
+    () =>
+      proposal.__typename === 'EthGovernanceProposal'
+        ? proposal.voteThreshold
+        : null,
+    [proposal]
+  );
+
+  const proposalLabel = useMemo(() => {
+    switch (proposal.__typename) {
+      case 'DemocracyProposal':
+        return 'Democracy Proposal';
+      case 'EthGovernanceProposal':
+        return 'Ownership Weighted';
+      default:
+        return 'Council';
+    }
+  }, [proposal.__typename]);
+
   return (
     <Card className={styles.card}>
       <div className={styles.header}>
@@ -154,29 +181,39 @@ export function ProposalCard({ proposal }: ProposalCardProps) {
           countdown}
       </div>
       <div className={styles.content}>
-        <div className={styles['proposal-title-container']}>
-          <Icon name={icon} className={styles['proposal-icon']} />
-          <div className={styles['proposal-title-items']}>
-            <div className={styles['proposal-title-item']}>
-              <Typography variant="title2">{proposalTitle}</Typography>
-              <span>
-                <Chip
-                  variant="proposal"
-                  color={
-                    proposal.__typename === 'CouncilProposal'
-                      ? 'dark-blue'
-                      : 'dark-green'
-                  }
-                >
-                  <Typography variant="title6">
-                    {proposal.__typename === 'CouncilProposal'
-                      ? 'Council'
-                      : 'Democracy'}
-                  </Typography>
-                </Chip>
-              </span>
+        <div className={styles['header-container']}>
+          <div className={styles['proposal-title-container']}>
+            <Icon name={icon} className={styles['proposal-icon']} />
+            <div className={styles['proposal-title-items']}>
+              <div className={styles['proposal-title-item']}>
+                <Typography variant="title2">{proposalTitle}</Typography>
+                <span>
+                  <Chip
+                    variant="proposal"
+                    color={
+                      proposal.__typename === 'DemocracyProposal'
+                        ? 'dark-green'
+                        : 'dark-blue'
+                    }
+                  >
+                    <Typography variant="title6">{proposalLabel}</Typography>
+                  </Chip>
+                </span>
+              </div>
             </div>
           </div>
+          {proposal.__typename === 'EthGovernanceProposal' && (
+            <div className={styles['header-items']}>
+              <div className={styles['header-item']}>
+                <Typography variant="caption2">Number</Typography>
+                <Typography variant="title5">{blockNumber}</Typography>
+              </div>
+              <div className={styles['header-item']}>
+                <Typography variant="caption2">Total Supply</Typography>
+                <Typography variant="title5">{voteThreshold}</Typography>
+              </div>
+            </div>
+          )}
         </div>
 
         <div className={styles['proposal-center-container']}>
@@ -210,7 +247,7 @@ export function ProposalCard({ proposal }: ProposalCardProps) {
             <Typography variant="caption2">Proposer&nbsp;</Typography>
             <span className={styles['proposal-item']}>
               <Icon name="user-profile" size="xs" />
-              <Typography variant="value6">
+              <Typography variant="title5">
                 {(accounts?.find(
                   (_account) => _account.address === proposal.account.id
                 )?.meta.name as string) ?? maskAddress(proposal.account.id)}
@@ -220,7 +257,7 @@ export function ProposalCard({ proposal }: ProposalCardProps) {
           {(proposal.kind.__typename === 'CreateBounty' ||
             proposal.kind.__typename === 'CreateTokenBounty') && (
             <div className={styles['proposal-item-container']}>
-              <span className={styles['proposal-transfer-info']}>
+              <span className={styles['proposal-item-container']}>
                 <Typography variant="caption3">Amount</Typography>
                 <Typography variant="title5">
                   {formatBalance(proposal.kind.value)} {currency}
@@ -230,7 +267,7 @@ export function ProposalCard({ proposal }: ProposalCardProps) {
           )}
           {proposal.kind.__typename === 'ProposeCurator' && (
             <div className={styles['proposal-item-container']}>
-              <span className={styles['proposal-transfer-info']}>
+              <span className={styles['proposal-item-container']}>
                 <Typography variant="caption3">Fee</Typography>
                 <Typography variant="title5">
                   {formatBalance(proposal.kind.fee)}
@@ -243,26 +280,24 @@ export function ProposalCard({ proposal }: ProposalCardProps) {
             proposal.kind.__typename === 'Spend') && (
             <>
               <div className={styles['proposal-item-container']}>
-                <span className={styles['proposal-transfer-info']}>
+                <span className={styles['proposal-item-container']}>
                   <Typography variant="caption3">Amount</Typography>
                   <Typography variant="title5">
                     {formatBalance(proposal.kind.amount)}
                   </Typography>
                 </span>
               </div>
-              <div>
-                <div className={styles['proposal-transfer-info']}>
-                  <Typography variant="caption3">Target</Typography>
-                  <Typography variant="title5">
-                    {(accounts?.find(
-                      (_account) =>
-                        _account.address ===
-                        (proposal.kind as SpendProposal | TransferProposal)
-                          .beneficiary
-                    )?.meta.name as string) ??
-                      maskAddress(proposal.kind.beneficiary)}
-                  </Typography>
-                </div>
+              <div className={styles['proposal-item-container']}>
+                <Typography variant="caption3">Target</Typography>
+                <Typography variant="title5">
+                  {(accounts?.find(
+                    (_account) =>
+                      _account.address ===
+                      (proposal.kind as SpendProposal | TransferProposal)
+                        .beneficiary
+                  )?.meta.name as string) ??
+                    maskAddress(proposal.kind.beneficiary)}
+                </Typography>
               </div>
             </>
           )}
@@ -313,11 +348,11 @@ export function ProposalCard({ proposal }: ProposalCardProps) {
           {proposal.__typename === 'CouncilProposal' && (
             <CouncilProposalActions proposal={proposal} />
           )}
-          {proposal.__typename === 'EthGovernanceProposal' && (
-            <EthGovernanceProposalActions proposal={proposal} />
-          )}
         </div>
       </div>
+      {proposal.__typename === 'EthGovernanceProposal' && (
+        <EthGovernanceProposalActions proposal={proposal} />
+      )}
       {proposal.__typename === 'DemocracyProposal' && (
         <DemocracyProposalCardActions proposal={proposal} />
       )}

@@ -3,9 +3,18 @@
 .container {
   display: flex;
   flex-direction: column;
-  flex-grow: 3;
   gap: 20px;
   height: max-content;
+}
+
+.governance-container {
+  flex-grow: 3;
+}
+
+.eth-container {
+  margin-left: auto;
+  margin-right: auto;
+  width: 60%;
 }
 
 .proposals-empty-card {

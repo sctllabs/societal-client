@@ -1,15 +1,17 @@
-import { ChangeEventHandler, useEffect, useState } from 'react';
+import { ChangeEventHandler, useEffect, useMemo, useState } from 'react';
+import clsx from 'clsx';
 import { toast } from 'react-toastify';
 
 import { useAtomValue } from 'jotai';
 import { metamaskAccountAtom } from 'store/account';
 
 import { useSubscription } from '@apollo/client';
-import SUBSCRIBE_VOTES_BY_PROPOSAL_ID from 'query/subscribeCouncilVotesByProposalId.graphql';
+import SUBSCRIBE_VOTES_BY_PROPOSAL_ID from 'query/subscribeEthGovernanceVotesByProposalId.graphql';
 
 import type {
   EthGovernanceProposalMeta,
-  SubscribeCouncilVotesByProposalId
+  SubscribeCouncilVotesByProposalId,
+  SubscribeEthVotesByProposalId
 } from 'types';
 
 import { Button } from 'components/ui-kit/Button';
@@ -29,6 +31,7 @@ import { Input } from 'components/ui-kit/Input';
 import { InputLabel, InputName } from 'components/CreateProposal/types';
 
 import styles from './ProposalCard.module.scss';
+import { VoteProgress } from './VoteProgress';
 
 type EthGovernanceProposalActionsProps = {
   proposal: EthGovernanceProposalMeta;
@@ -70,12 +73,17 @@ export function EthGovernanceProposalActions({
   };
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { data } = useSubscription<SubscribeCouncilVotesByProposalId>(
+  const { data } = useSubscription<SubscribeEthVotesByProposalId>(
     SUBSCRIBE_VOTES_BY_PROPOSAL_ID,
     {
       variables: { proposalId: proposal.id }
     }
   );
+
+  const ayes =
+    data?.ethGovernanceVoteHistories?.filter((x) => x.aye).length ?? 0;
+  const nays =
+    data?.ethGovernanceVoteHistories?.filter((x) => !x.aye).length ?? 0;
 
   const handleVote = async (aye: boolean) => {
     if (!metamaskAccount) {
@@ -100,6 +108,7 @@ export function EthGovernanceProposalActions({
           variant="success"
         />
       );
+      setModalOpen(false);
     } catch (e) {
       // eslint-disable-next-line no-console
       console.error(e);
@@ -118,61 +127,91 @@ export function EthGovernanceProposalActions({
 
   const handleCancelClick = () => setModalOpen(false);
 
+  const proposalStatus = useMemo(() => {
+    switch (proposal.status) {
+      case 'Approved':
+        return 'Approved';
+      case 'Disapproved':
+        return 'Failed';
+      case 'Executed': {
+        return proposal.executed ? 'Approved' : 'Failed';
+      }
+      default: {
+        return null;
+      }
+    }
+  }, [proposal.executed, proposal.status]);
+
   return (
     <div className={styles['eth-governance-proposal-actions']}>
       {proposal.status === 'Open' && (
-        <Dialog open={modalOpen} onOpenChange={setModalOpen}>
-          <DialogTrigger asChild>
-            <Button variant="filled">Vote</Button>
-          </DialogTrigger>
+        <>
+          <VoteProgress ayes={ayes} nays={nays} />
+          <Dialog open={modalOpen} onOpenChange={setModalOpen}>
+            <DialogTrigger asChild>
+              <Button variant="filled">Vote</Button>
+            </DialogTrigger>
 
-          <DialogContent>
-            <DialogTitle asChild>
-              <Typography variant="title1">
-                Enter the number of tokens that you want to vote with
-              </Typography>
-            </DialogTitle>
+            <DialogContent>
+              <DialogTitle asChild>
+                <Typography variant="title1">
+                  Enter the number of tokens that you want to vote with
+                </Typography>
+              </DialogTitle>
 
-            <DialogDescription asChild>
-              <>
-                <Input
-                  name={InputName.AMOUNT}
-                  label={InputLabel.AMOUNT}
-                  value={voteState.amount}
-                  onChange={onInputChange}
-                  type="tel"
-                  required
-                />
-                <div className={styles['buttons-container']}>
-                  <Button
-                    variant="outlined"
-                    color="destructive"
-                    className={styles['democracy-modal-button']}
-                    onClick={handleCancelClick}
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    className={styles['democracy-modal-button']}
-                    disabled={disabled}
-                    variant="filled"
-                    onClick={() => handleVote(false)}
-                  >
-                    Nay
-                  </Button>
-                  <Button
-                    className={styles['democracy-modal-button']}
-                    disabled={disabled}
-                    variant="filled"
-                    onClick={() => handleVote(true)}
-                  >
-                    Aye
-                  </Button>
-                </div>
-              </>
-            </DialogDescription>
-          </DialogContent>
-        </Dialog>
+              <DialogDescription asChild>
+                <>
+                  <Input
+                    name={InputName.AMOUNT}
+                    label={InputLabel.AMOUNT}
+                    value={voteState.amount}
+                    onChange={onInputChange}
+                    type="tel"
+                    required
+                  />
+                  <div className={styles['buttons-container']}>
+                    <Button
+                      variant="outlined"
+                      color="destructive"
+                      className={styles['democracy-modal-button']}
+                      onClick={handleCancelClick}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      className={styles['democracy-modal-button']}
+                      disabled={disabled}
+                      variant="filled"
+                      onClick={() => handleVote(false)}
+                    >
+                      Nay
+                    </Button>
+                    <Button
+                      className={styles['democracy-modal-button']}
+                      disabled={disabled}
+                      variant="filled"
+                      onClick={() => handleVote(true)}
+                    >
+                      Aye
+                    </Button>
+                  </div>
+                </>
+              </DialogDescription>
+            </DialogContent>
+          </Dialog>
+        </>
+      )}
+      {proposal.status !== 'Open' && (
+        <div className={styles['eth-status-container']}>
+          <div
+            className={clsx(
+              styles['referendum-status'],
+              proposalStatus && styles[proposalStatus.toLowerCase()]
+            )}
+          >
+            <Typography variant="button1">{proposalStatus}</Typography>
+          </div>
+        </div>
       )}
     </div>
   );
