@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
+import clsx from 'clsx';
 
 import { useAtomValue, useSetAtom } from 'jotai';
 import { currentDaoAtom } from 'store/dao';
-import { currentBlockAtom } from 'store/api';
 import { currentReferendumAtom } from 'store/referendum';
 
 import { useSubscription } from '@apollo/client';
@@ -12,12 +12,10 @@ import SUBSCRIBE_DEMOCRACY_PROPOSALS_BY_DAO_ID from 'query/subscribeDemocracyPro
 import SUBSCRIBE_LAST_REFERENDUM from 'query/subscribeLastDemocracyReferendum.graphql';
 
 import type {
-  CouncilProposalStatus,
   SubscribeCouncilProposalsByDaoId,
   SubscribeEthGovernanceProposalsByDaoId,
   SubscribeDemocracyProposalsByDaoId,
-  SubscribeDemocracyReferendums,
-  EthGovernanceProposalStatus
+  SubscribeDemocracyReferendums
 } from 'types';
 
 import { Card } from 'components/ui-kit/Card';
@@ -34,7 +32,6 @@ const tabOptions: TabOption[] = ['List', 'Referendum'];
 
 export function Proposals() {
   const currentDao = useAtomValue(currentDaoAtom);
-  const currentBlock = useAtomValue(currentBlockAtom);
   const setCurrentReferendum = useSetAtom(currentReferendumAtom);
   const [tab, setTab] = useState<TabOption>('List');
 
@@ -92,33 +89,8 @@ export function Proposals() {
   const proposals =
     tab === 'List'
       ? [
-          ...(councilProposalsData?.councilProposals.map((x) => {
-            if (
-              currentDao &&
-              currentBlock &&
-              x.status === 'Open' &&
-              x.blockNum + currentDao.policy.proposalPeriod < currentBlock
-            ) {
-              return {
-                ...x,
-                status: 'Expired' as CouncilProposalStatus
-              };
-            }
-            return x;
-          }) ?? []),
-          ...(ethGovernanceProposalsData?.ethGovernanceProposals.map((x) => {
-            if (
-              currentDao &&
-              currentBlock &&
-              x.blockNum + currentDao.policy.proposalPeriod < currentBlock
-            ) {
-              return {
-                ...x,
-                status: 'Expired' as EthGovernanceProposalStatus
-              };
-            }
-            return x;
-          }) ?? []),
+          ...(councilProposalsData?.councilProposals ?? []),
+          ...(ethGovernanceProposalsData?.ethGovernanceProposals ?? []),
           ...(democracyProposalsData?.democracyProposals ?? [])
         ].sort((a, b) => b.blockNum - a.blockNum)
       : referendumsData?.democracyReferendums.map((referendum) => ({
@@ -131,7 +103,14 @@ export function Proposals() {
   const onTabValueChange = (value: string) => setTab(value as TabOption);
 
   return (
-    <div className={styles.container}>
+    <div
+      className={clsx(
+        styles.container,
+        currentDao?.policy.governance.__typename === 'OwnershipWeightedVoting'
+          ? styles['eth-container']
+          : styles['governance-container']
+      )}
+    >
       <div className={styles['tabs-container']}>
         <Tabs
           value={tab}

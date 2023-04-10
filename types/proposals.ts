@@ -169,6 +169,10 @@ export type SubscribeCouncilVotesByProposalId = {
   readonly councilVoteHistories: CouncilVoteHistory[];
 };
 
+export type SubscribeEthVotesByProposalId = {
+  readonly ethGovernanceVoteHistories: EthGovernanceVoteHistory[];
+};
+
 export type CouncilVoteHistory = Readonly<{
   id: string;
   approvedVote: boolean;
