@@ -10,7 +10,6 @@ import SUBSCRIBE_VOTES_BY_PROPOSAL_ID from 'query/subscribeEthGovernanceVotesByP
 
 import type {
   EthGovernanceProposalMeta,
-  SubscribeCouncilVotesByProposalId,
   SubscribeEthVotesByProposalId
 } from 'types';
 
