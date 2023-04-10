@@ -139,7 +139,7 @@ export function ProposalCard({ proposal }: ProposalCardProps) {
   const blockNumber = useMemo(
     () =>
       proposal.__typename === 'EthGovernanceProposal'
-        ? proposal.blockNum
+        ? proposal.blockNumber
         : null,
     [proposal]
   );
@@ -205,7 +205,7 @@ export function ProposalCard({ proposal }: ProposalCardProps) {
           {proposal.__typename === 'EthGovernanceProposal' && (
             <div className={styles['header-items']}>
               <div className={styles['header-item']}>
-                <Typography variant="caption2">Number</Typography>
+                <Typography variant="caption2">Block Number</Typography>
                 <Typography variant="title5">{blockNumber}</Typography>
               </div>
               <div className={styles['header-item']}>
@@ -328,23 +328,24 @@ export function ProposalCard({ proposal }: ProposalCardProps) {
             </div>
           )}
 
-          {proposal.__typename === 'DemocracyProposal' && seconds.length > 0 && (
-            <div className={styles['proposal-item-container']}>
-              <Typography variant="title7">
-                235 users seconded this proposal
-              </Typography>
-              <span className={styles['seconded-container']}>
-                <span className={styles['profile-pictures']}>
-                  {Array.from(Array(10).keys()).map((x) => (
-                    <Icon key={x} name="user-profile" size="sm" />
-                  ))}
+          {proposal.__typename === 'DemocracyProposal' &&
+            seconds.length > 0 && (
+              <div className={styles['proposal-item-container']}>
+                <Typography variant="title7">
+                  235 users seconded this proposal
+                </Typography>
+                <span className={styles['seconded-container']}>
+                  <span className={styles['profile-pictures']}>
+                    {Array.from(Array(10).keys()).map((x) => (
+                      <Icon key={x} name="user-profile" size="sm" />
+                    ))}
+                  </span>
+                  <Button variant="text" className={styles['button-see-all']}>
+                    <Typography variant="button1">See all</Typography>
+                  </Button>
                 </span>
-                <Button variant="text" className={styles['button-see-all']}>
-                  <Typography variant="button1">See all</Typography>
-                </Button>
-              </span>
-            </div>
-          )}
+              </div>
+            )}
           {proposal.__typename === 'CouncilProposal' && (
             <CouncilProposalActions proposal={proposal} />
           )}

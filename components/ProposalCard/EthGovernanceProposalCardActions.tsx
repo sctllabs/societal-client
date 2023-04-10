@@ -80,9 +80,13 @@ export function EthGovernanceProposalActions({
   );
 
   const ayes =
-    data?.ethGovernanceVoteHistories?.filter((x) => x.aye).length ?? 0;
+    data?.ethGovernanceVoteHistories
+      ?.filter((x) => x.aye)
+      .reduce((acc, vote) => acc + Number(vote.balance), 0) ?? 0;
   const nays =
-    data?.ethGovernanceVoteHistories?.filter((x) => !x.aye).length ?? 0;
+    data?.ethGovernanceVoteHistories
+      ?.filter((x) => !x.aye)
+      .reduce((acc, vote) => acc + Number(vote.balance), 0) ?? 0;
 
   const handleVote = async (aye: boolean) => {
     if (!metamaskAccount) {
