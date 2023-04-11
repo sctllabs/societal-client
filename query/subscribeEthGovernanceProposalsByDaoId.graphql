@@ -9,6 +9,7 @@ subscription SubscribeEthGovernanceProposalsByDaoId($daoId: String!) {
     index
     status
     blockNum
+    blockNumber
     voteThreshold
     meta
     executed

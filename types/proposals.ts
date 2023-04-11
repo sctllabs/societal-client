@@ -150,6 +150,7 @@ export type EthGovernanceProposalMeta = ProposalMeta & {
   status: EthGovernanceProposalStatus;
   voteThreshold: string;
   executed: boolean;
+  blockNumber: number;
   __typename: 'EthGovernanceProposal';
 };
 
