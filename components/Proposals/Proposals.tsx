@@ -4,19 +4,17 @@ import clsx from 'clsx';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { currentDaoAtom } from 'store/dao';
 import { currentReferendumAtom } from 'store/referendum';
+import {
+  councilProposalsAtom,
+  democracyProposalsAtom,
+  ethGovernanceProposalsAtom
+} from 'store/proposals';
 
 import { useSubscription } from '@apollo/client';
-import SUBSCRIBE_COUNCIL_PROPOSALS_BY_DAO_ID from 'query/subscribeCouncilProposalsByDaoId.graphql';
-import SUBSCRIBE_ETH_GOVERNANCE_PROPOSALS_BY_DAO_ID from 'query/subscribeEthGovernanceProposalsByDaoId.graphql';
-import SUBSCRIBE_DEMOCRACY_PROPOSALS_BY_DAO_ID from 'query/subscribeDemocracyProposalsByDaoId.graphql';
+
 import SUBSCRIBE_LAST_REFERENDUM from 'query/subscribeLastDemocracyReferendum.graphql';
 
-import type {
-  SubscribeCouncilProposalsByDaoId,
-  SubscribeEthGovernanceProposalsByDaoId,
-  SubscribeDemocracyProposalsByDaoId,
-  SubscribeDemocracyReferendums
-} from 'types';
+import type { SubscribeDemocracyReferendums } from 'types';
 
 import { Card } from 'components/ui-kit/Card';
 import { Typography } from 'components/ui-kit/Typography';
@@ -32,32 +30,11 @@ const tabOptions: TabOption[] = ['List', 'Referendum'];
 
 export function Proposals() {
   const currentDao = useAtomValue(currentDaoAtom);
+  const councilProposals = useAtomValue(councilProposalsAtom);
+  const ethGovernanceProposals = useAtomValue(ethGovernanceProposalsAtom);
+  const democracyProposals = useAtomValue(democracyProposalsAtom);
   const setCurrentReferendum = useSetAtom(currentReferendumAtom);
   const [tab, setTab] = useState<TabOption>('List');
-
-  const { data: councilProposalsData } =
-    useSubscription<SubscribeCouncilProposalsByDaoId>(
-      SUBSCRIBE_COUNCIL_PROPOSALS_BY_DAO_ID,
-      {
-        variables: { daoId: currentDao?.id }
-      }
-    );
-
-  const { data: ethGovernanceProposalsData } =
-    useSubscription<SubscribeEthGovernanceProposalsByDaoId>(
-      SUBSCRIBE_ETH_GOVERNANCE_PROPOSALS_BY_DAO_ID,
-      {
-        variables: { daoId: currentDao?.id }
-      }
-    );
-
-  const { data: democracyProposalsData } =
-    useSubscription<SubscribeDemocracyProposalsByDaoId>(
-      SUBSCRIBE_DEMOCRACY_PROPOSALS_BY_DAO_ID,
-      {
-        variables: { daoId: currentDao?.id }
-      }
-    );
 
   const { data: referendumsData } =
     useSubscription<SubscribeDemocracyReferendums>(SUBSCRIBE_LAST_REFERENDUM, {
@@ -89,9 +66,9 @@ export function Proposals() {
   const proposals =
     tab === 'List'
       ? [
-          ...(councilProposalsData?.councilProposals ?? []),
-          ...(ethGovernanceProposalsData?.ethGovernanceProposals ?? []),
-          ...(democracyProposalsData?.democracyProposals ?? [])
+          ...(councilProposals ?? []),
+          ...(ethGovernanceProposals ?? []),
+          ...(democracyProposals ?? [])
         ].sort((a, b) => b.blockNum - a.blockNum)
       : referendumsData?.democracyReferendums.map((referendum) => ({
           ...referendum.democracyProposal,
