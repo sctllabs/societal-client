@@ -129,7 +129,12 @@ export function ReferendumInfo() {
       >
         <TabsList>
           {tabOptions.map((tabOption) => (
-            <TabsTrigger value={tabOption} key={tabOption} asChild>
+            <TabsTrigger
+              value={tabOption}
+              key={tabOption}
+              asChild
+              disabled={tabOption === 'Active' && !isReferendumActive}
+            >
               <Typography variant="title2">{tabOption}</Typography>
             </TabsTrigger>
           ))}
