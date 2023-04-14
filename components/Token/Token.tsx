@@ -29,7 +29,7 @@ export function Token() {
           </div>
 
           <Typography variant="title1">
-            {token.quantity && formatBalance(token.quantity)}
+            {token.quantity && formatBalance(token.quantity, token.decimals)}
           </Typography>
         </>
       )}

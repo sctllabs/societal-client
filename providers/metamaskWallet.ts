@@ -34,7 +34,7 @@ class MetamaskWallet {
           rpcUrls: [this.rpcUrl],
           nativeCurrency: {
             symbol: 'SCTL',
-            decimals: 18
+            decimals: 12
           }
         }
       ]);

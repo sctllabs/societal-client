@@ -8,7 +8,7 @@ import {
   metamaskAccountAtom,
   substrateAccountAtom
 } from 'store/account';
-import { tokenSymbolAtom } from 'store/token';
+import { tokenDecimalsAtom, tokenSymbolAtom } from 'store/token';
 import { currentReferendumAtom } from 'store/referendum';
 
 import { maskAddress } from 'utils/maskAddress';
@@ -44,6 +44,7 @@ const tabOptions: TabOption[] = ['Upcoming', 'Active'];
 
 export function ReferendumInfo() {
   const tokenSymbol = useAtomValue(tokenSymbolAtom);
+  const tokenDecimals = useAtomValue(tokenDecimalsAtom);
   const accountTokenBalance = useAtomValue(currentAccountTokenBalanceAtom);
   const currentReferendum = useAtomValue(currentReferendumAtom);
   const currentBlock = useAtomValue(currentBlockAtom);
@@ -114,10 +115,11 @@ export function ReferendumInfo() {
             (
               (accountTokenBalance as AssetAccount).reservedBalance.toBigInt() +
               (accountTokenBalance as AssetAccount).frozenBalance.toBigInt()
-            ).toString()
+            ).toString(),
+            tokenDecimals
           )
         : null,
-    [accountTokenBalance]
+    [accountTokenBalance, tokenDecimals]
   );
 
   return (

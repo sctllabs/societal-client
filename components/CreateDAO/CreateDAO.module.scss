@@ -70,17 +70,18 @@
   padding: 0;
 }
 
-.quantity-of-tokens-inputs {
-  width: calc(50% - 2rem);
-}
-
+.quantity-of-tokens-container,
 .proposal-period-container {
   display: flex;
   gap: 4rem;
+}
+
+.proposal-period-container {
   margin-bottom: 72px;
 }
 
-.proposal-period-item {
+.proposal-period-item,
+.quantity-of-tokens {
   display: flex;
   flex-direction: column;
   width: calc(50% - 2rem);

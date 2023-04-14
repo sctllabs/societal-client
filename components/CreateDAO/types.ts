@@ -24,6 +24,7 @@ export type DaoTokenState = {
   symbol: string;
   type: TokenType;
   quantity: string;
+  decimals: number;
   address: string;
 };
 
