@@ -89,10 +89,7 @@ export function ProposalInputs({
 
     setState((prevState) => ({
       ...prevState,
-      [targetName]:
-        targetName === InputName.AMOUNT
-          ? targetValue.replace(/[^0-9]/g, '')
-          : targetValue
+      [targetName]: targetValue
     }));
   };
 
@@ -241,7 +238,8 @@ export function ProposalInputs({
             label={InputLabel.AMOUNT}
             value={state.amount}
             onChange={onInputChange}
-            type="tel"
+            type="number"
+            step="any"
             required
           />
 
