@@ -15,3 +15,4 @@ export const apiConnectedAtom = atom<boolean>(false);
 export const apiErrorAtom = atom<string | null>(null);
 export const currentBlockAtom = atom<number | null>(null);
 export const chainSymbolAtom = atom<string | null>(null);
+export const chainDecimalsAtom = atom<number | null>(null);

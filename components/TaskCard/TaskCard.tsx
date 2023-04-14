@@ -3,9 +3,9 @@ import clsx from 'clsx';
 
 import { useAtomValue } from 'jotai';
 import { currentDaoAtom } from 'store/dao';
-import { tokenSymbolAtom } from 'store/token';
+import { tokenDecimalsAtom, tokenSymbolAtom } from 'store/token';
 import { accountsAtom } from 'store/account';
-import { chainSymbolAtom } from 'store/api';
+import { chainDecimalsAtom, chainSymbolAtom } from 'store/api';
 
 import { getProposalSettings } from 'utils/getProposalSettings';
 import { maskAddress } from 'utils/maskAddress';
@@ -63,7 +63,9 @@ export function TaskCard({ proposal, currentBlock }: TaskCardProps) {
 
   const currentDao = useAtomValue(currentDaoAtom);
   const tokenSymbol = useAtomValue(tokenSymbolAtom);
+  const tokenDecimals = useAtomValue(tokenDecimalsAtom);
   const chainSymbol = useAtomValue(chainSymbolAtom);
+  const chainDecimals = useAtomValue(chainDecimalsAtom);
   const accounts = useAtomValue(accountsAtom);
 
   const { proposalTitle, icon } = getProposalSettings(proposal.kind);
@@ -102,6 +104,26 @@ export function TaskCard({ proposal, currentBlock }: TaskCardProps) {
       }
     }
   }, [proposal.kind.__typename, chainSymbol, tokenSymbol]);
+
+  const decimals = useMemo(() => {
+    switch (proposal.kind.__typename) {
+      case 'CreateBounty': {
+        return chainDecimals;
+      }
+      case 'CreateTokenBounty': {
+        return tokenDecimals;
+      }
+      case 'Spend': {
+        return chainDecimals;
+      }
+      case 'TransferToken': {
+        return tokenDecimals;
+      }
+      default: {
+        return null;
+      }
+    }
+  }, [proposal.kind.__typename, chainDecimals, tokenDecimals]);
 
   return (
     <Card className={styles.card}>
@@ -174,7 +196,7 @@ export function TaskCard({ proposal, currentBlock }: TaskCardProps) {
                   <span className={styles['proposal-item']}>
                     <Icon name="treasury" size="xs" />
                     <Typography variant="title5">
-                      {formatBalance(proposal.kind.amount)}
+                      {formatBalance(proposal.kind.amount, decimals)}
                     </Typography>
                     <Typography variant="body2">{currency}</Typography>
                   </span>
@@ -223,7 +245,7 @@ export function TaskCard({ proposal, currentBlock }: TaskCardProps) {
                 <span className={styles['proposal-item']}>
                   <Icon name="treasury" size="xs" />
                   <Typography variant="title5">
-                    {formatBalance(proposal.kind.value)}
+                    {formatBalance(proposal.kind.value, decimals)}
                   </Typography>
                   <Typography variant="body2">
                     {proposal.kind.__typename === 'CreateBounty'
