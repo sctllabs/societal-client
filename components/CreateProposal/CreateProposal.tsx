@@ -5,13 +5,19 @@ import { useDaoDemocracyContract } from 'hooks/useDaoDemocracyContract';
 import { useDaoEthGovernanceContract } from 'hooks/useDaoEthGovernanceContract';
 
 import { useAtomValue } from 'jotai';
-import { apiAtom, chainSymbolAtom, keyringAtom } from 'store/api';
+import {
+  apiAtom,
+  chainDecimalsAtom,
+  chainSymbolAtom,
+  keyringAtom
+} from 'store/api';
 import {
   accountsAtom,
   metamaskAccountAtom,
   substrateAccountAtom
 } from 'store/account';
 import { currentDaoAtom } from 'store/dao';
+import { tokenDecimalsAtom } from 'store/token';
 
 import { LENGTH_BOUND } from 'constants/transaction';
 import { evmToAddress, isEthereumAddress } from '@polkadot/util-crypto';
@@ -97,6 +103,8 @@ export function CreateProposal({
   const keyring = useAtomValue(keyringAtom);
   const currentDao = useAtomValue(currentDaoAtom);
   const chainSymbol = useAtomValue(chainSymbolAtom);
+  const chainDecimals = useAtomValue(chainDecimalsAtom);
+  const tokenDecimals = useAtomValue(tokenDecimalsAtom);
 
   const daoCollectiveContract = useDaoCollectiveContract();
   const daoDemocracyContract = useDaoDemocracyContract();
@@ -155,7 +163,14 @@ export function CreateProposal({
         ? evmToAddress(state.target)
         : state.target;
 
-      const amount = parseInt(state.amount, 10);
+      const decimals =
+        proposalType === ProposalEnum.TRANSFER_GOVERNANCE_TOKEN
+          ? tokenDecimals
+          : chainDecimals;
+
+      const amount = (parseFloat(state.amount) * 10 ** (decimals || 0)).toFixed(
+        0
+      );
 
       switch (proposalType) {
         case ProposalEnum.ADD_MEMBER: {
@@ -227,7 +242,9 @@ export function CreateProposal({
       proposalBasicState.title,
       proposalBasicState.description,
       currency,
-      chainSymbol
+      chainSymbol,
+      chainDecimals,
+      tokenDecimals
     ]
   );
 
