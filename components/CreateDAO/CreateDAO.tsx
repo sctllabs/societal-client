@@ -57,7 +57,8 @@ const initialDaoTokenState: DaoTokenState = {
   type: TokenType.FUNGIBLE_TOKEN,
   quantity: '',
   address: '',
-  symbol: ''
+  symbol: '',
+  decimals: 2
 };
 
 const initialDaoGovernanceState: DaoGovernanceState = {
@@ -288,7 +289,7 @@ export function CreateDAO() {
           metadata: {
             name: daoToken.name.trim(),
             symbol: daoToken.symbol.trim(),
-            decimals: 10
+            decimals: daoToken.decimals
           }
         };
         break;

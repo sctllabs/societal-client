@@ -10,6 +10,7 @@ import styles from './CreateDAO.module.scss';
 
 enum InputName {
   TOKEN_QUANTITY = 'quantity',
+  TOKEN_DECIMALS = 'decimals',
   TOKEN_NAME = 'name',
   TOKEN_SYMBOL = 'symbol',
   TOKEN_TYPE = 'type',
@@ -18,6 +19,7 @@ enum InputName {
 
 enum InputLabel {
   TOKEN_QUANTITY = 'Quantity of Tokens',
+  TOKEN_DECIMALS = 'Token Decimals',
   TOKEN_NAME = 'Token Name',
   TOKEN_SYMBOL = 'Token Symbol',
   TOKEN_ADDRESS = 'ETH Token Address'
@@ -40,7 +42,8 @@ export function DaoToken({ state, setState }: DaoTokenProps) {
     setState((prevState) => ({
       ...prevState,
       [targetName]:
-        targetName === InputName.TOKEN_QUANTITY
+        targetName === InputName.TOKEN_QUANTITY ||
+        targetName === InputName.TOKEN_DECIMALS
           ? targetValue.replace(/[^0-9]/g, '')
           : targetValue
     }));
@@ -71,21 +74,44 @@ export function DaoToken({ state, setState }: DaoTokenProps) {
         </RadioGroup>
       </div>
       {state.type === TokenType.FUNGIBLE_TOKEN ? (
-        <div className={styles['quantity-of-tokens']}>
-          <Typography variant="h3">Select the Quantity of Tokens</Typography>
-          <Typography variant="body1">
-            Specify the number of tokens, the maximum amount is 1 billion.
-          </Typography>
+        <div>
+          <div className={styles['quantity-of-tokens-container']}>
+            <div className={styles['quantity-of-tokens']}>
+              <Typography variant="h3">
+                Select the Quantity of Tokens
+              </Typography>
+              <Typography variant="body1">
+                Specify the number of tokens, the maximum amount is 1 billion.
+              </Typography>
 
-          <div className={styles['quantity-of-tokens-inputs']}>
-            <Input
-              name={InputName.TOKEN_QUANTITY}
-              label={InputLabel.TOKEN_QUANTITY}
-              value={state.quantity}
-              onChange={onInputChange}
-              type="tel"
-              required
-            />
+              <div className={styles['quantity-of-tokens-inputs']}>
+                <Input
+                  name={InputName.TOKEN_QUANTITY}
+                  label={InputLabel.TOKEN_QUANTITY}
+                  value={state.quantity}
+                  onChange={onInputChange}
+                  type="tel"
+                  required
+                />
+              </div>
+            </div>
+            <div className={styles['quantity-of-tokens']}>
+              <Typography variant="h3">Token Decimals</Typography>
+              <Typography variant="body1">
+                Specify how many decimal places a token has.
+              </Typography>
+
+              <div className={styles['quantity-of-tokens-inputs']}>
+                <Input
+                  name={InputName.TOKEN_DECIMALS}
+                  label={InputLabel.TOKEN_DECIMALS}
+                  value={state.decimals}
+                  onChange={onInputChange}
+                  type="tel"
+                  required
+                />
+              </div>
+            </div>
           </div>
         </div>
       ) : (
