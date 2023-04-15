@@ -33,10 +33,10 @@ export function Preloader() {
           <PreloaderToken />
           <PreloaderBounties />
           <PreloaderProposals />
+          <PreloaderProposalEvents />
         </>
       )}
       {isHomePage && <PreloaderCuratorBounties />}
-      <PreloaderProposalEvents />
     </>
   );
 }

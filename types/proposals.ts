@@ -41,60 +41,49 @@ export type DemocracyReferendum = {
   __typename: 'DemocracyReferendum';
 };
 
-export enum ProposalType {
-  AddMember = 'AddMember',
-  RemoveMember = 'RemoveMember',
-  Spend = 'Spend',
-  TransferToken = 'TransferToken',
-  CreateBounty = 'CreateBounty',
-  CreateTokenBounty = 'CreateTokenBounty',
-  ProposeCurator = 'ProposeCurator',
-  UnassignCurator = 'UnassignCurator'
-}
-
 export type UnassignCuratorProposal = Readonly<{
-  __typename: ProposalType.UnassignCurator;
-  bountyId: 0;
+  __typename: 'UnassignCurator';
+  bountyId: number;
 }>;
 
 export type ProposeCuratorProposal = Readonly<{
-  __typename: ProposalType.ProposeCurator;
+  __typename: 'ProposeCurator';
   bountyId: number;
   curator: string;
   fee: string;
 }>;
 
 export type CreateBountyProposal = Readonly<{
-  __typename: ProposalType.CreateBounty;
+  __typename: 'CreateBounty';
   value: string;
   description: string;
 }>;
 
 export type CreateTokenBountyProposal = Readonly<{
-  __typename: ProposalType.CreateTokenBounty;
+  __typename: 'CreateTokenBounty';
   value: string;
   description: string;
   tokenId?: string;
 }>;
 
 export type AddMemberProposal = Readonly<{
-  __typename: ProposalType.AddMember;
+  __typename: 'AddMember';
   who: string;
 }>;
 
 export type RemoveMemberProposal = Readonly<{
-  __typename: ProposalType.RemoveMember;
+  __typename: 'RemoveMember';
   who: string;
 }>;
 
 export type SpendProposal = Readonly<{
-  __typename: ProposalType.Spend;
+  __typename: 'Spend';
   beneficiary: string;
   amount: string;
 }>;
 
 export type TransferProposal = Readonly<{
-  __typename: ProposalType.TransferToken;
+  __typename: 'TransferToken';
   amount: string;
   beneficiary: string;
 }>;
@@ -110,6 +99,7 @@ export type ProposalKind =
   | UnassignCuratorProposal;
 
 export type CouncilProposalStatus =
+  | 'Pending'
   | 'Open'
   | 'Approved'
   | 'Disapproved'
@@ -119,9 +109,10 @@ export type CouncilProposalStatus =
 
 export type EthGovernanceProposalStatus = CouncilProposalStatus;
 
-export type DemocracyProposalStatus = 'Open' | 'Referendum';
+export type DemocracyProposalStatus = 'Pending' | 'Open' | 'Referendum';
 
 export type DemocracyReferendumStatus =
+  | 'Pending'
   | 'Started'
   | 'Passed'
   | 'NotPassed'

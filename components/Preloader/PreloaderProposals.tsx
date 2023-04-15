@@ -2,9 +2,9 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useSetAtom } from 'jotai';
 import {
-  councilProposalsAtom,
-  democracyProposalsAtom,
-  ethGovernanceProposalsAtom
+  setCouncilProposalsAtom,
+  setDemocracyProposalsAtom,
+  setEthGovernanceProposalsAtom
 } from 'store/proposals';
 
 import { useSubscription } from '@apollo/client';
@@ -19,9 +19,9 @@ import type {
 
 export function PreloaderProposals() {
   const router = useRouter();
-  const setCouncilProposals = useSetAtom(councilProposalsAtom);
-  const setEthGovernanceProposals = useSetAtom(ethGovernanceProposalsAtom);
-  const setDemocracyProposalsData = useSetAtom(democracyProposalsAtom);
+  const setCouncilProposals = useSetAtom(setCouncilProposalsAtom);
+  const setEthGovernanceProposals = useSetAtom(setEthGovernanceProposalsAtom);
+  const setDemocracyProposals = useSetAtom(setDemocracyProposalsAtom);
 
   const { data: councilProposalsData, loading: councilProposalsLoading } =
     useSubscription<SubscribeCouncilProposalsByDaoId>(
@@ -74,11 +74,22 @@ export function PreloaderProposals() {
       return;
     }
 
-    setDemocracyProposalsData(democracyProposalsData?.democracyProposals);
+    setDemocracyProposals(democracyProposalsData?.democracyProposals);
   }, [
     democracyProposalsData,
     democracyProposalsLoading,
-    setDemocracyProposalsData
+    setDemocracyProposals
+  ]);
+
+  useEffect(() => {
+    setCouncilProposals(undefined);
+    setEthGovernanceProposals(undefined);
+    setDemocracyProposals(undefined);
+  }, [
+    router.query.id,
+    setCouncilProposals,
+    setDemocracyProposals,
+    setEthGovernanceProposals
   ]);
 
   return null;
