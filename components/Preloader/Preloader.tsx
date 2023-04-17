@@ -10,6 +10,8 @@ import { PreloaderDao } from './PreloaderDao';
 import { PreloaderAccountBalance } from './PreloaderAccountBalance';
 import { PreloaderBounties } from './PreloaderBounties';
 import { PreloaderCuratorBounties } from './PreloaderCuratorBounties';
+import { PreloaderProposals } from './PreloaderProposals';
+import { PreloaderProposalEvents } from './PreloaderProposalEvents';
 
 export function Preloader() {
   const router = useRouter();
@@ -25,9 +27,15 @@ export function Preloader() {
       <PreloaderCurrentBlock />
       <PreloaderAccount />
       <PreloaderAccountBalance />
-      {daoIdExists && <PreloaderDao />}
-      <PreloaderToken />
-      {daoIdExists && <PreloaderBounties />}
+      {daoIdExists && (
+        <>
+          <PreloaderDao />
+          <PreloaderToken />
+          <PreloaderBounties />
+          <PreloaderProposals />
+          <PreloaderProposalEvents />
+        </>
+      )}
       {isHomePage && <PreloaderCuratorBounties />}
     </>
   );

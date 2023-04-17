@@ -281,6 +281,11 @@
   --referendum-border-color: #{colors.$red-1};
 }
 
+.pending {
+  --referendum-background-color: #{rgba(colors.$green-2, 0.1)};
+  --referendum-border-color: #{colors.$green-2};
+}
+
 .header {
   align-items: center;
   border-bottom: 1px solid #{colors.$grayscale-30};
@@ -302,6 +307,10 @@
 
 .icon-active {
   color: #{colors.$blue-1};
+}
+
+.icon-pending {
+  color: #{colors.$green-2};
 }
 
 .icon-expired {
@@ -360,4 +369,10 @@
   display: flex;
   justify-content: flex-end;
   flex-grow: 1;
+}
+
+.pending-status {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
 }

@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { useRouter } from 'next/router';
 import { ethers } from 'ethers';
 import erc20Abi from 'abis/erc20.abi.json';
 import { appConfig } from 'config';
@@ -6,16 +7,31 @@ import { appConfig } from 'config';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { currentDaoAtom } from 'store/dao';
 import { apiAtom } from 'store/api';
-import { tokenAtom, tokenLoadingAtom } from 'store/token';
+import {
+  resetTokenAtom,
+  tokenAtom,
+  tokenLoadingAtom,
+  tokenQuantityAtom
+} from 'store/token';
 
 import type { AssetBalance } from '@polkadot/types/interfaces';
 import type { Option } from '@polkadot/types';
 
 export function PreloaderToken() {
+  const router = useRouter();
   const currentDao = useAtomValue(currentDaoAtom);
   const api = useAtomValue(apiAtom);
   const setToken = useSetAtom(tokenAtom);
   const setTokenLoading = useSetAtom(tokenLoadingAtom);
+  const setTokenQuantity = useSetAtom(tokenQuantityAtom);
+  const resetToken = useSetAtom(resetTokenAtom);
+
+  useEffect(
+    () => () => {
+      resetToken();
+    },
+    [resetToken, router.query.id]
+  );
 
   useEffect(() => {
     if (!currentDao) {
@@ -63,6 +79,24 @@ export function PreloaderToken() {
   }, [currentDao, setToken, setTokenLoading]);
 
   useEffect(() => {
+    if (!api || !currentDao || !currentDao.fungibleToken) {
+      return;
+    }
+
+    (async () => {
+      const _assetBalance = await api.query.assets.account<
+        Option<AssetBalance>
+      >(currentDao.fungibleToken.id, currentDao.account.id);
+      setToken({
+        quantity: _assetBalance.value.balance.toString(),
+        name: currentDao.fungibleToken.name,
+        symbol: currentDao.fungibleToken.symbol,
+        decimals: currentDao.fungibleToken.decimals
+      });
+    })();
+  }, [api, currentDao, setToken]);
+
+  useEffect(() => {
     if (!api) {
       return undefined;
     }
@@ -77,12 +111,7 @@ export function PreloaderToken() {
         currentDao.fungibleToken.id,
         currentDao.account.id,
         (_assetBalance: Option<AssetBalance>) =>
-          setToken({
-            quantity: _assetBalance.value.balance.toString(),
-            name: currentDao.fungibleToken.name,
-            symbol: currentDao.fungibleToken.symbol,
-            decimals: currentDao.fungibleToken.decimals
-          })
+          setTokenQuantity(_assetBalance.value.balance.toString())
       )
       .then((unsub) => {
         unsubscribe = unsub;

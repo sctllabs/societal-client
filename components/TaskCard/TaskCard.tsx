@@ -38,7 +38,13 @@ export interface TaskCardProps {
   currentBlock: number | null;
 }
 
-type TaskStatus = 'Active' | 'Completed' | 'Expired' | 'Referendum' | 'Failed';
+type TaskStatus =
+  | 'Pending'
+  | 'Active'
+  | 'Completed'
+  | 'Expired'
+  | 'Referendum'
+  | 'Failed';
 
 export function TaskCard({ proposal, currentBlock }: TaskCardProps) {
   const taskStatus: TaskStatus = useMemo(() => {
@@ -55,6 +61,8 @@ export function TaskCard({ proposal, currentBlock }: TaskCardProps) {
       case 'Executed': {
         return proposal.executed ? 'Completed' : 'Failed';
       }
+      case 'Pending':
+        return 'Pending';
       default: {
         return 'Completed';
       }
@@ -148,6 +156,14 @@ export function TaskCard({ proposal, currentBlock }: TaskCardProps) {
             orientation="horizontal"
             typography="value5"
           />
+        )}
+        {proposal.status === 'Pending' && (
+          <span className={styles['pending-status']}>
+            <Typography variant="value5">
+              Proposal is being processed
+            </Typography>
+            <Typography variant="caption2">Please wait</Typography>
+          </span>
         )}
       </div>
       <div className={styles.content}>

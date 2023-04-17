@@ -201,7 +201,8 @@ export function CouncilProposalActions({
   };
 
   const disabled = proposal.status !== 'Open';
-  const disabledFinish = proposal.status === 'Executed';
+  const disabledFinish =
+    proposal.status === 'Executed' || proposal.status === 'Pending';
   const ayes = data?.councilVoteHistories.filter(
     (_vote) => _vote.approvedVote
   ).length;

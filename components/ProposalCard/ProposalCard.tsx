@@ -51,6 +51,7 @@ export interface ProposalCardProps {
 }
 
 type ProposalStatus =
+  | 'Pending'
   | 'Active'
   | 'Completed'
   | 'Expired'
@@ -85,6 +86,8 @@ export function ProposalCard({ proposal }: ProposalCardProps) {
       case 'Executed': {
         return proposal.executed ? 'Completed' : 'Failed';
       }
+      case 'Pending':
+        return 'Pending';
       default: {
         return 'Completed';
       }
@@ -205,6 +208,14 @@ export function ProposalCard({ proposal }: ProposalCardProps) {
         {proposal.status === 'Open' &&
           proposal.__typename !== 'DemocracyProposal' &&
           countdown}
+        {proposal.status === 'Pending' && (
+          <span className={styles['pending-status']}>
+            <Typography variant="value5">
+              Proposal is being processed
+            </Typography>
+            <Typography variant="caption2">Please wait</Typography>
+          </span>
+        )}
       </div>
       <div className={styles.content}>
         <div className={styles['header-container']}>
@@ -354,24 +365,23 @@ export function ProposalCard({ proposal }: ProposalCardProps) {
             </div>
           )}
 
-          {proposal.__typename === 'DemocracyProposal' &&
-            seconds.length > 0 && (
-              <div className={styles['proposal-item-container']}>
-                <Typography variant="title7">
-                  235 users seconded this proposal
-                </Typography>
-                <span className={styles['seconded-container']}>
-                  <span className={styles['profile-pictures']}>
-                    {Array.from(Array(10).keys()).map((x) => (
-                      <Icon key={x} name="user-profile" size="sm" />
-                    ))}
-                  </span>
-                  <Button variant="text" className={styles['button-see-all']}>
-                    <Typography variant="button1">See all</Typography>
-                  </Button>
+          {proposal.__typename === 'DemocracyProposal' && seconds.length > 0 && (
+            <div className={styles['proposal-item-container']}>
+              <Typography variant="title7">
+                235 users seconded this proposal
+              </Typography>
+              <span className={styles['seconded-container']}>
+                <span className={styles['profile-pictures']}>
+                  {Array.from(Array(10).keys()).map((x) => (
+                    <Icon key={x} name="user-profile" size="sm" />
+                  ))}
                 </span>
-              </div>
-            )}
+                <Button variant="text" className={styles['button-see-all']}>
+                  <Typography variant="button1">See all</Typography>
+                </Button>
+              </span>
+            </div>
+          )}
           {proposal.__typename === 'CouncilProposal' && (
             <CouncilProposalActions proposal={proposal} />
           )}

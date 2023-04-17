@@ -139,6 +139,8 @@ export function EthGovernanceProposalActions({
       case 'Executed': {
         return proposal.executed ? 'Approved' : 'Failed';
       }
+      case 'Pending':
+        return 'Pending';
       default: {
         return null;
       }

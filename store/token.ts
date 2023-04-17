@@ -34,3 +34,10 @@ export const tokenAtom = atom(
     }
   }
 );
+
+export const resetTokenAtom = atom(null, (_get, _set) => {
+  _set(tokenNameAtom, null);
+  _set(tokenSymbolAtom, null);
+  _set(tokenDecimalsAtom, null);
+  _set(tokenQuantityAtom, null);
+});
