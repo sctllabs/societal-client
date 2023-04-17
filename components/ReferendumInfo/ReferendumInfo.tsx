@@ -110,7 +110,8 @@ export function ReferendumInfo() {
 
   const lockedBalance = useMemo(
     () =>
-      accountTokenBalance
+      accountTokenBalance &&
+      (accountTokenBalance as AssetAccount).reservedBalance
         ? formatBalance(
             (
               (accountTokenBalance as AssetAccount).reservedBalance.toBigInt() +
