@@ -3,19 +3,16 @@ import { MouseEventHandler, useEffect, useState } from 'react';
 import { useAtomValue } from 'jotai';
 import { currentDaoAtom } from 'store/dao';
 import { apiAtom } from 'store/api';
-
-import { useSubscription } from '@apollo/client';
-import SUBSCRIBE_COUNCIL_PROPOSALS_BY_DAO_ID from 'query/subscribeCouncilProposalsByDaoId.graphql';
-import SUBSCRIBE_ETH_GOVERNANCE_PROPOSALS_BY_DAO_ID from 'query/subscribeEthGovernanceProposalsByDaoId.graphql';
-import SUBSCRIBE_DEMOCRACY_PROPOSALS_BY_DAO_ID from 'query/subscribeDemocracyProposalsByDaoId.graphql';
+import {
+  councilProposalsAtom,
+  democracyProposalsAtom,
+  ethGovernanceProposalsAtom
+} from 'store/proposals';
 
 import type {
   CouncilProposalMeta,
   DemocracyProposalMeta,
-  EthGovernanceProposalMeta,
-  SubscribeCouncilProposalsByDaoId,
-  SubscribeDemocracyProposalsByDaoId,
-  SubscribeEthGovernanceProposalsByDaoId
+  EthGovernanceProposalMeta
 } from 'types';
 import type { u32 } from '@polkadot/types';
 
@@ -41,32 +38,11 @@ const filterOptions: FilterOption[] = [
 export function TaskBoard() {
   const api = useAtomValue(apiAtom);
   const currentDao = useAtomValue(currentDaoAtom);
+  const councilProposals = useAtomValue(councilProposalsAtom);
+  const ethGovernanceProposals = useAtomValue(ethGovernanceProposalsAtom);
+  const democracyProposals = useAtomValue(democracyProposalsAtom);
   const [currentBlock, setCurrentBlock] = useState<number | null>(null);
   const [filter, setFilter] = useState<FilterVariant>('All');
-
-  const { data: councilProposalsData } =
-    useSubscription<SubscribeCouncilProposalsByDaoId>(
-      SUBSCRIBE_COUNCIL_PROPOSALS_BY_DAO_ID,
-      {
-        variables: { daoId: currentDao?.id }
-      }
-    );
-
-  const { data: democracyProposalsData } =
-    useSubscription<SubscribeDemocracyProposalsByDaoId>(
-      SUBSCRIBE_DEMOCRACY_PROPOSALS_BY_DAO_ID,
-      {
-        variables: { daoId: currentDao?.id }
-      }
-    );
-
-  const { data: ethGovernanceProposalsData } =
-    useSubscription<SubscribeEthGovernanceProposalsByDaoId>(
-      SUBSCRIBE_ETH_GOVERNANCE_PROPOSALS_BY_DAO_ID,
-      {
-        variables: { daoId: currentDao?.id }
-      }
-    );
 
   useEffect(() => {
     (async () => {
@@ -89,9 +65,9 @@ export function TaskBoard() {
     | DemocracyProposalMeta
     | EthGovernanceProposalMeta
   )[] = [
-    ...(councilProposalsData?.councilProposals ?? []),
-    ...(democracyProposalsData?.democracyProposals ?? []),
-    ...(ethGovernanceProposalsData?.ethGovernanceProposals ?? [])
+    ...(councilProposals ?? []),
+    ...(ethGovernanceProposals ?? []),
+    ...(democracyProposals ?? [])
   ].sort((a, b) => b.blockNum - a.blockNum);
 
   return (
