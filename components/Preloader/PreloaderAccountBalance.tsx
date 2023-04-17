@@ -124,7 +124,7 @@ export function PreloaderAccountBalance() {
             contract.balanceOf(metamaskAccount?._address)
           ]);
 
-          setCurrentAccountTokenBalance(balance._hex);
+          setCurrentAccountTokenBalance(`${parseInt(balance._hex, 16)}`);
         } catch (e) {
           // eslint-disable-next-line no-console
           console.error(e);

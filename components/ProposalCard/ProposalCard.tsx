@@ -3,8 +3,12 @@ import clsx from 'clsx';
 import { useAtomValue } from 'jotai';
 import { accountsAtom } from 'store/account';
 import { currentDaoAtom } from 'store/dao';
-import { chainSymbolAtom, currentBlockAtom } from 'store/api';
-import { tokenSymbolAtom } from 'store/token';
+import {
+  chainDecimalsAtom,
+  chainSymbolAtom,
+  currentBlockAtom
+} from 'store/api';
+import { tokenDecimalsAtom, tokenSymbolAtom } from 'store/token';
 
 import { getProposalSettings } from 'utils/getProposalSettings';
 import { parseMeta } from 'utils/parseMeta';
@@ -61,7 +65,9 @@ export function ProposalCard({ proposal }: ProposalCardProps) {
   const currentDao = useAtomValue(currentDaoAtom);
   const currentBlock = useAtomValue(currentBlockAtom);
   const chainSymbol = useAtomValue(chainSymbolAtom);
+  const chainDecimals = useAtomValue(chainDecimalsAtom);
   const tokenSymbol = useAtomValue(tokenSymbolAtom);
+  const tokenDecimals = useAtomValue(tokenDecimalsAtom);
 
   const proposalStatus: ProposalStatus = useMemo(() => {
     switch (proposal.status) {
@@ -138,6 +144,26 @@ export function ProposalCard({ proposal }: ProposalCardProps) {
       }
     }
   }, [proposal.kind.__typename, chainSymbol, tokenSymbol]);
+
+  const decimals = useMemo(() => {
+    switch (proposal.kind.__typename) {
+      case 'CreateBounty': {
+        return chainDecimals;
+      }
+      case 'CreateTokenBounty': {
+        return tokenDecimals;
+      }
+      case 'Spend': {
+        return chainDecimals;
+      }
+      case 'TransferToken': {
+        return tokenDecimals;
+      }
+      default: {
+        return null;
+      }
+    }
+  }, [proposal.kind.__typename, chainDecimals, tokenDecimals]);
 
   const blockNumber = useMemo(
     () =>
@@ -271,7 +297,7 @@ export function ProposalCard({ proposal }: ProposalCardProps) {
               <span className={styles['proposal-item-container']}>
                 <Typography variant="caption3">Amount</Typography>
                 <Typography variant="title5">
-                  {formatBalance(proposal.kind.value)} {currency}
+                  {formatBalance(proposal.kind.value, decimals)} {currency}
                 </Typography>
               </span>
             </div>
@@ -281,7 +307,7 @@ export function ProposalCard({ proposal }: ProposalCardProps) {
               <span className={styles['proposal-item-container']}>
                 <Typography variant="caption3">Fee</Typography>
                 <Typography variant="title5">
-                  {formatBalance(proposal.kind.fee)}
+                  {formatBalance(proposal.kind.fee, decimals)}
                 </Typography>
               </span>
             </div>
@@ -294,7 +320,7 @@ export function ProposalCard({ proposal }: ProposalCardProps) {
                 <span className={styles['proposal-item-container']}>
                   <Typography variant="caption3">Amount</Typography>
                   <Typography variant="title5">
-                    {formatBalance(proposal.kind.amount)}
+                    {formatBalance(proposal.kind.amount, decimals)}
                   </Typography>
                 </span>
               </div>

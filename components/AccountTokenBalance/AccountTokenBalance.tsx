@@ -2,7 +2,7 @@ import { toast } from 'react-toastify';
 
 import { useAtomValue } from 'jotai';
 import { apiAtom } from 'store/api';
-import { tokenSymbolAtom } from 'store/token';
+import { tokenDecimalsAtom, tokenSymbolAtom } from 'store/token';
 
 import {
   currentAccountTokenBalanceAtom,
@@ -28,6 +28,7 @@ export function AccountTokenBalance() {
   const api = useAtomValue(apiAtom);
   const currentDao = useAtomValue(currentDaoAtom);
   const tokenSymbol = useAtomValue(tokenSymbolAtom);
+  const tokenDecimals = useAtomValue(tokenDecimalsAtom);
   const accountTokenBalance = useAtomValue(currentAccountTokenBalanceAtom);
 
   const metamaskAccount = useAtomValue(metamaskAccountAtom);
@@ -82,7 +83,7 @@ export function AccountTokenBalance() {
       {typeof accountTokenBalance === 'string' && (
         <span className={styles.balance}>
           <Typography variant="caption2">
-            {formatBalance(accountTokenBalance)}
+            {formatBalance(accountTokenBalance, tokenDecimals)}
           </Typography>
           <Typography variant="caption2">{tokenSymbol}</Typography>
         </span>
@@ -96,7 +97,8 @@ export function AccountTokenBalance() {
             <span className={styles.balance}>
               <Typography variant="title5">
                 {formatBalance(
-                  (accountTokenBalance as AssetAccount).balance.toString()
+                  (accountTokenBalance as AssetAccount).balance.toString(),
+                  tokenDecimals
                 )}
               </Typography>
               <Typography variant="caption2">{tokenSymbol}</Typography>
@@ -111,7 +113,8 @@ export function AccountTokenBalance() {
                 {formatBalance(
                   (
                     accountTokenBalance as AssetAccount
-                  ).reservedBalance.toString()
+                  ).reservedBalance.toString(),
+                  tokenDecimals
                 )}
               </Typography>
               <Typography variant="caption2">{tokenSymbol}</Typography>
@@ -124,7 +127,10 @@ export function AccountTokenBalance() {
             <span className={styles.balance}>
               <Typography variant="title5">
                 {formatBalance(
-                  (accountTokenBalance as AssetAccount).frozenBalance.toString()
+                  (
+                    accountTokenBalance as AssetAccount
+                  ).frozenBalance.toString(),
+                  tokenDecimals
                 )}
               </Typography>
               <Typography variant="caption2">{tokenSymbol}</Typography>
