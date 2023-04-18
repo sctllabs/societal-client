@@ -5,7 +5,6 @@ import { toast } from 'react-toastify';
 
 import { useAtomValue } from 'jotai';
 import { apiAtom, keyringAtom } from 'store/api';
-import { daosAtom } from 'store/dao';
 import {
   accountsAtom,
   metamaskAccountAtom,
@@ -16,7 +15,6 @@ import { useDaoContract } from 'hooks/useDaoContract';
 import { ssToEvmAddress } from 'utils/ssToEvmAddress';
 import { keyringAddExternal } from 'utils/keyringAddExternal';
 import { convertTimeToBlock } from 'utils/convertTimeToBlock';
-import { formLinkByDaoId } from 'utils/formLinkByDaoId';
 
 import { evmToAddress, isEthereumAddress } from '@polkadot/util-crypto';
 import { stringToHex } from '@polkadot/util';
@@ -109,36 +107,14 @@ export function CreateDAO() {
   const [daoBasic, setDaoBasic] = useState<DaoBasicState>(initialDaoBasicState);
   const api = useAtomValue(apiAtom);
   const keyring = useAtomValue(keyringAtom);
-  const daos = useAtomValue(daosAtom);
   const accounts = useAtomValue(accountsAtom);
   const metamaskSigner = useAtomValue(metamaskAccountAtom);
   const substrateAccount = useAtomValue(substrateAccountAtom);
 
-  const [createdDaoId, setCreatedDaoId] = useState<number | null>(null);
   const [proposedDaoId, setProposedDaoId] = useState<number | null>(null);
   const daoCreatedRef = useRef<boolean>(false);
 
   const daoContract = useDaoContract();
-
-  useEffect(() => {
-    if (!daoCreatedRef.current || createdDaoId === null) {
-      return;
-    }
-
-    const currentDao = daos?.find((x) => parseInt(x.id, 10) === createdDaoId);
-    if (!currentDao) {
-      return;
-    }
-
-    toast.success(
-      <Notification
-        title="You've successfully created a new community"
-        body="You can create new community and perform other actions."
-        variant="success"
-      />
-    );
-    router.push(formLinkByDaoId(currentDao.id, 'dashboard'));
-  }, [createdDaoId, daos, router]);
 
   useEffect(() => {
     if (proposedDaoId === null) {
@@ -171,7 +147,10 @@ export function CreateDAO() {
             return;
           }
 
-          setCreatedDaoId(proposedDaoId);
+          router.push({
+            pathname: '/create-dao/pending',
+            query: { 'created-dao-id': proposedDaoId }
+          });
         }
       )
       .then((unsub) => {
@@ -185,7 +164,7 @@ export function CreateDAO() {
     api?.query.dao,
     metamaskSigner,
     proposedDaoId,
-    setCreatedDaoId,
+    router,
     substrateAccount?.address
   ]);
 

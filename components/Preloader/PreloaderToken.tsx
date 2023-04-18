@@ -120,7 +120,7 @@ export function PreloaderToken() {
       .catch(console.error);
 
     return () => unsubscribe && unsubscribe();
-  }, [api, currentDao, setToken]);
+  }, [api, currentDao, setToken, setTokenQuantity]);
 
   return null;
 }
