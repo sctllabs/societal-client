@@ -43,7 +43,7 @@ export function Balance() {
 
   return (
     <Card className={styles.card}>
-      <Typography variant="caption2">Balance of all assets</Typography>
+      <Typography variant="caption2">Balance</Typography>
       <div className={styles.balance}>
         {balance !== null && (
           <Typography variant="title1">
