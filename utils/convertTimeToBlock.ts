@@ -1,4 +1,4 @@
-import { ProposalPeriod } from 'components/CreateDAO/types';
+import { ProposalPeriod } from 'components/CreateDAOOld/types';
 import { appConfig } from 'config';
 
 const SECONDS_IN_DAY = 24 * 60 * 60;

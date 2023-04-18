@@ -41,9 +41,9 @@ import { DaoMembers } from './DaoMembers';
 import { DaoToken } from './DaoToken';
 import { DaoGovernance } from './DaoGovernance';
 
-import styles from './CreateDAO.module.scss';
 import { DaoBounty } from './DaoBounty';
 import { DaoBasic } from './DaoBasic';
+import styles from './CreateDAO.module.scss';
 
 const initialDaoInfoState: DaoInfoState = {
   name: '',

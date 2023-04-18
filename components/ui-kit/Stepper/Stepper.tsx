@@ -1,7 +1,7 @@
 import clsx from 'clsx';
+import { Typography } from 'components/ui-kit/Typography';
+import { Icon } from 'components/ui-kit/Icon';
 import styles from './Stepper.module.scss';
-import { Typography } from '../Typography';
-import { Icon } from '../Icon';
 
 type StepperProps = {
   activeStep: number;
@@ -22,13 +22,15 @@ export function Stepper({ activeStep, steps }: StepperProps) {
               [styles['active-step']]: active
             })}
           >
-            <Icon
-              name={active ? 'circle' : 'noti-success-filled'}
-              className={clsx(styles.icon, {
-                [styles['icon-active']]: active,
-                [styles.shallow]: index > activeStep
-              })}
-            />
+            <span className={styles['icon-wrapper']}>
+              <Icon
+                name={active ? 'circle' : 'noti-success-filled'}
+                className={clsx(styles.icon, {
+                  [styles['icon-active']]: active,
+                  [styles.shallow]: index > activeStep
+                })}
+              />
+            </span>
             <Typography variant="title7">{step}</Typography>
           </li>
         );
