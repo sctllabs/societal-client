@@ -123,6 +123,7 @@ export type DaoToken = {
   readonly symbol: string;
   readonly decimals: number;
   quantity: string;
+  address?: string;
 };
 
 type DemocracySecond = Readonly<{
