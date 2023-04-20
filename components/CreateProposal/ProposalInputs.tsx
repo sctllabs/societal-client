@@ -89,7 +89,10 @@ export function ProposalInputs({
 
     setState((prevState) => ({
       ...prevState,
-      [targetName]: targetValue
+      [targetName]:
+        targetName === InputName.AMOUNT
+          ? targetValue.replace(/[^0-9]/g, '')
+          : targetValue
     }));
   };
 

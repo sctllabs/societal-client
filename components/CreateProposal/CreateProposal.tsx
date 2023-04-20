@@ -168,10 +168,7 @@ export function CreateProposal({
           ? tokenDecimals
           : chainDecimals;
 
-      const amount = (parseFloat(state.amount) * 10 ** (decimals || 0)).toFixed(
-        0
-      );
-
+      const amount = parseInt(state.amount, 10) * 10 ** (decimals || 0);
       switch (proposalType) {
         case ProposalEnum.ADD_MEMBER: {
           return api?.tx.daoCouncilMembers.addMember(_currentDao.id, target);
