@@ -67,7 +67,8 @@ export function PreloaderToken() {
           quantity: ethers.utils.formatUnits(totalSupply, decimals),
           decimals,
           symbol,
-          name
+          name,
+          address: currentDao.ethTokenAddress
         });
       } catch (e) {
         // eslint-disable-next-line no-console

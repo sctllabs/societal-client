@@ -89,7 +89,10 @@ export function ProposalInputs({
 
     setState((prevState) => ({
       ...prevState,
-      [targetName]: targetValue
+      [targetName]:
+        targetName === InputName.AMOUNT
+          ? targetValue.replace(/[^0-9]/g, '')
+          : targetValue
     }));
   };
 
@@ -241,6 +244,13 @@ export function ProposalInputs({
             type="number"
             step="any"
             required
+            endAdornment={
+              <Typography className={styles['select-currency']} variant="body2">
+                {proposalType === ProposalEnum.TRANSFER && chainSymbol}
+                {proposalType === ProposalEnum.TRANSFER_GOVERNANCE_TOKEN &&
+                  tokenSymbol}
+              </Typography>
+            }
           />
 
           <MembersDropdown

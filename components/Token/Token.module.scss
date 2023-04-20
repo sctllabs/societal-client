@@ -16,3 +16,12 @@
   background-color: #{colors.$purple-6};
   padding: 0.125rem 0.5rem;
 }
+
+.address {
+  color: #{colors.$purple-1};
+  cursor: pointer;
+
+  &:hover {
+    color: #{colors.$purple-2};
+  }
+}
