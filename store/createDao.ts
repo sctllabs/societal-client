@@ -6,6 +6,7 @@ import {
   GovernanceFungibleToken
 } from 'constants/governance';
 import { TokenType } from 'constants/token';
+import { isValidUrl } from '../utils/isValidUrl';
 
 export const nameAtom = atom<string>('');
 export const purposeAtom = atom<string>('');
@@ -55,10 +56,10 @@ export const bountyPeriodsAtom = atom((_get) => ({
 export const linksAtom = atom(['']);
 export const socialsAtom = atom(['']);
 
-export const daoDetailsSectionDisabledAtom = atom(
+export const detailsSectionDisabledAtom = atom(
   (_get) => !_get(nameAtom) || !_get(purposeAtom)
 );
-export const daoGovernanceSectionDisabledAtom = atom((_get) => {
+export const governanceSectionDisabledAtom = atom((_get) => {
   const tokenType = _get(tokenTypeAtom);
   const tokenQuantity = _get(tokenQuantityAtom);
   const ethTokenAddress = _get(ethTokenAddressAtom);
@@ -86,7 +87,7 @@ export const daoGovernanceSectionDisabledAtom = atom((_get) => {
     }
   }
 });
-export const daoVotingTermsSectionDisabledAtom = atom((_get) => {
+export const votingTermsSectionDisabledAtom = atom((_get) => {
   const governance = _get(governanceAtom);
   const approveOrigin = _get(approveOriginAtom);
   const basicPeriods = _get(basicPeriodsAtom);
@@ -104,5 +105,18 @@ export const daoVotingTermsSectionDisabledAtom = atom((_get) => {
         !governancePeriods.enactmentPeriod ||
         !governancePeriods.voteLockingPeriod ||
         !governancePeriods.launchPeriod))
+  );
+});
+export const additionalInfoSectionDisabledAtom = atom((_get) => {
+  const links = _get(linksAtom);
+  const socials = _get(socialsAtom);
+
+  return (
+    links
+      .map((link) => (link.length > 0 ? isValidUrl(link) : true))
+      .filter((valid) => !valid).length > 0 ||
+    socials
+      .map((link) => (link.length > 0 ? isValidUrl(link) : true))
+      .filter((valid) => !valid).length > 0
   );
 });

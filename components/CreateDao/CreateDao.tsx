@@ -3,9 +3,10 @@ import Link from 'next/link';
 
 import { useAtomValue } from 'jotai';
 import {
-  daoDetailsSectionDisabledAtom,
-  daoGovernanceSectionDisabledAtom,
-  daoVotingTermsSectionDisabledAtom
+  additionalInfoSectionDisabledAtom,
+  detailsSectionDisabledAtom,
+  governanceSectionDisabledAtom,
+  votingTermsSectionDisabledAtom
 } from 'store/createDao';
 
 import { createDaoSteps } from 'constants/steps';
@@ -32,12 +33,13 @@ import styles from './CreateDao.module.scss';
 
 export function CreateDao() {
   const [activeStep, setActiveStep] = useState(0);
-  const daoDetailsSectionDisabled = useAtomValue(daoDetailsSectionDisabledAtom);
-  const daoGovernanceSectionDisabled = useAtomValue(
-    daoGovernanceSectionDisabledAtom
+  const detailsSectionDisabled = useAtomValue(detailsSectionDisabledAtom);
+  const governanceSectionDisabled = useAtomValue(governanceSectionDisabledAtom);
+  const votingTermsSectionDisabled = useAtomValue(
+    votingTermsSectionDisabledAtom
   );
-  const daoVotingTermsSectionDisabled = useAtomValue(
-    daoVotingTermsSectionDisabledAtom
+  const additionalInfoSectionDisabled = useAtomValue(
+    additionalInfoSectionDisabledAtom
   );
 
   const handleNextStep = () => {
@@ -59,16 +61,16 @@ export function CreateDao() {
   const disabled = useMemo(() => {
     switch (activeStep) {
       case 0: {
-        return daoDetailsSectionDisabled;
+        return detailsSectionDisabled;
       }
       case 1: {
-        return daoGovernanceSectionDisabled;
+        return governanceSectionDisabled;
       }
       case 2: {
-        return daoVotingTermsSectionDisabled;
+        return votingTermsSectionDisabled;
       }
       case 3: {
-        return false;
+        return additionalInfoSectionDisabled;
       }
       default: {
         return true;
@@ -76,9 +78,10 @@ export function CreateDao() {
     }
   }, [
     activeStep,
-    daoDetailsSectionDisabled,
-    daoGovernanceSectionDisabled,
-    daoVotingTermsSectionDisabled
+    additionalInfoSectionDisabled,
+    detailsSectionDisabled,
+    governanceSectionDisabled,
+    votingTermsSectionDisabled
   ]);
 
   return (
