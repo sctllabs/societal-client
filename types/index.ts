@@ -7,3 +7,5 @@ export * from './referendum';
 export * from './account';
 export * from './bounty';
 export * from './proposalEvents';
+export * from './links';
+export * from './periods';

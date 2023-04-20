@@ -1,23 +1,23 @@
 .container {
+  align-items: center;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
   gap: 20px;
+  justify-content: center;
   padding: 40px;
 }
 
 .content {
+  align-items: center;
   display: flex;
   flex-direction: column;
   gap: 20px;
-  align-items: center;
   justify-content: center;
-  width: 383px;
   text-align: center;
+  width: 383px;
 }
 
 .animation {
-  width: 422px;
   height: 278px;
+  width: 422px;
 }

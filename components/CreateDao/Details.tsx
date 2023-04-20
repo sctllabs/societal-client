@@ -1,6 +1,6 @@
 import { ChangeEventHandler } from 'react';
 import { useAtom } from 'jotai';
-import { daoMetadataAtom, daoNameAtom, daoPurposeAtom } from 'store/dao';
+import { metadataAtom, nameAtom, purposeAtom } from 'store/createDao';
 
 import { Typography } from 'components/ui-kit/Typography';
 import { Input } from 'components/ui-kit/Input';
@@ -22,10 +22,10 @@ enum InputLabel {
 const PURPOSE_INPUT_MAX_LENGTH = 500;
 const METADATA_INPUT_MAX_LENGTH = 500;
 
-export function DaoDetails() {
-  const [daoName, setDaoName] = useAtom(daoNameAtom);
-  const [daoPurpose, setDaoPurpose] = useAtom(daoPurposeAtom);
-  const [daoMetadata, setDaoMetadata] = useAtom(daoMetadataAtom);
+export function Details() {
+  const [name, setName] = useAtom(nameAtom);
+  const [purpose, setPurpose] = useAtom(purposeAtom);
+  const [metadata, setMetadata] = useAtom(metadataAtom);
 
   const onChange: ChangeEventHandler = (e) => {
     const target = e.target as HTMLInputElement;
@@ -34,15 +34,15 @@ export function DaoDetails() {
 
     switch (targetName) {
       case InputName.NAME: {
-        setDaoName(targetValue);
+        setName(targetValue);
         break;
       }
       case InputName.PURPOSE: {
-        setDaoPurpose(targetValue);
+        setPurpose(targetValue);
         break;
       }
       case InputName.METADATA: {
-        setDaoMetadata(targetValue);
+        setMetadata(targetValue);
         break;
       }
       default: {
@@ -52,26 +52,25 @@ export function DaoDetails() {
   };
 
   return (
-    <div className={styles.info}>
+    <div className={styles.section}>
       <Typography variant="h3">Community Info</Typography>
       <Input
         classNames={{ root: styles['input-half-width'] }}
         name={InputName.NAME}
         label={InputLabel.NAME}
-        value={daoName}
+        value={name}
         onChange={onChange}
+        autoFocus
         required
       />
       <Input
         name={InputName.PURPOSE}
         label={InputLabel.PURPOSE}
         onChange={onChange}
-        value={daoPurpose}
+        value={purpose}
         maxLength={PURPOSE_INPUT_MAX_LENGTH}
         hint={
-          <Typography variant="caption3">
-            {daoPurpose?.length || 0}/500
-          </Typography>
+          <Typography variant="caption3">{purpose?.length || 0}/500</Typography>
         }
         hintPosition="end"
         required
@@ -80,11 +79,11 @@ export function DaoDetails() {
         name={InputName.METADATA}
         label={InputLabel.METADATA}
         onChange={onChange}
-        value={daoMetadata}
+        value={metadata}
         maxLength={METADATA_INPUT_MAX_LENGTH}
         hint={
           <Typography variant="caption3">
-            {daoMetadata?.length || 0}/500
+            {metadata?.length || 0}/500
           </Typography>
         }
         hintPosition="end"

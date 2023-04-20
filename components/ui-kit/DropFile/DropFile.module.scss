@@ -1,18 +1,18 @@
 @use "styles/colors";
 
 .root {
-  border: 1px dashed #{colors.$blue-1};
-  width: 114px;
-  height: 114px;
-  display: flex;
   align-items: center;
+  border: 1px dashed #{colors.$blue-1};
+  display: flex;
+  height: 114px;
   justify-content: center;
+  width: 114px;
 }
 
 .thumb {
+  height: 114px;
   position: relative;
   width: 114px;
-  height: 114px;
 }
 
 .root-accept {
@@ -45,6 +45,6 @@
 
 .button {
   position: absolute;
-  top: 0;
   right: 0;
+  top: 0;
 }

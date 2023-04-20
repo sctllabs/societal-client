@@ -1,8 +1,8 @@
 import { ChangeEventHandler, MouseEventHandler } from 'react';
 
 import { useAtom, useAtomValue } from 'jotai';
-import { daoMembersAtom } from 'store/dao';
 import { accountsAtom } from 'store/account';
+import { membersAtom } from 'store/createDao';
 
 import { MembersDropdown } from 'components/MembersDropdown';
 import { Typography } from 'components/ui-kit/Typography';
@@ -12,28 +12,27 @@ import { Icon } from 'components/ui-kit/Icon';
 
 import styles from './CreateDao.module.scss';
 
-enum InputName {
-  ADDRESSES = 'addresses'
-}
-
 enum InputLabel {
   ADDRESS = 'Add New Address'
 }
 
-export function DaoMembers() {
+export function Members() {
   const accounts = useAtomValue(accountsAtom);
-  const [daoMembers, setDaoMembers] = useAtom(daoMembersAtom);
+  const [members, setMembers] = useAtom(membersAtom);
 
   const onInputChange: ChangeEventHandler = (e) => {
     const target = e.target as HTMLInputElement;
     const targetValue = target.value;
 
-    const dataAddressIndex = target.getAttribute('data-address-index');
-    setDaoMembers((prevState) =>
+    const dataAddressString = target.getAttribute('data-address-index');
+
+    if (dataAddressString === null) {
+      return;
+    }
+    const dataAddressIndex = parseInt(dataAddressString, 10);
+    setMembers((prevState) =>
       prevState.map((x, index) =>
-        dataAddressIndex && parseInt(dataAddressIndex, 10) === index
-          ? targetValue
-          : x
+        dataAddressIndex === index ? targetValue : x
       )
     );
   };
@@ -44,7 +43,7 @@ export function DaoMembers() {
     }
     const addressIndex = parseInt(index, 10);
 
-    setDaoMembers((prevState) =>
+    setMembers((prevState) =>
       prevState.map((_address, idx) =>
         idx === addressIndex ? address : _address
       )
@@ -52,17 +51,18 @@ export function DaoMembers() {
   };
 
   const handleAddAddressClick: MouseEventHandler = () =>
-    setDaoMembers((prevState) => [...prevState, '']);
+    setMembers((prevState) => [...prevState, '']);
 
   const handleRemoveAddressClick: MouseEventHandler = (e) => {
-    const target = e.target as HTMLButtonElement;
-    const dataAddressIndex = target.getAttribute('data-address-index');
-    if (!dataAddressIndex) {
+    const dataAddressIndex = (e.target as HTMLButtonElement).getAttribute(
+      'data-address-index'
+    );
+    if (dataAddressIndex === null) {
       return;
     }
 
     const addressIndex = parseInt(dataAddressIndex, 10);
-    setDaoMembers((prevState) =>
+    setMembers((prevState) =>
       prevState.length === 1
         ? ['']
         : prevState.filter((_, index) => index !== addressIndex)
@@ -75,41 +75,39 @@ export function DaoMembers() {
       <Typography variant="body1">
         Add your DAO admins now or you can do it later in your DAO settings.
       </Typography>
-      <div className={styles['members-addresses']}>
-        {daoMembers.map((x, index) => {
+      <div className={styles.inputs}>
+        {members.map((x, index) => {
           const lastItem =
-            index === daoMembers.length - 1 &&
-            accounts?.length !== daoMembers.length;
+            index === members.length - 1 && accounts?.length !== members.length;
           const key = `address-${index}`;
 
           return (
             <MembersDropdown
               accounts={accounts?.filter(
-                (_account) => !daoMembers.includes(_account.address)
+                (_account) => !members.includes(_account.address)
               )}
               key={key}
               onValueChange={onMemberValueChange}
               index={index}
             >
               <Input
-                name={InputName.ADDRESSES}
                 label={InputLabel.ADDRESS}
                 onChange={onInputChange}
                 data-address-index={index}
                 value={
                   (accounts?.find(
-                    (_account) => _account.address === daoMembers[index]
-                  )?.meta.name as string) || daoMembers[index]
+                    (_account) => _account.address === members[index]
+                  )?.meta.name as string) || members[index]
                 }
                 autoComplete="off"
                 required
                 endAdornment={
-                  <span className={styles['members-button-group']}>
-                    {(daoMembers[index] || !lastItem) && (
+                  <span className={styles['input-button-group']}>
+                    {(members[index] || !lastItem) && (
                       <Button
                         data-address-index={index}
                         variant="ghost"
-                        className={styles['members-button']}
+                        className={styles['input-button']}
                         onClick={handleRemoveAddressClick}
                         size="sm"
                       >
@@ -120,7 +118,7 @@ export function DaoMembers() {
                       <Button
                         data-address-index={index}
                         variant="ghost"
-                        className={styles['members-button']}
+                        className={styles['input-button']}
                         onClick={handleAddAddressClick}
                         size="sm"
                       >

@@ -1,18 +1,24 @@
 import { useSetAtom } from 'jotai';
-import { daoAssetAtom } from 'store/dao';
+import { assetAtom } from 'store/createDao';
 
 import { Typography } from 'components/ui-kit/Typography';
 import { Icon } from 'components/ui-kit/Icon';
 import { DropFile } from 'components/ui-kit/DropFile';
+import {
+  TooltipProvider,
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent
+} from 'components/ui-kit/Tooltip';
 
 import styles from './CreateDao.module.scss';
 
 const acceptedFiles = { 'image/png': [], 'image/jpeg': [], 'image.jpg': [] };
 
-export function DaoAssets() {
-  const setDaoAsset = useSetAtom(daoAssetAtom);
+export function Assets() {
+  const setAsset = useSetAtom(assetAtom);
 
-  const handleAssetChange = (file: File | undefined) => setDaoAsset(file);
+  const handleAssetChange = (file: File | undefined) => setAsset(file);
 
   return (
     <div className={styles.assets}>
@@ -27,11 +33,21 @@ export function DaoAssets() {
       <div className={styles['assets-logo']}>
         <div className={styles['assets-logo-title']}>
           <Typography variant="title4">Logo</Typography>
-          <Icon
-            className={styles['assets-logo-icon']}
-            name="noti-info-stroke"
-            size="xs"
-          />
+
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span>
+                  <Icon
+                    className={styles['assets-logo-icon']}
+                    name="noti-info-stroke"
+                    size="xs"
+                  />
+                </span>
+              </TooltipTrigger>
+              <TooltipContent>Your text goes here</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
         <DropFile
           variant="rectangle"

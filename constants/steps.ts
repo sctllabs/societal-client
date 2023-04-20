@@ -1,4 +1,4 @@
-export const BountySteps = [
+export const bountySteps = [
   'Proposal Phase',
   'Curator Acceptance',
   'Active Bounty',
@@ -6,7 +6,7 @@ export const BountySteps = [
   'Claimed'
 ];
 
-export const CreateDaoSteps = [
+export const createDaoSteps = [
   'DAO details',
   'Governance',
   'Voting terms',

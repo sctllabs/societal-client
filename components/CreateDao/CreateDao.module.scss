@@ -8,9 +8,9 @@
 }
 
 .content {
-  min-width: 960px;
   padding-bottom: 54px;
   padding-top: 72px;
+  width: 960px;
 }
 
 .title {
@@ -25,9 +25,10 @@
 }
 
 .navigation {
-  display: flex;
-  justify-content: space-between;
   align-items: center;
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: space-between;
   min-width: 960px;
   padding-bottom: 40px;
 }
@@ -40,14 +41,10 @@
   margin-right: auto;
 }
 
-.info {
+.section {
   display: flex;
   flex-direction: column;
   gap: 24px;
-}
-
-.input-half-width {
-  width: 50%;
 }
 
 .details {
@@ -58,30 +55,30 @@
 
 .assets {
   display: flex;
-  justify-content: space-between;
   gap: 80px;
+  justify-content: space-between;
 }
 
 .assets-text {
   display: flex;
-  flex-direction: column;
-  gap: 24px;
-  flex-grow: 1;
   flex-basis: 0;
+  flex-direction: column;
+  flex-grow: 1;
+  gap: 24px;
 }
 
 .assets-logo {
   display: flex;
-  flex-grow: 1;
   flex-basis: 0;
   flex-direction: column;
+  flex-grow: 1;
   gap: 13.5px;
 }
 
 .assets-logo-title {
+  align-items: center;
   display: flex;
   gap: 10px;
-  align-items: center;
 }
 
 .assets-logo-icon {
@@ -94,7 +91,7 @@
   gap: 24px;
 }
 
-.members-addresses {
+.inputs {
   align-items: center;
   display: flex;
   flex-direction: column;
@@ -102,12 +99,87 @@
   width: 50%;
 }
 
-.members-button-group {
+.input-button-group {
   align-items: center;
   display: flex;
   justify-content: center;
 }
 
-.members-button {
+.input-button {
   padding: 0;
+}
+
+.radio-checkbox-group {
+  display: flex;
+  gap: 80px;
+  margin-top: 20px;
+}
+
+.radio-checkbox {
+  align-items: center;
+  background-color: #{colors.$grayscale-100};
+  border-radius: 8px;
+  display: flex;
+  flex-basis: 0px;
+  flex-grow: 1;
+  gap: 16px;
+  height: 54px;
+  padding: 16px 12px;
+}
+
+.eth-token-address {
+  float: right;
+  margin-left: auto;
+  width: calc(50% - 40px);
+}
+
+.input-half-width {
+  width: calc(50% - 40px);
+}
+
+.approve-origin-radio-group {
+  display: flex;
+  flex-direction: row;
+  gap: 40px;
+}
+
+.approve-origin-radio-span {
+  display: flex;
+  gap: 16px;
+}
+
+.approve-origin-radio {
+  align-items: center;
+  background: #{colors.$grayscale-100};
+  border-radius: 8px;
+  display: flex;
+  gap: 40px;
+  padding: 16px 30px 16px 16px;
+}
+
+.periods {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 72px 54px;
+}
+
+.proposal-period-item {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: calc(50% - 27px);
+}
+
+.proposal-period-input {
+  margin-top: auto;
+}
+
+.period-trigger {
+  width: max-content;
+}
+
+.title-optional-container {
+  align-items: center;
+  display: flex;
+  gap: 12px;
 }

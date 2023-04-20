@@ -13,7 +13,7 @@ import { apiAtom, chainSymbolAtom } from 'store/api';
 import { tokenSymbolAtom } from 'store/token';
 
 import { parseMeta } from 'utils/parseMeta';
-import { BountySteps } from 'constants/steps';
+import { bountySteps } from 'constants/steps';
 
 import { Card } from 'components/ui-kit/Card';
 import { Typography } from 'components/ui-kit/Typography';
@@ -225,7 +225,7 @@ export function CuratorBountyInfo() {
       </div>
       <div className={styles.content}>
         <div className={styles.stepper}>
-          <Stepper activeStep={activeStep} steps={BountySteps} />
+          <Stepper activeStep={activeStep} steps={bountySteps} />
         </div>
         <div className={styles.description}>
           <Typography variant="title7">{title}</Typography>

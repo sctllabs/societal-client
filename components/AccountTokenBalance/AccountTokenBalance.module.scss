@@ -5,10 +5,10 @@
 }
 
 .token-container {
-  margin-top: 20px;
   display: flex;
   flex-direction: column;
   gap: 12px;
+  margin-top: 20px;
 }
 
 .item {
@@ -18,19 +18,19 @@
 }
 
 .icon {
+  align-items: center;
   background-color: #{colors.$grayscale-98};
   border-radius: 36px;
-  height: 32px;
-  width: 32px;
   display: flex;
+  height: 32px;
   justify-content: center;
-  align-items: center;
+  width: 32px;
 }
 
 .balance {
+  align-items: baseline;
   display: flex;
   gap: 4px;
-  align-items: baseline;
 }
 
 .unlock-button {
