@@ -137,6 +137,11 @@
   width: calc(50% - 40px);
 }
 
+.double-input-container {
+  display: flex;
+  gap: 80px;
+}
+
 .approve-origin-radio-group {
   display: flex;
   flex-direction: row;
@@ -182,4 +187,27 @@
   align-items: center;
   display: flex;
   gap: 12px;
+}
+
+.animation-container {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  justify-content: center;
+}
+
+.animation {
+  height: 278px;
+  width: 422px;
+}
+
+.animation-content {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  justify-content: center;
+  text-align: center;
+  width: 383px;
 }

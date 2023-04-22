@@ -1,7 +1,6 @@
 import { ChangeEventHandler } from 'react';
 import { useAtom, useAtomValue } from 'jotai';
-import { tokenTickerAtom, tokenTypeAtom } from 'store/createDao';
-
+import { tokenDecimalsAtom, tokenTypeAtom } from 'store/createDao';
 import { TokenType } from 'constants/token';
 
 import { Typography } from 'components/ui-kit/Typography';
@@ -10,15 +9,17 @@ import { Input } from 'components/ui-kit/Input';
 import styles from './CreateDao.module.scss';
 
 enum InputLabel {
-  TOKEN_TICKER = 'Token Ticker'
+  TOKEN_DECIMALS = 'Token Decimals'
 }
 
-export function TokenTicker() {
+export function TokenDecimals() {
   const tokenType = useAtomValue(tokenTypeAtom);
-  const [tokenTicker, setTokenTicker] = useAtom(tokenTickerAtom);
+  const [tokenDecimals, setTokenDecimals] = useAtom(tokenDecimalsAtom);
 
   const onChange: ChangeEventHandler = (e) =>
-    setTokenTicker((e.target as HTMLInputElement).value);
+    setTokenDecimals(
+      (e.target as HTMLInputElement).value.replace(/[^0-9]/g, '')
+    );
 
   if (tokenType === TokenType.ETH_TOKEN) {
     return null;
@@ -26,16 +27,17 @@ export function TokenTicker() {
 
   return (
     <div className={styles.section}>
-      <Typography variant="h3">Token Ticker</Typography>
+      <Typography variant="h3">Token Decimals</Typography>
       <Typography variant="body1">
-        Enter a name for your Governance token.
+        Specify how many decimal places a token has.
       </Typography>
 
       <div className={styles['input-half-width']}>
         <Input
-          label={InputLabel.TOKEN_TICKER}
-          value={tokenTicker}
+          label={InputLabel.TOKEN_DECIMALS}
+          value={tokenDecimals}
           onChange={onChange}
+          type="tel"
           required
         />
       </div>

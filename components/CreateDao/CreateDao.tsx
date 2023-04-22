@@ -1,11 +1,12 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 
-import { useAtomValue } from 'jotai';
+import { useAtomValue, useSetAtom } from 'jotai';
 import {
   additionalInfoSectionDisabledAtom,
   detailsSectionDisabledAtom,
   governanceSectionDisabledAtom,
+  resetCreateDaoAtom,
   votingTermsSectionDisabledAtom
 } from 'store/createDao';
 
@@ -21,13 +22,16 @@ import { Assets } from './Assets';
 import { Members } from './Members';
 import { GovernanceToken } from './GovernanceToken';
 import { GovernanceType } from './GovernanceType';
-import { TokenTicker } from './TokenTicker';
+import { TokenInfo } from './TokenInfo';
 import { TokenSymbol } from './TokenSymbol';
 
 import { TokenQuantity } from './TokenQuantity';
 import { ApproveOrigin } from './ApproveOrigin';
 import { Periods } from './Periods';
 import { Links } from './Links';
+import { CreateDaoButton } from './CreateDaoButton';
+import { TokenDecimals } from './TokenDecimals';
+import { Pending } from './Pending';
 
 import styles from './CreateDao.module.scss';
 
@@ -41,6 +45,9 @@ export function CreateDao() {
   const additionalInfoSectionDisabled = useAtomValue(
     additionalInfoSectionDisabledAtom
   );
+  const resetCreateDao = useSetAtom(resetCreateDaoAtom);
+
+  useEffect(() => () => resetCreateDao(), [resetCreateDao]);
 
   const handleNextStep = () => {
     if (activeStep === createDaoSteps.length) {
@@ -111,9 +118,10 @@ export function CreateDao() {
             <>
               <GovernanceToken />
               <GovernanceType />
-              <TokenTicker />
+              <TokenInfo />
               <TokenSymbol />
               <TokenQuantity />
+              <TokenDecimals />
             </>
           )}
           {activeStep === 2 && (
@@ -123,18 +131,27 @@ export function CreateDao() {
             </>
           )}
           {activeStep === 3 && <Links />}
+          {activeStep === 4 && <Pending />}
         </div>
       </div>
       {activeStep < createDaoSteps.length && (
         <div className={styles.navigation}>
-          <Button
-            className={styles.next}
-            onClick={handleNextStep}
-            disabled={disabled}
-          >
-            {activeStep === 3 ? 'Create DAO' : 'Next Step'}
-            <Icon name={activeStep === 3 ? 'tick' : 'arrow-right'} size="xs" />
-          </Button>
+          {activeStep < 3 && (
+            <Button
+              className={styles.next}
+              onClick={handleNextStep}
+              disabled={disabled}
+            >
+              Next Step
+              <Icon name="arrow-right" size="xs" />
+            </Button>
+          )}
+          {activeStep === 3 && (
+            <CreateDaoButton
+              handleNextStep={handleNextStep}
+              disabled={disabled}
+            />
+          )}
 
           {activeStep !== 0 && (
             <Button

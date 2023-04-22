@@ -20,8 +20,10 @@ export const governanceAtom = atom<(GovernanceFungibleToken | GovernanceEth)[]>(
 );
 export const ethTokenAddressAtom = atom<string>('');
 export const tokenSymbolAtom = atom<File | undefined>(undefined);
+export const tokenNameAtom = atom<string>('');
 export const tokenTickerAtom = atom<string>('');
 export const tokenQuantityAtom = atom<string>('');
+export const tokenDecimalsAtom = atom<number>(2);
 
 export const approveOriginAtom = atom<ApproveOriginType>(
   ApproveOriginType['50%']
@@ -38,6 +40,22 @@ export const launchPeriodAtom = atom<number | undefined>(undefined);
 export const updatePeriodAtom = atom<number | undefined>(undefined);
 export const awardDelayPeriodAtom = atom<number | undefined>(undefined);
 
+export const linksAtom = atom(['']);
+export const socialsAtom = atom(['']);
+
+export const communityInfoAtom = atom((_get) => ({
+  name: _get(nameAtom),
+  purpose: _get(purposeAtom),
+  metadata: _get(metadataAtom)
+}));
+export const tokenAtom = atom((_get) => ({
+  name: _get(tokenNameAtom),
+  ticker: _get(tokenTickerAtom),
+  decimals: _get(tokenDecimalsAtom),
+  quantity: _get(tokenQuantityAtom),
+  address: _get(ethTokenAddressAtom),
+  type: _get(tokenTypeAtom)
+}));
 export const basicPeriodsAtom = atom((_get) => ({
   proposalPeriod: _get(proposalPeriodAtom),
   spendPeriod: _get(spendPeriodAtom)
@@ -52,15 +70,15 @@ export const bountyPeriodsAtom = atom((_get) => ({
   updatePeriod: _get(updatePeriodAtom),
   awardDelayPeriod: _get(awardDelayPeriodAtom)
 }));
-
-export const linksAtom = atom(['']);
-export const socialsAtom = atom(['']);
+export const proposedDaoIdAtom = atom<number | undefined>(undefined);
 
 export const detailsSectionDisabledAtom = atom(
   (_get) => !_get(nameAtom) || !_get(purposeAtom)
 );
 export const governanceSectionDisabledAtom = atom((_get) => {
   const tokenType = _get(tokenTypeAtom);
+  const tokenName = _get(tokenNameAtom);
+  const tokenDecimals = _get(tokenDecimalsAtom);
   const tokenQuantity = _get(tokenQuantityAtom);
   const ethTokenAddress = _get(ethTokenAddressAtom);
   const tokenTicker = _get(tokenTickerAtom);
@@ -71,6 +89,8 @@ export const governanceSectionDisabledAtom = atom((_get) => {
       return (
         !tokenTicker ||
         !tokenQuantity ||
+        !tokenName ||
+        !tokenDecimals ||
         !governance?.includes(
           GovernanceFungibleToken.GeneralCouncilAndTechnicalCommittee
         )
@@ -119,4 +139,37 @@ export const additionalInfoSectionDisabledAtom = atom((_get) => {
       .map((link) => (link.length > 0 ? isValidUrl(link) : true))
       .filter((valid) => !valid).length > 0
   );
+});
+
+export const resetCreateDaoAtom = atom(null, (_, _set) => {
+  _set(nameAtom, '');
+  _set(purposeAtom, '');
+  _set(metadataAtom, '');
+  _set(assetAtom, undefined);
+  _set(membersAtom, ['']);
+
+  _set(tokenTypeAtom, TokenType.FUNGIBLE_TOKEN);
+  _set(governanceAtom, [
+    GovernanceFungibleToken.GeneralCouncilAndTechnicalCommittee
+  ]);
+  _set(ethTokenAddressAtom, '');
+  _set(tokenSymbolAtom, undefined);
+  _set(tokenNameAtom, '');
+  _set(tokenTickerAtom, '');
+  _set(tokenQuantityAtom, '');
+  _set(tokenDecimalsAtom, 2);
+
+  _set(approveOriginAtom, ApproveOriginType['50%']);
+
+  _set(proposalPeriodAtom, undefined);
+  _set(spendPeriodAtom, undefined);
+  _set(votingPeriodAtom, undefined);
+  _set(enactmentPeriodAtom, undefined);
+  _set(voteLockingPeriodAtom, undefined);
+  _set(launchPeriodAtom, undefined);
+  _set(updatePeriodAtom, undefined);
+  _set(awardDelayPeriodAtom, undefined);
+
+  _set(linksAtom, ['']);
+  _set(socialsAtom, ['']);
 });

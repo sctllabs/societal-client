@@ -27,9 +27,10 @@ export function TokenQuantity() {
 
   return (
     <div className={styles.section}>
-      <Typography variant="h3">Token Ticker</Typography>
+      <Typography variant="h3">Quantity of Tokens</Typography>
       <Typography variant="body1">
-        Enter a name for your Governance token.
+        Initial amount of tokens to be minted should be higher than min balance,
+        the maximum amount is 1 billion.
       </Typography>
 
       <div className={styles['input-half-width']}>

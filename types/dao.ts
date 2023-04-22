@@ -71,7 +71,7 @@ type DaoPolicyProportion = {
 type CreateDaoPolicy = {
   proposal_period: number;
   approve_origin: DaoPolicyProportion;
-  governance: DaoGovernance;
+  governance?: DaoGovernance;
   bounty_payout_delay: number;
   bounty_update_period: number;
   spend_period: number;
