@@ -1,7 +1,22 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
 .info {
   display: flex;
   flex-direction: column;
-  gap: 0.625rem;
+  gap: 4px;
 }
 
+.links {
+  display: flex;
+  flex-direction: column;
+}
 
+.link {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}

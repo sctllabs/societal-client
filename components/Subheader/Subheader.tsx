@@ -73,7 +73,12 @@ export function Subheader() {
         {socials && (
           <div className={styles.socials}>
             {socials.map((link: string) => (
-              <Link className={styles.social} href={link} key={link}>
+              <Link
+                target="_blank"
+                className={styles.social}
+                href={link}
+                key={link}
+              >
                 <Icon color="white" name={getLinkIcon(link)} size="sm" />
               </Link>
             ))}
