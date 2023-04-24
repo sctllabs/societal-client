@@ -3,7 +3,7 @@ import { keyringAtom } from 'store/api';
 
 import type { KeyringPair } from '@polkadot/keyring/types';
 import type { JsonRpcSigner } from '@ethersproject/providers';
-import type { AssetAccount } from '../types';
+import type { AssetAccount } from 'types';
 
 const substrateAccountStorageKey = 'substrateAccountStorageKey';
 const substrateWalletStorageKey = 'substrateWalletStorageKey';

@@ -6,7 +6,7 @@ import {
   GovernanceFungibleToken
 } from 'constants/governance';
 import { TokenType } from 'constants/token';
-import { isValidUrl } from '../utils/isValidUrl';
+import { isValidUrl } from 'utils/isValidUrl';
 
 export const nameAtom = atom<string>('');
 export const purposeAtom = atom<string>('');

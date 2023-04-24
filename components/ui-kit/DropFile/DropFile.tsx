@@ -4,9 +4,9 @@ import { useDropzone, Accept } from 'react-dropzone';
 import clsx from 'clsx';
 
 import { Icon } from 'components/ui-kit/Icon';
+import { Button } from 'components/ui-kit/Button';
 
 import styles from './DropFile.module.scss';
-import { Button } from '../Button';
 
 type DropFileVariant = 'rectangle' | 'circle';
 
