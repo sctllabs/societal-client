@@ -32,9 +32,9 @@ export default async function handler(
 
     const reqDomain = extractDomain(req.headers.host ?? '');
 
-    // if (!appDomain.endsWith(reqDomain)) {
-    //   return res.status(403).send('Forbidden');
-    // }
+    if (!appDomain.endsWith(reqDomain)) {
+      return res.status(403).send('Forbidden');
+    }
 
     const { Location } = await AwsUploader.uploadToBucket(req, type);
 
