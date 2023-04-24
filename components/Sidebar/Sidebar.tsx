@@ -8,7 +8,7 @@ import { useSetAtom } from 'jotai';
 import { daosAtom } from 'store/dao';
 
 import { formLinkByDaoId } from 'utils/formLinkByDaoId';
-import { getImageUrlFromMetadata } from 'utils/getImageUrlFromMetadata';
+import { getFieldFromMetadata } from 'utils/getFieldFromMetadata';
 
 import { useSubscription } from '@apollo/client';
 import SUBSCRIBE_DAO from 'query/subscribeDaos.graphql';
@@ -103,7 +103,7 @@ export function Sidebar() {
             >
               <Avatar
                 value={dao.name}
-                link={getImageUrlFromMetadata(dao.metadata, 'logo')}
+                link={getFieldFromMetadata(dao.metadata, 'logo')}
                 className={styles['button-logo']}
                 radius="rounded"
               />

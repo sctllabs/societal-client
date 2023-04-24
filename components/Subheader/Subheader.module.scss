@@ -3,6 +3,7 @@
 
 .top-container {
   min-height: variables.$subheader-top-container-height;
+  position: relative;
 }
 
 .bottom-container {
@@ -21,11 +22,11 @@
 }
 
 .logo {
+  background-color: #{colors.$grayscale-98};
   bottom: 14px;
   height: 100px;
-  position: absolute;
   padding: 12px;
-  background-color: #{colors.$grayscale-98};
+  position: absolute;
 }
 
 .left-container {
@@ -66,4 +67,22 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
+}
+
+.socials {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+  display: flex;
+  padding: 0px 4px;
+  position: absolute;
+  right: 20px;
+  top: 56px;
+}
+
+.social {
+  align-items: center;
+  display: flex;
+  height: 32px;
+  justify-content: center;
+  width: 32px;
 }

@@ -8,7 +8,7 @@
 }
 
 .hint {
-  bottom: -1.25rem;
+  bottom: -20px;
   position: absolute;
 }
 
@@ -40,15 +40,15 @@
 .label-outlined {
   @extend %body-2;
 
-  --input-label-transform-top: translate(0px, -2.125rem);
+  --input-label-transform-top: translate(0px, -34px);
   --input-label-transform: translate(0px, 0px) scale(1);
-  left: 0.5rem;
+  left: 8px;
 }
 
 .label-standard {
   @extend %title-4;
 
-  --input-label-transform-top: translate(0px, -2.125rem);
+  --input-label-transform-top: translate(0px, -34px);
   --input-label-transform: translate(0px, 0px) scale(1);
   left: 0;
 }
@@ -62,7 +62,7 @@
   border: 0;
   color: var(--input-text);
   display: flex;
-  height: 1.75rem;
+  height: 28px;
   justify-content: center;
   padding: var(--input-padding);
   width: 100%;
@@ -96,19 +96,19 @@
 
 .input-standard {
   @extend %title-4;
-  --input-padding: 0.375rem 0;
+  --input-padding: 6px 0;
 }
 
 .input-outlined {
   @extend %body-2;
-  --input-padding: 0.5rem;
+  --input-padding: 8px;
 
   &.start-adornment {
-    --input-padding: 0 0 0 0.625rem;
+    --input-padding: 0 0 0 10px;
   }
 
   &.end-adornment {
-    --input-padding: 0 0 0 0.5rem;
+    --input-padding: 0 0 0 8px;
   }
 
 
@@ -121,8 +121,9 @@
   --input-text: #{colors.$grayscale-0};
   --input-text-empty: #{colors.$grayscale-55};
   --input-text-disabled: #{colors.$grayscale-80};
-  align-items: flex-end;
+  align-items: center;
   display: inline-flex;
+  gap: 6px;
 
   min-height: var(--input-root-min-height);
   padding: var(--input-root-padding);
@@ -139,6 +140,13 @@
       @extend %label-top;
     }
   }
+
+  > span {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    min-height: 32px;
+  }
 }
 
 .root-outlined {
@@ -146,7 +154,7 @@
   align-items: center;
 
   border: 1px solid var(--input-root-outlined-border-color);
-  border-radius: 0.5rem;
+  border-radius: 8px;
   justify-content: center;
 
   &:hover:not(.disabled) {
@@ -158,13 +166,13 @@
   }
 
   &.root-md {
-    --input-root-min-height: 2.5rem;
-    --input-root-padding: 0.5rem 0.875rem 0.5rem 0.875rem;
+    --input-root-min-height: 40px;
+    --input-root-padding: 8px 14px;
   }
 
   &.root-lg {
-    --input-root-min-height: 3.5rem;
-    --input-root-padding: 0.5rem 0.75rem;
+    --input-root-min-height: 56px;
+    --input-root-padding: 8px 12px;
   }
 }
 
@@ -172,15 +180,15 @@
   --input-wrapper-border-bottom-color: #{colors.$grayscale-55};
   --input-wrapper-border-bottom-color-hover: #{colors.$grayscale-55};
   --input-wrapper-border-bottom-color-focus: #{colors.$grayscale-0};
-  --input-wrapper-border-bottom-width: 0.0625rem;
-  --input-wrapper-border-bottom-width-focus: 0.0625rem;
-  --input-wrapper-border-bottom-width-hover: 0.125rem;
+  --input-wrapper-border-bottom-width: 1px;
+  --input-wrapper-border-bottom-width-focus: 1px;
+  --input-wrapper-border-bottom-width-hover: 2px;
   --input-wrapper-border-bottom-hover: #{colors.$grayscale-55};
   --input-wrapper-border-bottom-focus: #{colors.$grayscale-0};
-  --input-root-padding: 0.375rem 0;
-  --input-root-min-height: 3.125rem;
+  --input-root-padding: 6px 0 0;
+  --input-root-min-height: 50px;
 
-  margin-bottom: 1rem;
+  margin-bottom: 16px;
 
   &::before {
     border-bottom: var(--input-wrapper-border-bottom-width) solid var(--input-wrapper-border-bottom-color);
@@ -224,7 +232,7 @@
   --input-wrapper-border-bottom-color: #{colors.$orange-1};
   --input-wrapper-border-bottom-color-hover: #{colors.$orange-1};
   --input-wrapper-border-bottom-color-focus: #{colors.$orange-1};
-  --input-wrapper-border-bottom-width: 0.125rem;
-  --input-wrapper-border-bottom-width-focus: 0.125rem;
-  --input-wrapper-border-bottom-width-hover: 0.125rem;
+  --input-wrapper-border-bottom-width: 2px;
+  --input-wrapper-border-bottom-width-focus: 2px;
+  --input-wrapper-border-bottom-width-hover: 2px;
 }

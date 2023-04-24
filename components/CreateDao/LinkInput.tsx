@@ -3,6 +3,7 @@ import { ChangeEventHandler, MouseEventHandler } from 'react';
 import { SetStateAction } from 'jotai';
 
 import { isValidUrl } from 'utils/isValidUrl';
+import { getLinkIcon } from 'utils/getLinkIcon';
 
 import { Button } from 'components/ui-kit/Button';
 import { Icon } from 'components/ui-kit/Icon';
@@ -88,8 +89,11 @@ export function LinkInput({
               value={_link}
               error={error}
               autoFocus={autoFocus}
+              startAdornment={
+                _link && <Icon name={getLinkIcon(_link)} size="sm" />
+              }
               endAdornment={
-                <span className={styles['input-button-group']}>
+                <span>
                   {(state[index] || !lastItem) && (
                     <Button
                       data-address-index={index}
@@ -98,7 +102,7 @@ export function LinkInput({
                       onClick={handleRemoveLinkClick}
                       size="sm"
                     >
-                      <Icon name="close" size="sm" />
+                      <Icon name="trash" size="sm" />
                     </Button>
                   )}
                   {lastItem && (

@@ -67,7 +67,7 @@ import share from './share.svg';
 import socialApple from './social-apple.svg';
 import socialBehance from './social-behance.svg';
 import socialDiscord from './social-discord.svg';
-import socialDribbble from './social-dribbble.svg';
+import socialDribble from './social-dribble.svg';
 import socialEmail from './social-email.svg';
 import socialFacebook from './social-facebook.svg';
 import socialGithub from './social-github.svg';
@@ -175,7 +175,7 @@ const icons = {
   'social-apple': socialApple,
   'social-behance': socialBehance,
   'social-discord': socialDiscord,
-  'social-dribbble': socialDribbble,
+  'social-dribble': socialDribble,
   'social-email': socialEmail,
   'social-facebook': socialFacebook,
   'social-github': socialGithub,
