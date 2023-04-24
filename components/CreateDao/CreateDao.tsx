@@ -18,12 +18,12 @@ import { Stepper } from 'components/ui-kit/Stepper';
 import { Icon } from 'components/ui-kit/Icon';
 
 import { Details } from './Details';
-import { Assets } from './Assets';
+// import { Assets } from './Assets';
 import { Members } from './Members';
 import { GovernanceToken } from './GovernanceToken';
 import { GovernanceType } from './GovernanceType';
 import { TokenInfo } from './TokenInfo';
-import { TokenSymbol } from './TokenSymbol';
+// import { TokenSymbol } from './TokenSymbol';
 
 import { TokenQuantity } from './TokenQuantity';
 import { ApproveOrigin } from './ApproveOrigin';
@@ -110,7 +110,7 @@ export function CreateDao() {
           {activeStep === 0 && (
             <>
               <Details />
-              <Assets />
+              {/* <Assets /> */}
               <Members />
             </>
           )}
@@ -119,7 +119,7 @@ export function CreateDao() {
               <GovernanceToken />
               <GovernanceType />
               <TokenInfo />
-              <TokenSymbol />
+              {/* <TokenSymbol /> */}
               <TokenQuantity />
               <TokenDecimals />
             </>
