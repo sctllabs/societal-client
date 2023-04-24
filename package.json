@@ -51,7 +51,6 @@
     "graphql-ws": "^5.11.3",
     "jotai": "^1.11.2",
     "lottie-react": "^2.4.0",
-    "nanoid": "^4.0.2",
     "next": "13.0.6",
     "react": "18.2.0",
     "react-dom": "18.2.0",
