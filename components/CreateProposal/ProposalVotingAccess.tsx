@@ -37,7 +37,14 @@ export function ProposalVotingAccess({
       <SelectContent>
         {Object.entries(ProposalVotingAccessEnum)
           .filter(([_proposalKey]) => {
-            const govType = currentDao?.policy.governance.__typename;
+            const { governance } = currentDao?.policy || {};
+            if (!governance) {
+              return (
+                _proposalKey !== 'Democracy' && _proposalKey !== 'EthGovernance'
+              );
+            }
+
+            const govType = governance?.__typename;
             switch (govType) {
               case 'OwnershipWeightedVoting':
                 return _proposalKey !== 'Democracy';

@@ -79,11 +79,13 @@ export function Proposals() {
 
   const onTabValueChange = (value: string) => setTab(value as TabOption);
 
+  const { governance } = currentDao?.policy || {};
+
   return (
     <div
       className={clsx(
         styles.container,
-        currentDao?.policy.governance.__typename === 'OwnershipWeightedVoting'
+        !governance || governance?.__typename === 'OwnershipWeightedVoting'
           ? styles['eth-container']
           : styles['governance-container']
       )}
@@ -97,7 +99,7 @@ export function Proposals() {
           <TabsList>
             {tabOptions
               .filter((tabOption) =>
-                currentDao?.policy.governance.__typename !== 'GovernanceV1'
+                currentDao?.policy.governance?.__typename !== 'GovernanceV1'
                   ? tabOption !== 'Referendum'
                   : true
               )

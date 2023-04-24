@@ -18,7 +18,7 @@ export default function Governance() {
   return (
     <div className={styles.container}>
       <Proposals />
-      {currentDao?.policy.governance.__typename === 'GovernanceV1' && (
+      {currentDao?.policy.governance?.__typename === 'GovernanceV1' && (
         <ReferendumInfo />
       )}
     </div>

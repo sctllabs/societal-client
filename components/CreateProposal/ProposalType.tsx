@@ -39,7 +39,7 @@ export function ProposalType({
       <SelectContent>
         {Object.entries(ProposalEnum)
           .filter(([_proposalKey]) => {
-            const govType = currentDao?.policy.governance.__typename;
+            const govType = currentDao?.policy.governance?.__typename;
             switch (govType) {
               case 'OwnershipWeightedVoting':
                 return _proposalKey !== 'TRANSFER_GOVERNANCE_TOKEN';

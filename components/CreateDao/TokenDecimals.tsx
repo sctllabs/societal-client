@@ -18,7 +18,7 @@ export function TokenDecimals() {
 
   const onChange: ChangeEventHandler = (e) =>
     setTokenDecimals(
-      (e.target as HTMLInputElement).value.replace(/[^0-9]/g, '')
+      parseInt((e.target as HTMLInputElement).value.replace(/[^0-9]/g, ''), 10)
     );
 
   if (tokenType === TokenType.ETH_TOKEN) {
