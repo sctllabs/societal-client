@@ -15,7 +15,7 @@ export const Checkbox = forwardRef<
       className={clsx(styles.root, className)}
       {...props}
     >
-      <CheckboxPrimitive.Indicator asChild>
+      <CheckboxPrimitive.Indicator>
         <Icon name="tick" size="xs" color="white" />
       </CheckboxPrimitive.Indicator>
     </CheckboxPrimitive.Root>

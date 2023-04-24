@@ -354,9 +354,9 @@
 }
 
 .header-items {
+  align-items: center;
   display: flex;
   gap: 60px;
-  align-items: center;
 }
 
 .header-item {
@@ -367,12 +367,12 @@
 
 .eth-status-container {
   display: flex;
-  justify-content: flex-end;
   flex-grow: 1;
+  justify-content: flex-end;
 }
 
 .pending-status {
+  align-items: flex-end;
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
 }

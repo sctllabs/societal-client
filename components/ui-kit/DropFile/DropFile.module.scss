@@ -1,0 +1,50 @@
+@use "styles/colors";
+
+.root {
+  align-items: center;
+  border: 1px dashed #{colors.$blue-1};
+  display: flex;
+  height: 114px;
+  justify-content: center;
+  width: 114px;
+}
+
+.thumb {
+  height: 114px;
+  position: relative;
+  width: 114px;
+}
+
+.root-accept {
+  border-color: #{colors.$green-1};
+}
+
+.root-reject {
+  border-color: #{colors.$red-1};
+}
+
+.rectangle {
+  border-radius: 8px;
+}
+
+.circle {
+  border-radius: 50%;
+}
+
+.active {
+  color: #{colors.$purple-1};
+}
+
+.accept {
+  color: #{colors.$green-1};
+}
+
+.reject {
+  color: #{colors.$red-1};
+}
+
+.button {
+  position: absolute;
+  right: 0;
+  top: 0;
+}

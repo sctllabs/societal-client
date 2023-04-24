@@ -1,0 +1,213 @@
+@use "styles/colors";
+
+.container {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.content {
+  padding-bottom: 54px;
+  padding-top: 72px;
+  width: 960px;
+}
+
+.title {
+  padding-bottom: 32px;
+  padding-top: 44px;
+  text-align: center;
+}
+
+.cancel-button {
+  align-self: flex-end;
+  margin: 24px 40px 0 0;
+}
+
+.navigation {
+  align-items: center;
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: space-between;
+  min-width: 960px;
+  padding-bottom: 40px;
+}
+
+.next {
+  margin-left: auto;
+}
+
+.previous {
+  margin-right: auto;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.details {
+  display: flex;
+  flex-direction: column;
+  gap: 72px;
+}
+
+.assets {
+  display: flex;
+  gap: 80px;
+  justify-content: space-between;
+}
+
+.assets-text {
+  display: flex;
+  flex-basis: 0;
+  flex-direction: column;
+  flex-grow: 1;
+  gap: 24px;
+}
+
+.assets-logo {
+  display: flex;
+  flex-basis: 0;
+  flex-direction: column;
+  flex-grow: 1;
+  gap: 13.5px;
+}
+
+.assets-logo-title {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+}
+
+.assets-logo-icon {
+  color: #{colors.$blue-1};
+}
+
+.members {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.inputs {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 50%;
+}
+
+.input-button-group {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+}
+
+.input-button {
+  padding: 0;
+}
+
+.radio-checkbox-group {
+  display: flex;
+  gap: 80px;
+  margin-top: 20px;
+}
+
+.radio-checkbox {
+  align-items: center;
+  background-color: #{colors.$grayscale-100};
+  border-radius: 8px;
+  display: flex;
+  flex-basis: 0px;
+  flex-grow: 1;
+  gap: 16px;
+  height: 54px;
+  padding: 16px 12px;
+}
+
+.eth-token-address {
+  float: right;
+  margin-left: auto;
+  width: calc(50% - 40px);
+}
+
+.input-half-width {
+  width: calc(50% - 40px);
+}
+
+.double-input-container {
+  display: flex;
+  gap: 80px;
+}
+
+.approve-origin-radio-group {
+  display: flex;
+  flex-direction: row;
+  gap: 40px;
+}
+
+.approve-origin-radio-span {
+  display: flex;
+  gap: 16px;
+}
+
+.approve-origin-radio {
+  align-items: center;
+  background: #{colors.$grayscale-100};
+  border-radius: 8px;
+  display: flex;
+  gap: 40px;
+  padding: 16px 30px 16px 16px;
+}
+
+.periods {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 72px 54px;
+}
+
+.proposal-period-item {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: calc(50% - 27px);
+}
+
+.proposal-period-input {
+  margin-top: auto;
+}
+
+.period-trigger {
+  width: max-content;
+}
+
+.title-optional-container {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+}
+
+.animation-container {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  justify-content: center;
+}
+
+.animation {
+  height: 278px;
+  width: 422px;
+}
+
+.animation-content {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  justify-content: center;
+  text-align: center;
+  width: 383px;
+}

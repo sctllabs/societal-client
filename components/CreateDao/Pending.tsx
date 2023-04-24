@@ -5,29 +5,29 @@ import Lottie from 'lottie-react';
 
 import { useAtomValue } from 'jotai';
 import { daosAtom } from 'store/dao';
+import { nameAtom, proposedDaoIdAtom } from 'store/createDao';
 
 import { formLinkByDaoId } from 'utils/formLinkByDaoId';
 
 import { Typography } from 'components/ui-kit/Typography';
 import { Notification } from 'components/ui-kit/Notifications';
 
-import styles from 'styles/pages/pending.module.scss';
-
 import pendingAnimation from 'public/animations/aBNove0ils.json';
+import styles from './CreateDao.module.scss';
 
-export default function Pending() {
-  const name = 'Societal';
+export function Pending() {
   const router = useRouter();
-  const createdDaoId = router.query['created-dao-id'];
+  const proposedDaoId = useAtomValue(proposedDaoIdAtom);
+  const name = useAtomValue(nameAtom);
   const daos = useAtomValue(daosAtom);
 
   useEffect(() => {
-    if (typeof createdDaoId !== 'string') {
+    if (proposedDaoId === undefined) {
       router.push('/home');
       return;
     }
 
-    const currentDao = daos?.find((x) => x.id === createdDaoId);
+    const currentDao = daos?.find((x) => x.id === proposedDaoId.toString());
     if (!currentDao) {
       return;
     }
@@ -40,16 +40,16 @@ export default function Pending() {
       />
     );
     router.push(formLinkByDaoId(currentDao.id, 'dashboard'));
-  }, [createdDaoId, daos, router]);
+  }, [proposedDaoId, daos, router]);
 
   return (
-    <div className={styles.container}>
+    <div className={styles['animation-container']}>
       <Lottie
         animationData={pendingAnimation}
         loop
         className={styles.animation}
       />
-      <div className={styles.content}>
+      <div className={styles['animation-content']}>
         <Typography variant="h3">Building Your {name}</Typography>
         <Typography variant="body1">
           We&apos;re creating your {name}! Please wait until we set it up, this

@@ -11,10 +11,10 @@
   box-shadow: 0 2px 10px var(--blackA7);
   cursor: pointer;
   display: flex;
-  height: 1.25rem;
+  height: 20px;
   justify-content: center;
   transition: background-color 0.3s, border-color 0.3s;
-  width: 1.25rem;
+  width: 20px;
 
   &:disabled {
     cursor: not-allowed;
@@ -23,7 +23,6 @@
 
   &:hover:not(:disabled) {
     --checkbox-border-color: #{colors.$purple-3};
-    background-color: var(--violet3);
   }
 
   &[data-state='checked'] {

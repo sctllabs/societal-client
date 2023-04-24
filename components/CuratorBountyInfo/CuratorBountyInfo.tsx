@@ -13,6 +13,7 @@ import { apiAtom, chainSymbolAtom } from 'store/api';
 import { tokenSymbolAtom } from 'store/token';
 
 import { parseMeta } from 'utils/parseMeta';
+import { bountySteps } from 'constants/steps';
 
 import { Card } from 'components/ui-kit/Card';
 import { Typography } from 'components/ui-kit/Typography';
@@ -32,14 +33,6 @@ import { Input } from 'components/ui-kit/Input';
 import { Stepper } from 'components/ui-kit/Stepper';
 
 import styles from './CuratorBounty.module.scss';
-
-const steps = [
-  'Proposal Phase',
-  'Curator Acceptance',
-  'Active Bounty',
-  'Bounty Awarded',
-  'Claimed'
-];
 
 export function CuratorBountyInfo() {
   const api = useAtomValue(apiAtom);
@@ -232,7 +225,7 @@ export function CuratorBountyInfo() {
       </div>
       <div className={styles.content}>
         <div className={styles.stepper}>
-          <Stepper activeStep={activeStep} steps={steps} />
+          <Stepper activeStep={activeStep} steps={bountySteps} />
         </div>
         <div className={styles.description}>
           <Typography variant="title7">{title}</Typography>

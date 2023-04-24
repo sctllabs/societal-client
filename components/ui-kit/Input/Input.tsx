@@ -88,6 +88,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
     >
       {startAdornment}
       <input
+        ref={inputRef}
         id={id}
         disabled={disabled}
         className={clsx(
@@ -102,7 +103,6 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
           classNames?.input
         )}
         {...otherProps}
-        ref={inputRef}
       />
       {label && (
         <Label.Root
