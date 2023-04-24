@@ -44,7 +44,10 @@ export function Token() {
           </div>
 
           <Typography variant="title1">
-            {token.quantity && formatBalance(token.quantity, token.decimals)}
+            {token.quantity &&
+              (token.address
+                ? token.quantity
+                : formatBalance(token.quantity, token.decimals))}
           </Typography>
         </>
       )}
