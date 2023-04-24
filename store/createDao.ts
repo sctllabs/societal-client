@@ -157,7 +157,7 @@ export const resetCreateDaoAtom = atom(null, (_, _set) => {
   _set(tokenNameAtom, '');
   _set(tokenTickerAtom, '');
   _set(tokenQuantityAtom, '');
-  _set(tokenDecimalsAtom, 2);
+  _set(tokenDecimalsAtom, 0);
 
   _set(approveOriginAtom, ApproveOriginType['50%']);
 

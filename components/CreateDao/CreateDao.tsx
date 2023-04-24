@@ -30,7 +30,7 @@ import { ApproveOrigin } from './ApproveOrigin';
 import { Periods } from './Periods';
 import { Links } from './Links';
 import { CreateDaoButton } from './CreateDaoButton';
-import { TokenDecimals } from './TokenDecimals';
+// import { TokenDecimals } from './TokenDecimals';
 import { Pending } from './Pending';
 
 import styles from './CreateDao.module.scss';
@@ -121,7 +121,7 @@ export function CreateDao() {
               <TokenInfo />
               {/* <TokenSymbol /> */}
               <TokenQuantity />
-              <TokenDecimals />
+              {/* <TokenDecimals /> */}
             </>
           )}
           {activeStep === 2 && (
