@@ -14,8 +14,10 @@ import {
   communityInfoAtom,
   governanceAtom,
   governancePeriodsAtom,
+  linksAtom,
   membersAtom,
   proposedDaoIdAtom,
+  socialsAtom,
   tokenAtom
 } from 'store/createDao';
 
@@ -27,6 +29,7 @@ import { ssToEvmAddress } from 'utils/ssToEvmAddress';
 import { keyringAddExternal } from 'utils/keyringAddExternal';
 
 import { useDaoContract } from 'hooks/useDaoContract';
+import { useImageUpload } from 'hooks/useImageUpload';
 
 import type { u32 } from '@polkadot/types';
 import type { CreateDaoInput } from 'types';
@@ -61,9 +64,12 @@ export function CreateDaoButton({
   const basicPeriods = useAtomValue(basicPeriodsAtom);
   const governancePeriods = useAtomValue(governancePeriodsAtom);
   const bountyPeriods = useAtomValue(bountyPeriodsAtom);
+  const links = useAtomValue(linksAtom);
+  const socials = useAtomValue(socialsAtom);
   const setProposedDaoId = useSetAtom(proposedDaoIdAtom);
 
   const daoContract = useDaoContract();
+  const imageUpload = useImageUpload();
 
   useEffect(() => {
     let unsubscribe: any;
@@ -79,7 +85,7 @@ export function CreateDaoButton({
     return () => unsubscribe && unsubscribe();
   }, [api, nextDaoId]);
 
-  const handleTransform = () => {
+  const handleTransform = async () => {
     if (
       nextDaoId === null ||
       !keyring ||
@@ -109,10 +115,24 @@ export function CreateDaoButton({
     const bounty_payout_delay = bountyPeriods.awardDelayPeriod;
     const bounty_update_period = bountyPeriods.updatePeriod;
 
+    const assetUrl =
+      communityInfo.asset && (await imageUpload(communityInfo.asset));
+    const tokenAssetUrl = token.asset && (await imageUpload(token.asset));
+
+    const metadata = stringToHex(
+      JSON.stringify({
+        metadata: communityInfo.metadata.trim(),
+        logo: assetUrl?.replaceAll('"', ''),
+        token_logo: tokenAssetUrl?.replaceAll('"', ''),
+        links: links.filter((x) => x.length > 0),
+        socials: socials.filter((x) => x.length > 0)
+      })
+    );
+
     const data: CreateDaoInput = {
       name: communityInfo.name.trim(),
       purpose: communityInfo.purpose.trim(),
-      metadata: communityInfo.metadata.trim(),
+      metadata,
       policy: {
         proposal_period,
         bounty_payout_delay,
@@ -227,7 +247,7 @@ export function CreateDaoButton({
       return;
     }
 
-    const data = handleTransform();
+    const data = await handleTransform();
 
     try {
       await daoContract

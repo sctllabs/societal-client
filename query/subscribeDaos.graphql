@@ -2,5 +2,6 @@ subscription DaosSubscription {
   daos(limit: 100) {
     id
     name
+    metadata
   }
 }

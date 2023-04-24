@@ -16,6 +16,7 @@ export type SubscribeDemocracySecondsByProposalId = {
 export type DaoNameAndId = {
   id: string;
   name: string;
+  metadata: string;
 };
 
 export type GovernanceV1 = Readonly<{

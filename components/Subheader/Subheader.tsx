@@ -16,6 +16,7 @@ import { NavLink } from 'components/ui-kit/NavLink';
 import { CreateProposal } from 'components/CreateProposal';
 
 import styles from './Subheader.module.scss';
+import { getImageUrlFromMetadata } from '../../utils/getImageUrlFromMetadata';
 
 type Navigation = {
   icon: IconNamesType;
@@ -71,6 +72,7 @@ export function Subheader() {
             <Avatar
               className={styles.logo}
               value={currentDao.name}
+              link={getImageUrlFromMetadata(currentDao.metadata, 'logo')}
               radius="standard"
             />
           </span>

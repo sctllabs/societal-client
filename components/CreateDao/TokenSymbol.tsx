@@ -1,5 +1,5 @@
 import { useSetAtom } from 'jotai';
-import { tokenSymbolAtom } from 'store/createDao';
+import { tokenAssetAtom } from 'store/createDao';
 
 import { Typography } from 'components/ui-kit/Typography';
 import { Icon } from 'components/ui-kit/Icon';
@@ -16,7 +16,7 @@ import styles from './CreateDao.module.scss';
 const acceptedFiles = { 'image/png': [], 'image/jpeg': [], 'image.jpg': [] };
 
 export function TokenSymbol() {
-  const setTokenSymbol = useSetAtom(tokenSymbolAtom);
+  const setTokenSymbol = useSetAtom(tokenAssetAtom);
 
   const handleAssetChange = (file: File | undefined) => setTokenSymbol(file);
 
