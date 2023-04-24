@@ -13,8 +13,6 @@ const getGlobalAWSConfig = () => {
     }
   };
 
-  console.log(awsConfig);
-
   baseConfig = {
     ...baseConfig,
     region: awsConfig.region
@@ -47,8 +45,6 @@ export class AwsUploader {
   uploadToBucket = async (
     file: File | Readable
   ): Promise<ManagedUpload.SendData> => {
-    console.log(this.awsS3Instance);
-
     return this.awsS3Instance
       .upload({
         Bucket: this.bucketName,

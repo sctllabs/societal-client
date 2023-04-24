@@ -64,7 +64,7 @@ export function PreloaderToken() {
         ]);
 
         setToken({
-          quantity: ethers.utils.formatUnits(totalSupply, decimals),
+          quantity: ethers.utils.formatUnits(totalSupply, decimals).toString(),
           decimals,
           symbol,
           name,
