@@ -53,7 +53,7 @@ export function Details() {
 
   return (
     <div className={styles.section}>
-      <Typography variant="h3">Community Description</Typography>
+      <Typography variant="h3">Community Info</Typography>
       <Input
         classNames={{ root: styles['input-half-width'] }}
         name={InputName.NAME}
