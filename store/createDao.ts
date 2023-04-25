@@ -171,4 +171,5 @@ export const resetCreateDaoAtom = atom(null, (_, _set) => {
 
   _set(linksAtom, ['']);
   _set(socialsAtom, ['']);
+  _set(proposedDaoIdAtom, undefined);
 });

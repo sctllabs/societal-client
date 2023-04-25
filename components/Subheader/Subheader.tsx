@@ -123,7 +123,22 @@ export function Subheader() {
           ))}
         </div>
         <div className={styles['right-container']}>
-          <CreateProposal icon="proposals-add" title="Create Proposal" />
+          {!router.asPath.includes('governance') && (
+            <CreateProposal
+              icon="task-add"
+              buttonText="Create Bounty"
+              proposalVariant="bounty"
+            />
+          )}
+
+          {!router.asPath.includes('bounties') && (
+            <CreateProposal
+              buttonVariant="outlined"
+              icon="proposals-add"
+              buttonText="Create Proposal"
+              proposalVariant="proposal"
+            />
+          )}
         </div>
       </div>
     </div>

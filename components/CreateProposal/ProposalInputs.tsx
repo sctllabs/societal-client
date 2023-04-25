@@ -23,6 +23,7 @@ import { Typography } from 'components/ui-kit/Typography';
 import { MembersDropdown } from 'components/MembersDropdown';
 
 import {
+  BountyProposalEnum,
   InputLabel,
   InputName,
   ProposalEnum,
@@ -32,7 +33,7 @@ import {
 import styles from './CreateProposal.module.scss';
 
 type ProposalInputsProps = {
-  proposalType: ProposalEnum | undefined;
+  proposalType: ProposalEnum | BountyProposalEnum | undefined;
   state: State;
   setState: Dispatch<SetStateAction<State>>;
   setCurrency: Dispatch<SetStateAction<string | null>>;
@@ -103,10 +104,10 @@ export function ProposalInputs({
 
   return (
     <>
-      {(proposalType === ProposalEnum.BOUNTY_CURATOR ||
-        proposalType === ProposalEnum.BOUNTY_UNASSIGN_CURATOR) && (
+      {(proposalType === BountyProposalEnum.BOUNTY_CURATOR ||
+        proposalType === BountyProposalEnum.BOUNTY_UNASSIGN_CURATOR) && (
         <div className={styles['proposal-input-transfer']}>
-          {proposalType === ProposalEnum.BOUNTY_CURATOR && (
+          {proposalType === BountyProposalEnum.BOUNTY_CURATOR && (
             <MembersDropdown
               accounts={_accounts}
               onValueChange={onAccountValueChange}
@@ -187,14 +188,14 @@ export function ProposalInputs({
           </Select>
         </div>
       )}
-      {(proposalType === ProposalEnum.BOUNTY ||
-        proposalType === ProposalEnum.BOUNTY_CURATOR) &&
+      {(proposalType === BountyProposalEnum.BOUNTY ||
+        proposalType === BountyProposalEnum.BOUNTY_CURATOR) &&
         chainSymbol && (
           <div className={styles['proposal-input-bounty-amount']}>
             <Input
               name={InputName.AMOUNT}
               label={
-                proposalType === ProposalEnum.BOUNTY
+                proposalType === BountyProposalEnum.BOUNTY
                   ? InputLabel.AMOUNT
                   : InputLabel.FEE
               }
@@ -203,7 +204,7 @@ export function ProposalInputs({
               type="tel"
               required
               endAdornment={
-                proposalType === ProposalEnum.BOUNTY &&
+                proposalType === BountyProposalEnum.BOUNTY &&
                 (currentDao?.fungibleToken?.id && tokenSymbol ? (
                   <Select
                     defaultValue={chainSymbol}
