@@ -23,7 +23,7 @@ export const tokenAssetAtom = atom<File | undefined>(undefined);
 export const tokenNameAtom = atom<string>('');
 export const tokenTickerAtom = atom<string>('');
 export const tokenQuantityAtom = atom<string>('');
-export const tokenDecimalsAtom = atom<number>(2);
+export const tokenDecimalsAtom = atom<number>(0);
 
 export const approveOriginAtom = atom<ApproveOriginType>(
   ApproveOriginType['50%']
@@ -92,7 +92,6 @@ export const governanceSectionDisabledAtom = atom((_get) => {
         !tokenTicker ||
         !tokenQuantity ||
         !tokenName ||
-        !tokenDecimals ||
         !governance?.includes(
           GovernanceFungibleToken.GeneralCouncilAndTechnicalCommittee
         )
