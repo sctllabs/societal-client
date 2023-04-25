@@ -45,7 +45,7 @@ export function Assets() {
                   />
                 </span>
               </TooltipTrigger>
-              <TooltipContent>Your text goes here</TooltipContent>
+              <TooltipContent>Upload Community Logo</TooltipContent>
             </Tooltip>
           </TooltipProvider>
         </div>
