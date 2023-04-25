@@ -22,12 +22,13 @@ export enum InputLabel {
   PROPOSAL_TYPE = 'Select proposal type',
   PROPOSAL_VOTING_ACCESS = 'Select proposal voting access',
   AMOUNT = 'Amount',
+  BOUNTY_AMOUNT = 'Bounty Amount',
   TARGET = 'Target',
   MEMBER = 'Choose a member',
   DESCRIPTION = 'Description',
   TITLE = 'Title',
-  DEPOSIT = 'Deposit',
-  FEE = 'Fee',
+  DEPOSIT = 'Proposal Deposit',
+  FEE = 'Curator Fee',
   CURATOR = 'Choose a bounty curator',
   BOUNTY_INDEX = 'Select bounty from the list'
 }

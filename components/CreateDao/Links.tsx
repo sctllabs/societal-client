@@ -8,14 +8,14 @@ const additionalFields: LinkInputType[] = [
   {
     title: 'Links',
     subtitle:
-      'Looking to grow the DAO members? Add links to allow people to learn more about your DAO.',
+      'Looking to grow the Community members? Add links to allow people to learn more about your Community.',
     label: 'Add Link',
     atom: 'linksAtom'
   },
   {
     title: 'Socials',
     subtitle:
-      'Looking to grow the DAO members? Add socials to allow people to learn more about your DAO.',
+      'Looking to grow the Community members? Add socials to allow people to learn more about your Community.',
     label: 'Add Social',
     atom: 'socialsAtom'
   }

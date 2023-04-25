@@ -299,6 +299,11 @@ export function ProposalInputs({
             onChange={onInputChange}
             type="tel"
             required
+            endAdornment={
+              <Typography className={styles['select-currency']} variant="body2">
+                {tokenSymbol}
+              </Typography>
+            }
           />
         </div>
       )}

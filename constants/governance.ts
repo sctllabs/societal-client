@@ -1,5 +1,5 @@
 export enum GovernanceFungibleToken {
-  GeneralCouncilAndTechnicalCommittee = 'General Council and Technical Committee Voting',
+  GeneralCouncilAndTechnicalCommittee = 'Council Voting',
   GovernanceV1 = 'Governance V1'
 }
 
