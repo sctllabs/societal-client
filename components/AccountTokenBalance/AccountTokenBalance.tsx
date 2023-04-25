@@ -21,6 +21,12 @@ import { TxButton } from 'components/TxButton';
 import { Button } from 'components/ui-kit/Button';
 import { Icon } from 'components/ui-kit/Icon';
 import { AssetAccount } from 'types';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger
+} from 'components/ui-kit/Tooltip';
 
 import styles from './AccountTokenBalance.module.scss';
 
@@ -73,14 +79,10 @@ export function AccountTokenBalance() {
 
   const isEthToken = typeof accountTokenBalance === 'string' || false;
 
-  if (!accountTokenBalance) {
-    return null;
-  }
-
   return (
     <Card className={styles.card}>
       <Typography variant="title4">Your governance token balance</Typography>
-      {typeof accountTokenBalance === 'string' && (
+      {accountTokenBalance && typeof accountTokenBalance === 'string' && (
         <span className={styles.balance}>
           <Typography variant="caption2">
             {formatBalance(accountTokenBalance, tokenDecimals)}
@@ -91,47 +93,74 @@ export function AccountTokenBalance() {
       {!isEthToken && (
         <div className={styles['token-container']}>
           <div className={styles.item}>
-            <span className={styles.icon}>
-              <Icon name="database" size="xs" />
-            </span>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className={styles.icon}>
+                    <Icon name="database" size="xs" />
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent>Free Balance</TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
             <span className={styles.balance}>
               <Typography variant="title5">
-                {formatBalance(
-                  (accountTokenBalance as AssetAccount).balance.toString(),
-                  tokenDecimals
-                )}
+                {accountTokenBalance
+                  ? formatBalance(
+                      (accountTokenBalance as AssetAccount).balance.toString(),
+                      tokenDecimals
+                    )
+                  : 0}
               </Typography>
               <Typography variant="caption2">{tokenSymbol}</Typography>
             </span>
           </div>
           <div className={styles.item}>
-            <span className={styles.icon}>
-              <Icon name="toolkit" size="xs" />
-            </span>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className={styles.icon}>
+                    <Icon name="toolkit" size="xs" />
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent>Locked Balance</TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
             <span className={styles.balance}>
               <Typography variant="title5">
-                {formatBalance(
-                  (
-                    accountTokenBalance as AssetAccount
-                  ).reservedBalance.toString(),
-                  tokenDecimals
-                )}
+                {accountTokenBalance
+                  ? formatBalance(
+                      (
+                        accountTokenBalance as AssetAccount
+                      ).reservedBalance.toString(),
+                      tokenDecimals
+                    )
+                  : 0}
               </Typography>
               <Typography variant="caption2">{tokenSymbol}</Typography>
             </span>
           </div>
           <div className={styles.item}>
-            <span className={styles.icon}>
-              <Icon name="spinner" size="xs" />
-            </span>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className={styles.icon}>
+                    <Icon name="spinner" size="xs" />
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent>Frozen Balance</TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
             <span className={styles.balance}>
               <Typography variant="title5">
-                {formatBalance(
-                  (
-                    accountTokenBalance as AssetAccount
-                  ).frozenBalance.toString(),
-                  tokenDecimals
-                )}
+                {accountTokenBalance
+                  ? formatBalance(
+                      (
+                        accountTokenBalance as AssetAccount
+                      ).frozenBalance.toString(),
+                      tokenDecimals
+                    )
+                  : 0}
               </Typography>
               <Typography variant="caption2">{tokenSymbol}</Typography>
             </span>

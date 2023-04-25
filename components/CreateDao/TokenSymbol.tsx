@@ -43,7 +43,7 @@ export function TokenSymbol() {
                   />
                 </span>
               </TooltipTrigger>
-              <TooltipContent>Your text goes here</TooltipContent>
+              <TooltipContent>Upload Token Icon</TooltipContent>
             </Tooltip>
           </TooltipProvider>
         </div>

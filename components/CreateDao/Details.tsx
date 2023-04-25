@@ -1,6 +1,6 @@
 import { ChangeEventHandler } from 'react';
 import { useAtom } from 'jotai';
-import { metadataAtom, nameAtom, purposeAtom } from 'store/createDao';
+import { nameAtom, purposeAtom } from 'store/createDao';
 
 import { Typography } from 'components/ui-kit/Typography';
 import { Input } from 'components/ui-kit/Input';
@@ -15,17 +15,17 @@ enum InputName {
 
 enum InputLabel {
   NAME = 'Community Name',
-  PURPOSE = 'Purpose',
+  PURPOSE = 'Community Description',
   METADATA = 'Metadata'
 }
 
 const PURPOSE_INPUT_MAX_LENGTH = 500;
-const METADATA_INPUT_MAX_LENGTH = 500;
+// const METADATA_INPUT_MAX_LENGTH = 500;
 
 export function Details() {
   const [name, setName] = useAtom(nameAtom);
   const [purpose, setPurpose] = useAtom(purposeAtom);
-  const [metadata, setMetadata] = useAtom(metadataAtom);
+  // const [metadata, setMetadata] = useAtom(metadataAtom);
 
   const onChange: ChangeEventHandler = (e) => {
     const target = e.target as HTMLInputElement;
@@ -41,10 +41,10 @@ export function Details() {
         setPurpose(targetValue);
         break;
       }
-      case InputName.METADATA: {
-        setMetadata(targetValue);
-        break;
-      }
+      // case InputName.METADATA: {
+      //   setMetadata(targetValue);
+      //   break;
+      // }
       default: {
         throw new Error('Unexpected input');
       }
@@ -75,7 +75,7 @@ export function Details() {
         hintPosition="end"
         required
       />
-      <Input
+      {/* <Input
         name={InputName.METADATA}
         label={InputLabel.METADATA}
         onChange={onChange}
@@ -88,7 +88,7 @@ export function Details() {
         }
         hintPosition="end"
         required
-      />
+      /> */}
     </div>
   );
 }

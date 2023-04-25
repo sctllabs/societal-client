@@ -50,9 +50,9 @@ export function Pending() {
         className={styles.animation}
       />
       <div className={styles['animation-content']}>
-        <Typography variant="h3">Building Your {name}</Typography>
+        <Typography variant="h3">Building Your Community</Typography>
         <Typography variant="body1">
-          We&apos;re creating your {name}! Please wait until we set it up, this
+          We&apos;re creating your {name}. Please wait until we set it up, this
           may take a few seconds.
         </Typography>
       </div>

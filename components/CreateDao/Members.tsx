@@ -71,9 +71,10 @@ export function Members() {
 
   return (
     <div className={styles.members}>
-      <Typography variant="h3">Admins</Typography>
+      <Typography variant="h3">Council Members</Typography>
       <Typography variant="body1">
-        Add your DAO admins now or you can do it later in your DAO settings.
+        Add Council Members to your Community now or you can do it later in your
+        Community settings.
       </Typography>
       <div className={styles.inputs}>
         {members.map((x, index) => {

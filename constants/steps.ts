@@ -7,7 +7,7 @@ export const bountySteps = [
 ];
 
 export const createDaoSteps = [
-  'DAO details',
+  'Community details',
   'Governance',
   'Voting terms',
   'Additional info'

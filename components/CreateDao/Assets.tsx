@@ -23,7 +23,7 @@ export function Assets() {
   return (
     <div className={styles.assets}>
       <div className={styles['assets-text']}>
-        <Typography variant="h3">DAO Assets</Typography>
+        <Typography variant="h3">Community Assets</Typography>
         <Typography variant="body1">
           Select a logo and a cover out of a Basic (free) plan set of assets or
           check out our Subscription Plans to bring brand identity into your
@@ -45,7 +45,7 @@ export function Assets() {
                   />
                 </span>
               </TooltipTrigger>
-              <TooltipContent>Your text goes here</TooltipContent>
+              <TooltipContent>Upload Community Logo</TooltipContent>
             </Tooltip>
           </TooltipProvider>
         </div>
