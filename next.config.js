@@ -11,6 +11,14 @@ const nextConfig = {
   sassOptions: {
     includePaths: [path.join(__dirname, 'styles')]
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'societal-dev.s3.amazonaws.com'
+      }
+    ]
+  },
   webpack: (config, context) => {
     config.module.rules.push({
       test: /\.(graphql|gql)$/,

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { appConfig } from '../config';
+import { appConfig } from 'config';
 
 const SECOND = 1000;
 

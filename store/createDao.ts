@@ -6,7 +6,7 @@ import {
   GovernanceFungibleToken
 } from 'constants/governance';
 import { TokenType } from 'constants/token';
-import { isValidUrl } from '../utils/isValidUrl';
+import { isValidUrl } from 'utils/isValidUrl';
 
 export const nameAtom = atom<string>('');
 export const purposeAtom = atom<string>('');
@@ -19,7 +19,7 @@ export const governanceAtom = atom<(GovernanceFungibleToken | GovernanceEth)[]>(
   [GovernanceFungibleToken.GeneralCouncilAndTechnicalCommittee]
 );
 export const ethTokenAddressAtom = atom<string>('');
-export const tokenSymbolAtom = atom<File | undefined>(undefined);
+export const tokenAssetAtom = atom<File | undefined>(undefined);
 export const tokenNameAtom = atom<string>('');
 export const tokenTickerAtom = atom<string>('');
 export const tokenQuantityAtom = atom<string>('');
@@ -46,7 +46,8 @@ export const socialsAtom = atom(['']);
 export const communityInfoAtom = atom((_get) => ({
   name: _get(nameAtom),
   purpose: _get(purposeAtom),
-  metadata: _get(metadataAtom)
+  metadata: _get(metadataAtom),
+  asset: _get(assetAtom)
 }));
 export const tokenAtom = atom((_get) => ({
   name: _get(tokenNameAtom),
@@ -54,6 +55,7 @@ export const tokenAtom = atom((_get) => ({
   decimals: _get(tokenDecimalsAtom),
   quantity: _get(tokenQuantityAtom),
   address: _get(ethTokenAddressAtom),
+  asset: _get(tokenAssetAtom),
   type: _get(tokenTypeAtom)
 }));
 export const basicPeriodsAtom = atom((_get) => ({
@@ -153,7 +155,7 @@ export const resetCreateDaoAtom = atom(null, (_, _set) => {
     GovernanceFungibleToken.GeneralCouncilAndTechnicalCommittee
   ]);
   _set(ethTokenAddressAtom, '');
-  _set(tokenSymbolAtom, undefined);
+  _set(tokenAssetAtom, undefined);
   _set(tokenNameAtom, '');
   _set(tokenTickerAtom, '');
   _set(tokenQuantityAtom, '');

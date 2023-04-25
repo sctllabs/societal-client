@@ -3,12 +3,12 @@ import { useAtom, useAtomValue } from 'jotai';
 import { tokenNameAtom, tokenTickerAtom, tokenTypeAtom } from 'store/createDao';
 
 import { TokenType } from 'constants/token';
+import { UNEXPECTED_FIELD_VALUE } from 'constants/errors';
 
 import { Typography } from 'components/ui-kit/Typography';
 import { Input } from 'components/ui-kit/Input';
 
 import styles from './CreateDao.module.scss';
-import { UNEXPECTED_FIELD_VALUE } from '../../constants/errors';
 
 enum InputLabel {
   TOKEN_NAME = 'Token Name',

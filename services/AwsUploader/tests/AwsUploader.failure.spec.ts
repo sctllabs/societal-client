@@ -22,6 +22,8 @@ describe('AWS uploader', () => {
       type: 'text/plain'
     });
 
-    expect(AwsUploader.uploadToBucket(file)).rejects.toBeUndefined();
+    await expect(
+      AwsUploader.uploadToBucket(file, 'text/plain')
+    ).rejects.toBeUndefined();
   });
 });

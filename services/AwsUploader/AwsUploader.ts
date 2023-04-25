@@ -21,12 +21,10 @@ const getGlobalAWSConfig = () => {
   return baseConfig;
 };
 
-const getInstanceConfig = () => {
-  return {
-    apiVersion: awsConfig.apiVersion,
-    params: { Bucket: awsConfig.bucket }
-  };
-};
+const getInstanceConfig = () => ({
+  apiVersion: awsConfig.apiVersion,
+  params: { Bucket: awsConfig.bucket }
+});
 
 AWS.config.update(getGlobalAWSConfig());
 
@@ -43,18 +41,18 @@ export class AwsUploader {
   }
 
   uploadToBucket = async (
-    file: File | Readable
-  ): Promise<ManagedUpload.SendData> => {
-    return this.awsS3Instance
+    file: File | Readable,
+    contentType: string
+  ): Promise<ManagedUpload.SendData> =>
+    this.awsS3Instance
       .upload({
         Bucket: this.bucketName,
         Key: nanoid(),
         Body: file,
         ACL: 'public-read',
-        ContentType: 'image/png'
+        ContentType: contentType
       })
       .promise();
-  };
 }
 
 const awsUploader = new AwsUploader(awsS3, awsConfig.bucket);

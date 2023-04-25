@@ -21,17 +21,24 @@ export default async function handler(
     return res.status(405).send('Method Not Allowed');
   }
 
+  const type = req.headers['content-type'];
+
+  if (!type) {
+    return res.status(400).send('BadRequest');
+  }
+
   try {
     const { appDomain } = appConfig;
+
     const reqDomain = extractDomain(req.headers.host ?? '');
 
     if (!appDomain.endsWith(reqDomain)) {
       return res.status(403).send('Forbidden');
     }
 
-    const { Key } = await AwsUploader.uploadToBucket(req);
+    const { Location } = await AwsUploader.uploadToBucket(req, type);
 
-    return res.status(200).json(Key);
+    return res.status(200).json(Location);
   } catch (err) {
     return res
       .status(500)

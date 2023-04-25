@@ -1,10 +1,13 @@
 import { useRouter } from 'next/router';
+import Link from 'next/link';
 
 import { useAtomValue } from 'jotai';
 import { currentDaoAtom } from 'store/dao';
 
 import { generateRandomGradient } from 'utils/generateRandomGradient';
 import { formLinkByDaoId } from 'utils/formLinkByDaoId';
+import { getFieldFromMetadata } from 'utils/getFieldFromMetadata';
+import { getLinkIcon } from 'utils/getLinkIcon';
 
 import type { Href } from 'types';
 
@@ -57,6 +60,8 @@ export function Subheader() {
     currentDao.name
   );
 
+  const socials = getFieldFromMetadata(currentDao.metadata, 'socials');
+
   return (
     <div className={styles.root}>
       <div
@@ -64,13 +69,29 @@ export function Subheader() {
           background: `linear-gradient(${angle}, ${color1}, ${color2}, ${color3})`
         }}
         className={styles['top-container']}
-      />
+      >
+        {socials && (
+          <div className={styles.socials}>
+            {socials.map((link: string) => (
+              <Link
+                target="_blank"
+                className={styles.social}
+                href={link}
+                key={link}
+              >
+                <Icon color="white" name={getLinkIcon(link)} size="sm" />
+              </Link>
+            ))}
+          </div>
+        )}
+      </div>
       <div className={styles['bottom-container']}>
         <div className={styles['left-container']}>
           <span className={styles['logo-container']}>
             <Avatar
               className={styles.logo}
               value={currentDao.name}
+              link={getFieldFromMetadata(currentDao.metadata, 'logo')}
               radius="standard"
             />
           </span>

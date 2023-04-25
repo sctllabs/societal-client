@@ -35,7 +35,7 @@ export interface TxButtonProps extends ButtonProps {
   onStart?: () => void;
   onSuccess?: TxCallback;
   onUpdate?: TxCallback;
-  params?: unknown[] | (() => unknown[]) | null;
+  params?: unknown[] | (() => unknown[] | Promise<unknown[]>) | null;
   tx?: ((...args: any[]) => SubmittableExtrinsic<'promise'>) | null;
   children: ReactNode;
 }
@@ -99,7 +99,7 @@ export function TxButton({
   }, [setIsStarted]);
 
   const _onSend = useCallback(
-    (e: MouseEvent<HTMLButtonElement>): void => {
+    async (e: MouseEvent<HTMLButtonElement>): Promise<void> => {
       let extrinsics: SubmittableExtrinsic<'promise'>[] | undefined;
 
       if (propsExtrinsic) {
@@ -107,7 +107,9 @@ export function TxButton({
           ? propsExtrinsic
           : [propsExtrinsic];
       } else if (tx) {
-        extrinsics = [tx(...(isFunction(params) ? params() : params || []))];
+        extrinsics = [
+          tx(...(isFunction(params) ? await params() : params || []))
+        ];
       }
 
       assert(
