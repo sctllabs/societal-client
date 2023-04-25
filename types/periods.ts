@@ -1,12 +1,14 @@
-export type BasicPeriodAtom = 'proposalPeriodAtom' | 'spendPeriodAtom';
-
 export type GovernancePeriodAtom =
+  | 'proposalPeriodAtom'
   | 'votingPeriodAtom'
   | 'enactmentPeriodAtom'
   | 'voteLockingPeriodAtom'
   | 'launchPeriodAtom';
 
-export type BountyPeriodAtom = 'updatePeriodAtom' | 'awardDelayPeriodAtom';
+export type BountyPeriodAtom =
+  | 'updatePeriodAtom'
+  | 'awardDelayPeriodAtom'
+  | 'spendPeriodAtom';
 
 export type GenericPeriodInputType<Atom> = {
   title: string;
@@ -15,15 +17,6 @@ export type GenericPeriodInputType<Atom> = {
   atom: Atom;
 };
 
-export type GovernancePeriodInputType =
+export type ProposalPeriodInputType =
   GenericPeriodInputType<GovernancePeriodAtom>;
-export type BasicPeriodInputType = GenericPeriodInputType<BasicPeriodAtom>;
 export type BountyPeriodInputType = GenericPeriodInputType<BountyPeriodAtom>;
-
-export type GenericPeriodValue<Atom> = {
-  _atom: Atom;
-  _value: number;
-};
-export type BasicPeriodValue = GenericPeriodValue<BasicPeriodAtom>;
-export type GovernancePeriodValue = GenericPeriodValue<GovernancePeriodAtom>;
-export type BountyPeriodValue = GenericPeriodValue<BountyPeriodAtom>;

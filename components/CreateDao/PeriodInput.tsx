@@ -60,7 +60,7 @@ export function PeriodInput({
 
   return (
     <div className={styles['proposal-period-item']}>
-      <Typography variant="h3">{title}</Typography>
+      <Typography variant="title4">{title}</Typography>
       <Typography variant="body1">{subtitle}</Typography>
 
       <div className={styles['proposal-period-input']}>

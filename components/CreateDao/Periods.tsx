@@ -1,4 +1,5 @@
-import { SetStateAction, useAtomValue, useSetAtom } from 'jotai';
+import { useCallback } from 'react';
+import { useAtomValue, useSetAtom } from 'jotai';
 import {
   awardDelayPeriodAtom,
   enactmentPeriodAtom,
@@ -13,31 +14,25 @@ import {
 import { GovernanceFungibleToken } from 'constants/governance';
 import { UNEXPECTED_ATOM_VALUE } from 'constants/errors';
 import type {
-  BasicPeriodInputType,
+  BountyPeriodAtom,
   BountyPeriodInputType,
-  GovernancePeriodInputType
+  GovernancePeriodAtom,
+  ProposalPeriodInputType
 } from 'types';
+
+import { Typography } from 'components/ui-kit/Typography';
 
 import { PeriodInput } from './PeriodInput';
 
 import styles from './CreateDao.module.scss';
 
-const basicPeriods: BasicPeriodInputType[] = [
+const governancePeriods: ProposalPeriodInputType[] = [
   {
     title: 'Proposal Period',
     subtitle: 'Determine the duration of your сouncil proposals.',
     label: 'Proposal Period',
     atom: 'proposalPeriodAtom'
   },
-  {
-    title: 'Spend Period',
-    subtitle: 'Periodic treasury spend period used for bounties funding.',
-    label: 'Spend Period',
-    atom: 'spendPeriodAtom'
-  }
-];
-
-const governancePeriods: GovernancePeriodInputType[] = [
   {
     title: 'Launch Period',
     subtitle: 'How often new public referenda are launched.',
@@ -72,6 +67,12 @@ const bountyPeriods: BountyPeriodInputType[] = [
     atom: 'updatePeriodAtom'
   },
   {
+    title: 'Spend Period',
+    subtitle: 'Periodic treasury spend period used for bounties funding.',
+    label: 'Spend Period',
+    atom: 'spendPeriodAtom'
+  },
+  {
     title: 'Bounty Award Delay',
     subtitle:
       'The delay period for which bounty beneficiary need to wait before claim the payout.',
@@ -79,12 +80,6 @@ const bountyPeriods: BountyPeriodInputType[] = [
     atom: 'awardDelayPeriodAtom'
   }
 ];
-
-const periodsInputs = {
-  basicPeriods,
-  governancePeriods,
-  bountyPeriods
-};
 
 export function Periods() {
   const governance = useAtomValue(governanceAtom);
@@ -99,69 +94,90 @@ export function Periods() {
   const setUpdatePeriod = useSetAtom(updatePeriodAtom);
   const setAwardDelayPeriod = useSetAtom(awardDelayPeriodAtom);
 
-  return (
-    <div className={styles.periods}>
-      {Object.entries(periodsInputs).map(([key, inputs]) => {
-        if (
-          key === 'governancePeriods' &&
-          !governance.includes(GovernanceFungibleToken.GovernanceV1)
-        ) {
-          return null;
+  const getPeriod = useCallback(
+    (_atom: GovernancePeriodAtom | BountyPeriodAtom) => {
+      switch (_atom) {
+        case 'proposalPeriodAtom': {
+          return setProposalPeriod;
         }
+        case 'spendPeriodAtom': {
+          return setSpendPeriod;
+        }
+        case 'votingPeriodAtom': {
+          return setVotingPeriod;
+        }
+        case 'enactmentPeriodAtom': {
+          return setEnactmentPeriod;
+        }
+        case 'voteLockingPeriodAtom': {
+          return setVoteLockingPeriod;
+        }
+        case 'launchPeriodAtom': {
+          return setLaunchPeriod;
+        }
+        case 'updatePeriodAtom': {
+          return setUpdatePeriod;
+        }
+        case 'awardDelayPeriodAtom': {
+          return setAwardDelayPeriod;
+        }
+        default: {
+          throw new Error(UNEXPECTED_ATOM_VALUE);
+        }
+      }
+    },
+    [
+      setAwardDelayPeriod,
+      setEnactmentPeriod,
+      setLaunchPeriod,
+      setProposalPeriod,
+      setSpendPeriod,
+      setUpdatePeriod,
+      setVoteLockingPeriod,
+      setVotingPeriod
+    ]
+  );
 
-        return inputs.map((_periodInput) => {
-          let setPeriod: (update?: SetStateAction<number | undefined>) => void;
-
-          switch (_periodInput.atom) {
-            case 'proposalPeriodAtom': {
-              setPeriod = setProposalPeriod;
-              break;
+  return (
+    <>
+      <div className={styles.section}>
+        <Typography variant="h3">Proposal Settings</Typography>
+        <div className={styles.periods}>
+          {governancePeriods.map((_periodInput) => {
+            if (
+              !governance.includes(GovernanceFungibleToken.GovernanceV1) &&
+              _periodInput.atom !== 'proposalPeriodAtom'
+            ) {
+              return null;
             }
-            case 'spendPeriodAtom': {
-              setPeriod = setSpendPeriod;
-              break;
-            }
-            case 'votingPeriodAtom': {
-              setPeriod = setVotingPeriod;
-              break;
-            }
-            case 'enactmentPeriodAtom': {
-              setPeriod = setEnactmentPeriod;
-              break;
-            }
-            case 'voteLockingPeriodAtom': {
-              setPeriod = setVoteLockingPeriod;
-              break;
-            }
-            case 'launchPeriodAtom': {
-              setPeriod = setLaunchPeriod;
-              break;
-            }
-            case 'updatePeriodAtom': {
-              setPeriod = setUpdatePeriod;
-              break;
-            }
-            case 'awardDelayPeriodAtom': {
-              setPeriod = setAwardDelayPeriod;
-              break;
-            }
-            default: {
-              throw new Error(UNEXPECTED_ATOM_VALUE);
-            }
-          }
-
-          return (
+            return (
+              <PeriodInput
+                key={_periodInput.title}
+                title={_periodInput.title}
+                subtitle={_periodInput.subtitle}
+                periodLabel={_periodInput.label}
+                atom={_periodInput.atom}
+                setPeriod={getPeriod(_periodInput.atom)}
+              />
+            );
+          })}
+        </div>
+      </div>
+      <div className={styles.section}>
+        <Typography variant="h3">Bounty Settings</Typography>
+        <div className={styles.periods}>
+          {bountyPeriods.map((_periodInput) => (
             <PeriodInput
               key={_periodInput.title}
               title={_periodInput.title}
               subtitle={_periodInput.subtitle}
               periodLabel={_periodInput.label}
               atom={_periodInput.atom}
-              setPeriod={setPeriod}
+              setPeriod={getPeriod(_periodInput.atom)}
             />
-          );
-        });
-      })}
-    </div>
+          ))}
+        </div>
+      </div>
+    </>
   );
 }
