@@ -12,7 +12,7 @@ import { tokenDecimalsAtom, tokenSymbolAtom } from 'store/token';
 import { currentReferendumAtom } from 'store/referendum';
 
 import { maskAddress } from 'utils/maskAddress';
-import { formatBalance } from 'utils/formatBalance';
+import { formatBalance } from '@polkadot/util';
 import { evmToAddress } from '@polkadot/util-crypto';
 import type {
   AssetAccount,
@@ -117,9 +117,9 @@ export function ReferendumInfo() {
               (accountTokenBalance as AssetAccount).reservedBalance.toBigInt() +
               (accountTokenBalance as AssetAccount).frozenBalance.toBigInt()
             ).toString(),
-            tokenDecimals
+            { decimals: tokenDecimals || 0, withSi: false, forceUnit: '-' }
           )
-        : null,
+        : 0,
     [accountTokenBalance, tokenDecimals]
   );
 
@@ -238,7 +238,11 @@ export function ReferendumInfo() {
                     <Typography variant="caption3">Locked balance:</Typography>
                     <span className={styles['locked-balance']}>
                       <Typography variant="value8">
-                        {delegation.balance}
+                        {formatBalance(delegation.balance, {
+                          decimals: currentDao?.fungibleToken.decimals,
+                          withSi: false,
+                          forceUnit: '-'
+                        })}
                       </Typography>
                       {tokenSymbol && (
                         <Typography variant="title7">{tokenSymbol}</Typography>

@@ -2,7 +2,7 @@ import { useAtomValue } from 'jotai';
 import { currentAccountBalanceAtom } from 'store/account';
 import { chainDecimalsAtom, chainSymbolAtom } from 'store/api';
 
-import { formatBalance } from 'utils/formatBalance';
+import { formatBalance } from '@polkadot/util';
 
 import { ConnectWallet } from 'components/ConnectWallet';
 import { Search } from 'components/Search';
@@ -25,7 +25,12 @@ export function Header() {
         <div className={styles['right-container']}>
           {currentAccountBalance !== null && (
             <Typography variant="caption1">
-              {formatBalance(currentAccountBalance, currencyDecimals)}&nbsp;
+              {formatBalance(currentAccountBalance, {
+                decimals: currencyDecimals || 0,
+                withSi: false,
+                forceUnit: '-'
+              })}
+              &nbsp;
               {currencySymbol}
             </Typography>
           )}

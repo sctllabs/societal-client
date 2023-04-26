@@ -11,7 +11,7 @@ import {
 } from 'store/account';
 import { currentDaoAtom } from 'store/dao';
 
-import { formatBalance } from 'utils/formatBalance';
+import { formatBalance } from '@polkadot/util';
 import { useDaoDemocracyContract } from 'hooks/useDaoDemocracyContract';
 
 import { Notification } from 'components/ui-kit/Notifications';
@@ -85,7 +85,11 @@ export function AccountTokenBalance() {
       {accountTokenBalance && typeof accountTokenBalance === 'string' && (
         <span className={styles.balance}>
           <Typography variant="caption2">
-            {formatBalance(accountTokenBalance, tokenDecimals)}
+            {formatBalance(accountTokenBalance, {
+              decimals: tokenDecimals || 0,
+              withSi: false,
+              forceUnit: '-'
+            })}
           </Typography>
           <Typography variant="caption2">{tokenSymbol}</Typography>
         </span>
@@ -108,7 +112,11 @@ export function AccountTokenBalance() {
                 {accountTokenBalance
                   ? formatBalance(
                       (accountTokenBalance as AssetAccount).balance.toString(),
-                      tokenDecimals
+                      {
+                        decimals: tokenDecimals || 0,
+                        withSi: false,
+                        forceUnit: '-'
+                      }
                     )
                   : 0}
               </Typography>
@@ -133,7 +141,11 @@ export function AccountTokenBalance() {
                       (
                         accountTokenBalance as AssetAccount
                       ).reservedBalance.toString(),
-                      tokenDecimals
+                      {
+                        decimals: tokenDecimals || 0,
+                        withSi: false,
+                        forceUnit: '-'
+                      }
                     )
                   : 0}
               </Typography>
@@ -158,7 +170,11 @@ export function AccountTokenBalance() {
                       (
                         accountTokenBalance as AssetAccount
                       ).frozenBalance.toString(),
-                      tokenDecimals
+                      {
+                        decimals: tokenDecimals || 0,
+                        withSi: false,
+                        forceUnit: '-'
+                      }
                     )
                   : 0}
               </Typography>
