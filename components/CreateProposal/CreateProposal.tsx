@@ -316,7 +316,8 @@ export function CreateProposal({
     proposalVotingAccess,
     state.balance,
     proposalBasicState.description,
-    proposalBasicState.title
+    proposalBasicState.title,
+    tokenDecimals
   ]);
 
   const disabled =
