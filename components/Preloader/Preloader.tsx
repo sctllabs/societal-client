@@ -12,6 +12,7 @@ import { PreloaderBounties } from './PreloaderBounties';
 import { PreloaderCuratorBounties } from './PreloaderCuratorBounties';
 import { PreloaderProposals } from './PreloaderProposals';
 import { PreloaderProposalEvents } from './PreloaderProposalEvents';
+import { PreloaderMembers } from './PreloaderMembers';
 
 export function Preloader() {
   const router = useRouter();
@@ -30,6 +31,7 @@ export function Preloader() {
       {daoIdExists && (
         <>
           <PreloaderDao />
+          <PreloaderMembers />
           <PreloaderToken />
           <PreloaderBounties />
           <PreloaderProposals />
