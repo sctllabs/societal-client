@@ -167,10 +167,11 @@ export function CreateProposal({
         ? evmToAddress(state.target)
         : state.target;
 
-      const decimals =
+      let decimals = currency === 'SCTL' ? chainDecimals : tokenDecimals;
+      decimals =
         proposalType === ProposalEnum.TRANSFER_GOVERNANCE_TOKEN
           ? tokenDecimals
-          : chainDecimals;
+          : decimals;
 
       const amount = parseInt(state.amount, 10) * 10 ** (decimals || 0);
       switch (proposalType) {
@@ -294,7 +295,7 @@ export function CreateProposal({
         return [
           currentDao.id,
           { Inline: _tx?.method.toHex() },
-          state.balance,
+          parseInt(state.balance, 10) * 10 ** (tokenDecimals || 0),
           meta
         ];
       case ProposalVotingAccessEnum.EthGovernance:
@@ -306,7 +307,7 @@ export function CreateProposal({
           meta
         ];
       default:
-        return [currentDao.id, _tx, LENGTH_BOUND, meta];
+        return [currentDao.id, _tx, LENGTH_BOUND, meta, tokenDecimals];
     }
   }, [
     currentDao,
