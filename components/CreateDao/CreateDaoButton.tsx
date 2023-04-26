@@ -9,11 +9,10 @@ import {
 import { apiAtom, keyringAtom } from 'store/api';
 import {
   approveOriginAtom,
-  basicPeriodsAtom,
   bountyPeriodsAtom,
   communityInfoAtom,
   governanceAtom,
-  governancePeriodsAtom,
+  proposalPeriodsAtom,
   linksAtom,
   membersAtom,
   proposedDaoIdAtom,
@@ -61,8 +60,7 @@ export function CreateDaoButton({
   const approveOrigin = useAtomValue(approveOriginAtom);
   const communityInfo = useAtomValue(communityInfoAtom);
   const members = useAtomValue(membersAtom);
-  const basicPeriods = useAtomValue(basicPeriodsAtom);
-  const governancePeriods = useAtomValue(governancePeriodsAtom);
+  const proposalPeriods = useAtomValue(proposalPeriodsAtom);
   const bountyPeriods = useAtomValue(bountyPeriodsAtom);
   const links = useAtomValue(linksAtom);
   const socials = useAtomValue(socialsAtom);
@@ -89,15 +87,15 @@ export function CreateDaoButton({
     if (
       nextDaoId === null ||
       !keyring ||
-      !basicPeriods.proposalPeriod ||
-      !basicPeriods.spendPeriod ||
+      !proposalPeriods.proposalPeriod ||
+      !bountyPeriods.spendPeriod ||
       !bountyPeriods.awardDelayPeriod ||
       !bountyPeriods.updatePeriod ||
       (governance.includes(GovernanceFungibleToken.GovernanceV1) &&
-        (!governancePeriods.enactmentPeriod ||
-          !governancePeriods.launchPeriod ||
-          !governancePeriods.votingPeriod ||
-          !governancePeriods.voteLockingPeriod))
+        (!proposalPeriods.enactmentPeriod ||
+          !proposalPeriods.launchPeriod ||
+          !proposalPeriods.votingPeriod ||
+          !proposalPeriods.voteLockingPeriod))
     ) {
       return [];
     }
@@ -105,13 +103,13 @@ export function CreateDaoButton({
     const initial_balance = token.quantity;
     const token_id = nextDaoId;
     const proportion = approveOrigin.split('/').map((x) => parseInt(x, 10));
-    const proposal_period = basicPeriods.proposalPeriod;
-    const spend_period = basicPeriods.spendPeriod;
-    const enactment_period = governancePeriods.enactmentPeriod;
-    const launch_period = governancePeriods.launchPeriod;
-    const voting_period = governancePeriods.votingPeriod;
-    const vote_locking_period = governancePeriods.voteLockingPeriod;
-    const cooloff_period = governancePeriods.enactmentPeriod;
+    const proposal_period = proposalPeriods.proposalPeriod;
+    const spend_period = bountyPeriods.spendPeriod;
+    const enactment_period = proposalPeriods.enactmentPeriod;
+    const launch_period = proposalPeriods.launchPeriod;
+    const voting_period = proposalPeriods.votingPeriod;
+    const vote_locking_period = proposalPeriods.voteLockingPeriod;
+    const cooloff_period = proposalPeriods.enactmentPeriod;
     const bounty_payout_delay = bountyPeriods.awardDelayPeriod;
     const bounty_update_period = bountyPeriods.updatePeriod;
 

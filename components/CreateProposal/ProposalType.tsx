@@ -12,15 +12,24 @@ import {
   SelectValue
 } from 'components/ui-kit/Select';
 
-import { InputLabel, ProposalEnum } from './types';
+import {
+  BountyProposalEnum,
+  InputLabel,
+  ProposalEnum,
+  ProposalVariant
+} from './types';
 
 type ProposalTypeProps = {
-  proposalType: ProposalEnum | undefined;
-  setProposalType: Dispatch<SetStateAction<ProposalEnum | undefined>>;
+  proposalVariant: ProposalVariant;
+  proposalType: ProposalEnum | BountyProposalEnum | undefined;
+  setProposalType: Dispatch<
+    SetStateAction<ProposalEnum | BountyProposalEnum | undefined>
+  >;
 };
 
 export function ProposalType({
   proposalType,
+  proposalVariant,
   setProposalType
 }: ProposalTypeProps) {
   const currentDao = useAtomValue(currentDaoAtom);
@@ -37,9 +46,12 @@ export function ProposalType({
         <SelectValue placeholder={InputLabel.PROPOSAL_TYPE} />
       </SelectTrigger>
       <SelectContent>
-        {Object.entries(ProposalEnum)
+        {Object.entries(
+          proposalVariant === 'proposal' ? ProposalEnum : BountyProposalEnum
+        )
           .filter(([_proposalKey]) => {
             const govType = currentDao?.policy.governance?.__typename;
+
             switch (govType) {
               case 'OwnershipWeightedVoting':
                 return _proposalKey !== 'TRANSFER_GOVERNANCE_TOKEN';

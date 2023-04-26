@@ -58,11 +58,9 @@ export const tokenAtom = atom((_get) => ({
   asset: _get(tokenAssetAtom),
   type: _get(tokenTypeAtom)
 }));
-export const basicPeriodsAtom = atom((_get) => ({
+
+export const proposalPeriodsAtom = atom((_get) => ({
   proposalPeriod: _get(proposalPeriodAtom),
-  spendPeriod: _get(spendPeriodAtom)
-}));
-export const governancePeriodsAtom = atom((_get) => ({
   votingPeriod: _get(votingPeriodAtom),
   enactmentPeriod: _get(enactmentPeriodAtom),
   voteLockingPeriod: _get(voteLockingPeriodAtom),
@@ -70,7 +68,8 @@ export const governancePeriodsAtom = atom((_get) => ({
 }));
 export const bountyPeriodsAtom = atom((_get) => ({
   updatePeriod: _get(updatePeriodAtom),
-  awardDelayPeriod: _get(awardDelayPeriodAtom)
+  awardDelayPeriod: _get(awardDelayPeriodAtom),
+  spendPeriod: _get(spendPeriodAtom)
 }));
 export const proposedDaoIdAtom = atom<number | undefined>(undefined);
 
@@ -80,7 +79,7 @@ export const detailsSectionDisabledAtom = atom(
 export const governanceSectionDisabledAtom = atom((_get) => {
   const tokenType = _get(tokenTypeAtom);
   const tokenName = _get(tokenNameAtom);
-  const tokenDecimals = _get(tokenDecimalsAtom);
+  // const tokenDecimals = _get(tokenDecimalsAtom);
   const tokenQuantity = _get(tokenQuantityAtom);
   const ethTokenAddress = _get(ethTokenAddressAtom);
   const tokenTicker = _get(tokenTickerAtom);
@@ -111,14 +110,13 @@ export const governanceSectionDisabledAtom = atom((_get) => {
 export const votingTermsSectionDisabledAtom = atom((_get) => {
   const governance = _get(governanceAtom);
   const approveOrigin = _get(approveOriginAtom);
-  const basicPeriods = _get(basicPeriodsAtom);
-  const governancePeriods = _get(governancePeriodsAtom);
+  const governancePeriods = _get(proposalPeriodsAtom);
   const bountyPeriods = _get(bountyPeriodsAtom);
 
   return (
     !approveOrigin ||
-    !basicPeriods.proposalPeriod ||
-    !basicPeriods.spendPeriod ||
+    !governancePeriods.proposalPeriod ||
+    !bountyPeriods.spendPeriod ||
     !bountyPeriods.updatePeriod ||
     !bountyPeriods.awardDelayPeriod ||
     (governance.includes(GovernanceFungibleToken.GovernanceV1) &&
@@ -173,4 +171,5 @@ export const resetCreateDaoAtom = atom(null, (_, _set) => {
 
   _set(linksAtom, ['']);
   _set(socialsAtom, ['']);
+  _set(proposedDaoIdAtom, undefined);
 });

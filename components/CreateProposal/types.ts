@@ -33,11 +33,16 @@ export enum InputLabel {
   BOUNTY_INDEX = 'Select bounty from the list'
 }
 
+export type ProposalVariant = 'proposal' | 'bounty';
+
 export enum ProposalEnum {
   TRANSFER = 'Transfer',
   TRANSFER_GOVERNANCE_TOKEN = 'Transfer Governance Token',
-  ADD_MEMBER = 'Add Member',
-  REMOVE_MEMBER = 'Remove Member',
+  ADD_MEMBER = 'Add Council Member',
+  REMOVE_MEMBER = 'Remove Council Member'
+}
+
+export enum BountyProposalEnum {
   BOUNTY = 'Bounty',
   BOUNTY_CURATOR = 'Bounty Curator',
   BOUNTY_UNASSIGN_CURATOR = 'Unassign Bounty Curator'

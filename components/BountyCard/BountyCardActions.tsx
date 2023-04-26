@@ -21,7 +21,7 @@ import {
   DialogTrigger
 } from 'components/ui-kit/Dialog';
 import { CreateProposal } from 'components/CreateProposal';
-import { ProposalEnum } from 'components/CreateProposal/types';
+import { BountyProposalEnum } from 'components/CreateProposal/types';
 
 import styles from './BountyCard.module.scss';
 
@@ -155,9 +155,10 @@ export function BountyCardActions({ bounty }: BountyCardActionsProps) {
         bounty.status === 'BecameActive') && (
         <div className={styles['assign-curator']}>
           <CreateProposal
-            title="Propose Curator"
+            proposalVariant="bounty"
+            buttonText="Propose Curator"
             bountyIndex={bounty.index.toString()}
-            proposalType={ProposalEnum.BOUNTY_CURATOR}
+            proposalType={BountyProposalEnum.BOUNTY_CURATOR}
           />
         </div>
       )}
@@ -217,11 +218,12 @@ export function BountyCardActions({ bounty }: BountyCardActionsProps) {
         bounty.curator?.id !== accountAddress && (
           <div className={styles['assign-curator']}>
             <CreateProposal
-              proposalType={ProposalEnum.BOUNTY_UNASSIGN_CURATOR}
+              proposalVariant="bounty"
+              proposalType={BountyProposalEnum.BOUNTY_UNASSIGN_CURATOR}
               bountyIndex={bounty.index.toString()}
               buttonColor="destructive"
               buttonVariant="outlined"
-              title="Unassign Curator"
+              buttonText="Unassign Curator"
             />
           </div>
         )}

@@ -43,8 +43,10 @@ import {
 } from 'components/ui-kit/Dialog';
 
 import {
+  BountyProposalEnum,
   ProposalBasicState,
   ProposalEnum,
+  ProposalVariant,
   ProposalVotingAccessEnum,
   State
 } from './types';
@@ -55,9 +57,10 @@ import { ProposalVotingAccess } from './ProposalVotingAccess';
 import { ProposalBasicInputs } from './ProposalBasicInputs';
 
 type CreateProposalProps = {
-  proposalType?: ProposalEnum;
+  proposalType?: ProposalEnum | BountyProposalEnum;
+  proposalVariant: ProposalVariant;
   bountyIndex?: string;
-  title?: string;
+  buttonText?: string;
   icon?: IconNamesType;
   buttonVariant?: ButtonVariant;
   buttonColor?: ButtonColor;
@@ -76,9 +79,10 @@ const INITIAL_BASIC_STATE: ProposalBasicState = {
 };
 
 export function CreateProposal({
+  proposalVariant,
   proposalType: _proposalType,
   bountyIndex,
-  title,
+  buttonText,
   icon,
   buttonVariant,
   buttonColor
@@ -87,9 +91,9 @@ export function CreateProposal({
 
   const [proposalVotingAccess, setProposalVotingAccess] =
     useState<ProposalVotingAccessEnum | null>(null);
-  const [proposalType, setProposalType] = useState<ProposalEnum | undefined>(
-    undefined
-  );
+  const [proposalType, setProposalType] = useState<
+    ProposalEnum | BountyProposalEnum | undefined
+  >(undefined);
   const [proposalBasicState, setProposalBasicState] =
     useState(INITIAL_BASIC_STATE);
   const [state, setState] = useState<State>(INITIAL_STATE);
@@ -186,7 +190,7 @@ export function CreateProposal({
             target
           );
         }
-        case ProposalEnum.BOUNTY: {
+        case BountyProposalEnum.BOUNTY: {
           const description = stringToHex(
             JSON.stringify({
               title: proposalBasicState.title.trim(),
@@ -207,7 +211,7 @@ export function CreateProposal({
             description
           );
         }
-        case ProposalEnum.BOUNTY_CURATOR: {
+        case BountyProposalEnum.BOUNTY_CURATOR: {
           return api?.tx.daoBounties.proposeCurator(
             currentDao?.id,
             state.bountyIndex,
@@ -215,7 +219,7 @@ export function CreateProposal({
             amount
           );
         }
-        case ProposalEnum.BOUNTY_UNASSIGN_CURATOR: {
+        case BountyProposalEnum.BOUNTY_UNASSIGN_CURATOR: {
           return api?.tx.daoBounties.unassignCurator(
             currentDao?.id,
             state.bountyIndex
@@ -325,7 +329,7 @@ export function CreateProposal({
     ((proposalType === ProposalEnum.ADD_MEMBER ||
       proposalType === ProposalEnum.REMOVE_MEMBER) &&
       !state.target) ||
-    (proposalType === ProposalEnum.BOUNTY_UNASSIGN_CURATOR &&
+    (proposalType === BountyProposalEnum.BOUNTY_UNASSIGN_CURATOR &&
       state.bountyIndex === undefined);
 
   const handleProposeClick = async () => {
@@ -411,7 +415,7 @@ export function CreateProposal({
         <Button color={buttonColor} variant={buttonVariant}>
           <span className={styles['button-content']}>
             {icon && <Icon name={icon} size="sm" />}
-            <Typography variant="button1">{title}</Typography>
+            <Typography variant="button1">{buttonText}</Typography>
           </span>
         </Button>
       </DialogTrigger>
@@ -429,6 +433,7 @@ export function CreateProposal({
                   setProposalVotingAccess={setProposalVotingAccess}
                 />
                 <ProposalType
+                  proposalVariant={proposalVariant}
                   proposalType={proposalType}
                   setProposalType={setProposalType}
                 />
