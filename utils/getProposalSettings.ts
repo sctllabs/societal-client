@@ -8,7 +8,10 @@ export enum ProposalEnum {
   REMOVE_MEMBER = 'Remove Member',
   BOUNTY = 'Bounty',
   BOUNTY_CURATOR = 'Bounty Curator',
-  UNASSIGN_CURATOR = 'Unassign Bounty Curator'
+  UNASSIGN_CURATOR = 'Unassign Bounty Curator',
+  UPDATE_DAO_METADATA = 'Update Metadata',
+  UPDATE_DAO_POLICY = 'Update Policy',
+  MINT_DAO_TOKEN = 'Mint Governance Token'
 }
 
 type ProposalSettings = {
@@ -66,6 +69,24 @@ export function getProposalSettings(
       return {
         proposalTitle: ProposalEnum.UNASSIGN_CURATOR,
         icon: 'user-delete'
+      };
+    }
+    case 'UpdateDaoMetadata': {
+      return {
+        proposalTitle: ProposalEnum.UPDATE_DAO_METADATA,
+        icon: 'database'
+      };
+    }
+    case 'UpdateDaoPolicy': {
+      return {
+        proposalTitle: ProposalEnum.UPDATE_DAO_POLICY,
+        icon: 'governance'
+      };
+    }
+    case 'MintDaoToken': {
+      return {
+        proposalTitle: ProposalEnum.MINT_DAO_TOKEN,
+        icon: 'treasury'
       };
     }
     default: {

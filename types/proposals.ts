@@ -88,6 +88,21 @@ export type TransferProposal = Readonly<{
   beneficiary: string;
 }>;
 
+export type UpdateDaoMetadataProposal = Readonly<{
+  __typename: 'UpdateDaoMetadata';
+  metadata: string;
+}>;
+
+export type UpdateDaoPolicyProposal = Readonly<{
+  __typename: 'UpdateDaoPolicy';
+  policy: string;
+}>;
+
+export type MintDaoTokenProposal = Readonly<{
+  __typename: 'MintDaoToken';
+  amount: string;
+}>;
+
 export type ProposalKind =
   | AddMemberProposal
   | RemoveMemberProposal
@@ -96,7 +111,10 @@ export type ProposalKind =
   | CreateBountyProposal
   | CreateTokenBountyProposal
   | ProposeCuratorProposal
-  | UnassignCuratorProposal;
+  | UnassignCuratorProposal
+  | UpdateDaoMetadataProposal
+  | UpdateDaoPolicyProposal
+  | MintDaoTokenProposal;
 
 export type CouncilProposalStatus =
   | 'Pending'
