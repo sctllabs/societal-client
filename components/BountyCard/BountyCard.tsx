@@ -3,9 +3,14 @@ import clsx from 'clsx';
 import { formatDistance } from 'date-fns';
 
 import { useAtom, useAtomValue } from 'jotai';
-import { chainSymbolAtom, currentBlockAtom } from 'store/api';
-import { tokenSymbolAtom } from 'store/token';
+import {
+  chainDecimalsAtom,
+  chainSymbolAtom,
+  currentBlockAtom
+} from 'store/api';
+import { tokenDecimalsAtom, tokenSymbolAtom } from 'store/token';
 import { selectedDaoBountyAtom } from 'store/bounty';
+import { formatBalance } from '@polkadot/util';
 
 import type { BountyMeta } from 'types';
 import { Card } from 'components/ui-kit/Card';
@@ -25,6 +30,8 @@ export function BountyCard({ bounty }: BountyCardProps) {
   const currentBlock = useAtomValue(currentBlockAtom);
   const tokenSymbol = useAtomValue(tokenSymbolAtom);
   const currencySymbol = useAtomValue(chainSymbolAtom);
+  const chainDecimals = useAtomValue(chainDecimalsAtom);
+  const tokenDecimals = useAtomValue(tokenDecimalsAtom);
   const [selectedDaoBounty, setSelectedDaoBounty] = useAtom(
     selectedDaoBountyAtom
   );
@@ -119,7 +126,14 @@ export function BountyCard({ bounty }: BountyCardProps) {
           </div>
           <div className={styles['additional-info-container']}>
             <div className={styles.value}>
-              <Typography variant="title2">{bounty.value}</Typography>
+              <Typography variant="title2">
+                {formatBalance(bounty.value, {
+                  decimals:
+                    (bounty.nativeToken ? chainDecimals : tokenDecimals) || 0,
+                  withSi: false,
+                  forceUnit: '-'
+                })}
+              </Typography>
               <Typography variant="body2">
                 {bounty.nativeToken ? currencySymbol : tokenSymbol}
               </Typography>
