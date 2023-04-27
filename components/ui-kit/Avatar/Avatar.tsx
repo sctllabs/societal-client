@@ -1,5 +1,4 @@
-import { HTMLAttributes } from 'react';
-import Image from 'next/image';
+import { HTMLAttributes, useState } from 'react';
 import clsx from 'clsx';
 import { stringAvatar } from 'utils/stringAvatar';
 
@@ -19,13 +18,21 @@ export function Avatar({
   className,
   radius = 'standard'
 }: AvatarProps) {
+  const [error, setError] = useState<boolean>(false);
   const { color, backgroundColor, children } = stringAvatar(value);
 
-  if (link) {
+  const onError = () => setError(true);
+
+  if (!error && link) {
     return (
       <span className={clsx(styles.root, styles[radius], className)}>
         <span className={styles.container}>
-          <Image src={link} alt={value} fill />
+          <img
+            className={styles.img}
+            src={link}
+            alt={value}
+            onError={onError}
+          />
         </span>
       </span>
     );
