@@ -3,6 +3,7 @@ import Link from 'next/link';
 
 import { useAtomValue } from 'jotai';
 import { currentDaoAtom } from 'store/dao';
+import { membersAtom } from 'store/members';
 
 import { generateRandomGradient } from 'utils/generateRandomGradient';
 import { formLinkByDaoId } from 'utils/formLinkByDaoId';
@@ -48,6 +49,7 @@ export function Subheader() {
   const router = useRouter();
   const { id: daoId } = router.query;
   const currentDao = useAtomValue(currentDaoAtom);
+  const members = useAtomValue(membersAtom);
 
   if (!daoId || !currentDao) {
     return null;
@@ -98,8 +100,11 @@ export function Subheader() {
           <div className={styles['title-container']}>
             <Typography variant="title2">{currentDao.name}</Typography>
             <Typography variant="caption2">
-              {currentDao.council.length}{' '}
-              {currentDao.council.length > 1 ? 'members' : 'member'}
+              {members ? (
+                `${members.length} ${members.length > 1 ? 'members' : 'member'}`
+              ) : (
+                <span>&nbsp;</span>
+              )}
             </Typography>
             <span className={styles['address-container']}>
               <Typography variant="caption3">

@@ -13,7 +13,7 @@ import { tokenDecimalsAtom, tokenSymbolAtom } from 'store/token';
 import { getProposalSettings } from 'utils/getProposalSettings';
 import { parseMeta } from 'utils/parseMeta';
 import { maskAddress } from 'utils/maskAddress';
-import { formatBalance } from 'utils/formatBalance';
+import { formatBalance } from '@polkadot/util';
 
 import type {
   AddMemberProposal,
@@ -221,7 +221,15 @@ export function ProposalCard({ proposal }: ProposalCardProps) {
           </span>
         )}
       </div>
-      <div className={styles.content}>
+      <div
+        className={clsx(
+          styles.content,
+          proposal.__typename === 'DemocracyProposal' &&
+            proposalStatus === 'Completed'
+            ? styles['democracy-completed']
+            : ''
+        )}
+      >
         <div className={styles['header-container']}>
           <div className={styles['proposal-title-container']}>
             <Icon name={icon} className={styles['proposal-icon']} />
@@ -301,7 +309,15 @@ export function ProposalCard({ proposal }: ProposalCardProps) {
               <span className={styles['proposal-item-container']}>
                 <Typography variant="caption3">Amount</Typography>
                 <Typography variant="title5">
-                  {formatBalance(proposal.kind.value, decimals)} {currency}
+                  {/* TODO */}
+                  {!Number.isNaN(proposal.kind.value)
+                    ? formatBalance(proposal.kind.value, {
+                        decimals: decimals || 0,
+                        withSi: false,
+                        forceUnit: '-'
+                      })
+                    : ''}{' '}
+                  {currency}
                 </Typography>
               </span>
             </div>
@@ -311,7 +327,14 @@ export function ProposalCard({ proposal }: ProposalCardProps) {
               <span className={styles['proposal-item-container']}>
                 <Typography variant="caption3">Fee</Typography>
                 <Typography variant="title5">
-                  {formatBalance(proposal.kind.fee, decimals)}
+                  {/* TODO */}
+                  {!Number.isNaN(proposal.kind.fee)
+                    ? formatBalance(proposal.kind.fee, {
+                        decimals: decimals || 0,
+                        withSi: false,
+                        forceUnit: '-'
+                      })
+                    : ''}
                 </Typography>
               </span>
             </div>
@@ -324,7 +347,14 @@ export function ProposalCard({ proposal }: ProposalCardProps) {
                 <span className={styles['proposal-item-container']}>
                   <Typography variant="caption3">Amount</Typography>
                   <Typography variant="title5">
-                    {formatBalance(proposal.kind.amount, decimals)}
+                    {/* TODO */}
+                    {!Number.isNaN(proposal.kind.amount)
+                      ? formatBalance(proposal.kind.amount, {
+                          decimals: decimals || 0,
+                          withSi: false,
+                          forceUnit: '-'
+                        })
+                      : ''}
                   </Typography>
                 </span>
               </div>
@@ -395,9 +425,10 @@ export function ProposalCard({ proposal }: ProposalCardProps) {
       {proposal.__typename === 'EthGovernanceProposal' && (
         <EthGovernanceProposalActions proposal={proposal} />
       )}
-      {proposal.__typename === 'DemocracyProposal' && (
-        <DemocracyProposalCardActions proposal={proposal} />
-      )}
+      {proposal.__typename === 'DemocracyProposal' &&
+        proposalStatus !== 'Completed' && (
+          <DemocracyProposalCardActions proposal={proposal} />
+        )}
       {proposal.__typename === 'DemocracyReferendum' && (
         <DemocracyReferendumCardActions proposal={proposal} />
       )}

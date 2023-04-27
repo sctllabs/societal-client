@@ -7,6 +7,7 @@ import { currentDaoAtom } from 'store/dao';
 import { metamaskAccountAtom, substrateAccountAtom } from 'store/account';
 
 import { evmToAddress } from '@polkadot/util-crypto';
+import { formatBalance } from '@polkadot/util';
 import { useSubscription } from '@apollo/client';
 import SUBSCRIBE_DEMOCRACY_SECONDS_BY_PROPOSAL_ID from 'query/subscribeDemocracySecondsByProposalId.graphql';
 import { useDaoDemocracyContract } from 'hooks/useDaoDemocracyContract';
@@ -120,7 +121,13 @@ export function DemocracyProposalCardActions({
       <div className={styles['democracy-deposit']}>
         <Typography variant="caption2">Locked balance:</Typography>
         <span className={styles['democracy-deposit-amount']}>
-          <Typography variant="value3">{lockedBalance.toString()}</Typography>
+          <Typography variant="value3">
+            {formatBalance(lockedBalance, {
+              decimals: currentDao?.fungibleToken.decimals,
+              withSi: false,
+              forceUnit: '-'
+            })}
+          </Typography>
           <Typography variant="title4">
             {currentDao?.fungibleToken.symbol}
           </Typography>

@@ -10,7 +10,7 @@ import { chainDecimalsAtom, chainSymbolAtom } from 'store/api';
 import { getProposalSettings } from 'utils/getProposalSettings';
 import { maskAddress } from 'utils/maskAddress';
 import { parseMeta } from 'utils/parseMeta';
-import { formatBalance } from 'utils/formatBalance';
+import { formatBalance } from '@polkadot/util';
 import type {
   AddMemberProposal,
   CouncilProposalMeta,
@@ -107,6 +107,9 @@ export function TaskCard({ proposal, currentBlock }: TaskCardProps) {
       case 'TransferToken': {
         return tokenSymbol;
       }
+      case 'MintDaoToken': {
+        return tokenSymbol;
+      }
       default: {
         return null;
       }
@@ -125,6 +128,9 @@ export function TaskCard({ proposal, currentBlock }: TaskCardProps) {
         return chainDecimals;
       }
       case 'TransferToken': {
+        return tokenDecimals;
+      }
+      case 'MintDaoToken': {
         return tokenDecimals;
       }
       default: {
@@ -212,7 +218,14 @@ export function TaskCard({ proposal, currentBlock }: TaskCardProps) {
                   <span className={styles['proposal-item']}>
                     <Icon name="treasury" size="xs" />
                     <Typography variant="title5">
-                      {formatBalance(proposal.kind.amount, decimals)}
+                      {/* TODO */}
+                      {!Number.isNaN(proposal.kind.amount)
+                        ? formatBalance(proposal.kind.amount, {
+                            decimals: decimals || 0,
+                            withSi: false,
+                            forceUnit: '-'
+                          })
+                        : ''}
                     </Typography>
                     <Typography variant="body2">{currency}</Typography>
                   </span>
@@ -261,7 +274,14 @@ export function TaskCard({ proposal, currentBlock }: TaskCardProps) {
                 <span className={styles['proposal-item']}>
                   <Icon name="treasury" size="xs" />
                   <Typography variant="title5">
-                    {formatBalance(proposal.kind.value, decimals)}
+                    {/* TODO */}
+                    {!Number.isNaN(proposal.kind.value)
+                      ? formatBalance(proposal.kind.value, {
+                          decimals: decimals || 0,
+                          withSi: false,
+                          forceUnit: '-'
+                        })
+                      : 0}
                   </Typography>
                   <Typography variant="body2">
                     {proposal.kind.__typename === 'CreateBounty'

@@ -3,11 +3,17 @@ import Link from 'next/link';
 
 import { tokenAtom, tokenLoadingAtom } from 'store/token';
 import { appConfig } from 'config';
-import { formatBalance } from 'utils/formatBalance';
+import { formatBalance } from '@polkadot/util';
 
 import { Typography } from 'components/ui-kit/Typography';
 import { Card } from 'components/ui-kit/Card';
 import { Chip } from 'components/ui-kit/Chip';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger
+} from 'components/ui-kit/Tooltip';
 
 import styles from './Token.module.scss';
 
@@ -18,6 +24,7 @@ export function Token() {
   const isTokenLoading = useAtomValue(tokenLoadingAtom);
 
   const { tokenNetwork } = appConfig;
+  const { decimals, address, quantity, symbol } = token || {};
 
   return (
     <Card className={styles.card}>
@@ -28,14 +35,14 @@ export function Token() {
           <div className={styles.token}>
             {token?.address ? (
               <Link
-                href={`https://${tokenNetwork}.etherscan.io/token/${token.address}`}
+                href={`https://${tokenNetwork}.etherscan.io/token/${address}`}
                 className={styles.address}
                 target="_blank"
               >
-                <Typography variant="caption2">{token?.symbol}</Typography>
+                <Typography variant="caption2">{symbol}</Typography>
               </Link>
             ) : (
-              <Typography variant="caption2">{token?.symbol}</Typography>
+              <Typography variant="caption2">{symbol}</Typography>
             )}
 
             <Chip variant="group" color="active" className={styles.chip}>
@@ -44,10 +51,33 @@ export function Token() {
           </div>
 
           <Typography variant="title1">
-            {token.quantity &&
-              (token.address
-                ? token.quantity
-                : formatBalance(token.quantity, token.decimals))}
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span>
+                    {quantity &&
+                      (address
+                        ? quantity
+                        : formatBalance(quantity, {
+                            decimals: decimals || 0,
+                            withSi: false,
+                            forceUnit: '-'
+                          }))}
+                  </span>
+                </TooltipTrigger>
+                {address ? (
+                  <TooltipContent>{quantity}</TooltipContent>
+                ) : (
+                  <TooltipContent>
+                    {decimals
+                      ? (Number(quantity) / Number(10 ** decimals)).toFixed(
+                          decimals
+                        )
+                      : quantity}
+                  </TooltipContent>
+                )}
+              </Tooltip>
+            </TooltipProvider>
           </Typography>
         </>
       )}

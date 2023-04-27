@@ -4,7 +4,7 @@ import { useAtomValue } from 'jotai';
 import { currentDaoAtom } from 'store/dao';
 import { apiAtom, chainDecimalsAtom, chainSymbolAtom } from 'store/api';
 
-import { formatBalance } from 'utils/formatBalance';
+import { formatBalance } from '@polkadot/util';
 
 import type { AccountInfo } from '@polkadot/types/interfaces';
 
@@ -47,7 +47,11 @@ export function Balance() {
       <div className={styles.balance}>
         {balance !== null && (
           <Typography variant="title1">
-            {formatBalance(balance, decimals)}
+            {formatBalance(balance, {
+              decimals: decimals || 0,
+              withSi: false,
+              forceUnit: '-'
+            })}
           </Typography>
         )}
         <Typography variant="title2">{currency}</Typography>
