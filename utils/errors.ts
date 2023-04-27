@@ -16,11 +16,12 @@ export function extractErrorFromString(
       json?.error?.data &&
       Array.isArray(json?.error?.data)
     ) {
+      const hexError = `0x${Array.from(json?.error?.data, function (byte) {
+        return ('0' + ((byte as any) & 0xff).toString(16)).slice(-2);
+      }).join('')}`;
+
       const error = api?.registry.findMetaError(
-        new Uint8Array([
-          json.index,
-          new BN(new (Buffer as any).from(json?.error?.data)).toNumber()
-        ])
+        new Uint8Array([json.index, parseInt(hexError.substring(0, 4), 16)])
       );
 
       if (error) {
@@ -46,8 +47,12 @@ export function extractError(
   } else {
     const { isModule, asModule: mod } = result?.dispatchError || {};
     if (isModule && mod) {
+      // TODO: re-visit
       const error = api?.registry.findMetaError(
-        new Uint8Array([mod.index.toNumber(), new BN(mod.error).toNumber()])
+        new Uint8Array([
+          mod.index.toNumber(),
+          parseInt(mod.error.toString().substring(0, 4), 16)
+        ])
       );
 
       if (error) {

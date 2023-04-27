@@ -4,11 +4,12 @@ import { format } from 'date-fns';
 import { useAtomValue } from 'jotai';
 import { accountsAtom } from 'store/account';
 import { currentDaoAtom } from 'store/dao';
-import { tokenSymbolAtom } from 'store/token';
-import { chainSymbolAtom } from 'store/api';
+import { tokenDecimalsAtom, tokenSymbolAtom } from 'store/token';
+import { chainDecimalsAtom, chainSymbolAtom } from 'store/api';
 import { bountiesAtom } from 'store/bounty';
 
 import type { KeyringPair } from '@polkadot/keyring/types';
+import { formatBalance } from '@polkadot/util';
 
 import {
   Select,
@@ -54,6 +55,8 @@ export function ProposalInputs({
   const tokenSymbol = useAtomValue(tokenSymbolAtom);
   const chainSymbol = useAtomValue(chainSymbolAtom);
   const bounties = useAtomValue(bountiesAtom);
+  const chainDecimals = useAtomValue(chainDecimalsAtom);
+  const tokenDecimals = useAtomValue(tokenDecimalsAtom);
 
   let _accounts: KeyringPair[] | undefined;
 
@@ -167,7 +170,14 @@ export function ProposalInputs({
                           <span className={styles['bounty-item']}>
                             <Typography variant="caption2">Amount</Typography>
                             <Typography variant="title5">
-                              {bounty.value}{' '}
+                              {formatBalance(bounty.value, {
+                                decimals:
+                                  (bounty.nativeToken
+                                    ? chainDecimals
+                                    : tokenDecimals) || 0,
+                                withSi: false,
+                                forceUnit: '-'
+                              })}{' '}
                               {bounty.nativeToken ? chainSymbol : tokenSymbol}
                             </Typography>
                           </span>
