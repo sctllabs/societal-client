@@ -12,6 +12,7 @@ subscription SubscribeCouncilProposalsByDaoId($daoId: String!) {
     voteThreshold
     meta
     executed
+    reason
     dao {
       id
     }

@@ -4,6 +4,7 @@ import { toast } from 'react-toastify';
 
 import { useAtomValue } from 'jotai';
 import { metamaskAccountAtom } from 'store/account';
+import { apiAtom } from 'store/api';
 
 import { useSubscription } from '@apollo/client';
 import SUBSCRIBE_VOTES_BY_PROPOSAL_ID from 'query/subscribeEthGovernanceVotesByProposalId.graphql';
@@ -12,6 +13,7 @@ import type {
   EthGovernanceProposalMeta,
   SubscribeEthVotesByProposalId
 } from 'types';
+import { extractErrorFromString } from 'utils/errors';
 
 import { Button } from 'components/ui-kit/Button';
 import { Typography } from 'components/ui-kit/Typography';
@@ -27,6 +29,13 @@ import {
 import { useDaoEthGovernanceContract } from 'hooks/useDaoEthGovernanceContract';
 import { stringToHex } from '@polkadot/util';
 import { Input } from 'components/ui-kit/Input';
+import { Icon } from 'components/ui-kit/Icon';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger
+} from 'components/ui-kit/Tooltip';
 import { InputLabel, InputName } from 'components/CreateProposal/types';
 
 import styles from './ProposalCard.module.scss';
@@ -50,6 +59,7 @@ export function EthGovernanceProposalActions({
   const [modalOpen, setModalOpen] = useState(false);
   const [voteState, setVoteState] = useState(INITIAL_STATE);
 
+  const api = useAtomValue(apiAtom);
   const metamaskAccount = useAtomValue(metamaskAccountAtom);
   const daoEthGovernanceContract = useDaoEthGovernanceContract();
 
@@ -215,6 +225,25 @@ export function EthGovernanceProposalActions({
             )}
           >
             <Typography variant="button1">{proposalStatus}</Typography>
+            {proposal.__typename === 'EthGovernanceProposal' &&
+            proposalStatus === 'Failed' ? (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <span>
+                      <Icon
+                        className={styles['hint-logo-icon']}
+                        name="noti-info-stroke"
+                        size="xs"
+                      />
+                    </span>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    {extractErrorFromString(api, proposal.reason)}
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            ) : null}
           </div>
         </div>
       )}

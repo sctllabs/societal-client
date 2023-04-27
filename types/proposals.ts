@@ -151,6 +151,7 @@ export type CouncilProposalMeta = ProposalMeta & {
   status: CouncilProposalStatus;
   voteThreshold: number;
   executed: boolean;
+  reason: string;
   __typename: 'CouncilProposal';
 };
 
@@ -159,6 +160,7 @@ export type EthGovernanceProposalMeta = ProposalMeta & {
   status: EthGovernanceProposalStatus;
   voteThreshold: string;
   executed: boolean;
+  reason: string;
   blockNumber: number;
   __typename: 'EthGovernanceProposal';
 };
