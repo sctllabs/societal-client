@@ -20,13 +20,14 @@ import { Card } from 'components/ui-kit/Card';
 import { TxButton } from 'components/TxButton';
 import { Button } from 'components/ui-kit/Button';
 import { Icon } from 'components/ui-kit/Icon';
-import { AssetAccount } from 'types';
+import { AssetAccount, TxFailedCallback } from 'types';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger
 } from 'components/ui-kit/Tooltip';
+import { extractError } from 'utils/errors';
 
 import styles from './AccountTokenBalance.module.scss';
 
@@ -52,11 +53,11 @@ export function AccountTokenBalance() {
     );
   };
 
-  const onFailed = () =>
+  const onFailed: TxFailedCallback = (result) =>
     toast.error(
       <Notification
         title="Transaction failed"
-        body="Transaction Failed"
+        body={extractError(api, result)}
         variant="error"
       />
     );
@@ -73,7 +74,7 @@ export function AccountTokenBalance() {
     } catch (e) {
       // eslint-disable-next-line no-console
       console.error(e);
-      onFailed();
+      onFailed(null);
     }
   };
 
@@ -199,7 +200,7 @@ export function AccountTokenBalance() {
                   params={[currentDao?.id, substrateAccount?.address]}
                   variant="outlined"
                   onSuccess={onSuccess}
-                  onFailed={onFailed}
+                  onFailed={(result) => onFailed(result)}
                   size="xs"
                 >
                   Unlock

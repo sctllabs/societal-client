@@ -6,7 +6,7 @@ import { apiAtom } from 'store/api';
 import { metamaskAccountAtom, substrateAccountAtom } from 'store/account';
 
 import { useDaoDemocracyContract } from 'hooks/useDaoDemocracyContract';
-import type { DemocracyReferendumMeta } from 'types';
+import type { DemocracyReferendumMeta, TxFailedCallback } from 'types';
 
 import { Notification } from 'components/ui-kit/Notifications';
 import { TxButton } from 'components/TxButton';
@@ -16,6 +16,7 @@ import { Typography } from 'components/ui-kit/Typography';
 import { currentDaoAtom } from 'store/dao';
 import { evmToAddress } from '@polkadot/util-crypto';
 import { Voting } from '@polkadot/types/interfaces';
+import { extractError } from 'utils/errors';
 
 import styles from './ProposalCard.module.scss';
 
@@ -96,11 +97,11 @@ export function DemocracyReferendumRevokeVote({
     );
   };
 
-  const onFailed = () =>
+  const onFailed: TxFailedCallback = (result) =>
     toast.error(
       <Notification
         title="Transaction failed"
-        body="Transaction Failed"
+        body={extractError(api, result)}
         variant="error"
       />
     );
@@ -118,7 +119,7 @@ export function DemocracyReferendumRevokeVote({
     } catch (e) {
       // eslint-disable-next-line no-console
       console.error(e);
-      onFailed();
+      onFailed(null);
     }
   };
 
@@ -140,7 +141,7 @@ export function DemocracyReferendumRevokeVote({
       variant="outlined"
       disabled={!revokeEnabled}
       onSuccess={onSuccess}
-      onFailed={onFailed}
+      onFailed={(result) => onFailed(result)}
     >
       <Typography variant="button1">Revoke Vote</Typography>
     </TxButton>

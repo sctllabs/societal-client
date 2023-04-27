@@ -26,12 +26,13 @@ import { stringToHex } from '@polkadot/util';
 import { isEthereumAddress } from '@polkadot/util-crypto';
 import { ssToEvmAddress } from 'utils/ssToEvmAddress';
 import { keyringAddExternal } from 'utils/keyringAddExternal';
+import { extractError } from 'utils/errors';
 
 import { useDaoContract } from 'hooks/useDaoContract';
 import { useImageUpload } from 'hooks/useImageUpload';
 
 import type { u32 } from '@polkadot/types';
-import type { CreateDaoInput } from 'types';
+import type { CreateDaoInput, TxFailedCallback } from 'types';
 
 import { TxButton } from 'components/TxButton';
 import { Button } from 'components/ui-kit/Button';
@@ -218,11 +219,11 @@ export function CreateDaoButton({
     return [_members, [], stringToHex(JSON.stringify(data).trim())];
   };
 
-  const onFailed = () => {
+  const onFailed: TxFailedCallback = (result) => {
     toast.error(
       <Notification
         title="Transaction declined"
-        body="Transaction was declined"
+        body={extractError(api, result)}
         variant="error"
       />
     );
@@ -257,14 +258,14 @@ export function CreateDaoButton({
       // eslint-disable-next-line no-console
       console.error(e);
 
-      onFailed();
+      onFailed(null);
     }
   };
 
   return substrateAccount ? (
     <TxButton
       onSuccess={onSuccess}
-      onFailed={onFailed}
+      onFailed={(result) => onFailed(result)}
       disabled={disabled}
       accountId={substrateAccount?.address}
       params={handleTransform}

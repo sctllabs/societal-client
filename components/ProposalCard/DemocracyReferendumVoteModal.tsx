@@ -8,7 +8,11 @@ import { apiAtom } from 'store/api';
 
 import { ConvictionOptions, ConvictionToEth } from 'constants/conviction';
 import { useDaoDemocracyContract } from 'hooks/useDaoDemocracyContract';
-import type { DemocracyReferendumMeta, GovernanceV1 } from 'types';
+import type {
+  DemocracyReferendumMeta,
+  GovernanceV1,
+  TxFailedCallback
+} from 'types';
 
 import { Notification } from 'components/ui-kit/Notifications';
 import {
@@ -33,6 +37,7 @@ import { TxButton } from 'components/TxButton';
 
 import { appConfig } from 'config';
 import { currentDaoAtom } from 'store/dao';
+import { extractError } from 'utils/errors';
 
 import styles from './ProposalCard.module.scss';
 
@@ -102,11 +107,11 @@ export function DemocracyReferendumVoteModal({
     setModalOpen(false);
   };
 
-  const onFailed = () =>
+  const onFailed: TxFailedCallback = (result) =>
     toast.error(
       <Notification
         title="Transaction failed"
-        body="Transaction Failed"
+        body={extractError(api, result)}
         variant="error"
       />
     );
@@ -128,7 +133,7 @@ export function DemocracyReferendumVoteModal({
         );
       onSuccess();
     } catch (e) {
-      onFailed();
+      onFailed(null);
     }
   };
 
@@ -256,7 +261,7 @@ export function DemocracyReferendumVoteModal({
                     variant="vote"
                     color="success"
                     onSuccess={onSuccess}
-                    onFailed={onFailed}
+                    onFailed={(result) => onFailed(result)}
                   >
                     <Typography variant="button1">Vote Aye</Typography>
                     <Icon name="vote-yes" size="xs" />

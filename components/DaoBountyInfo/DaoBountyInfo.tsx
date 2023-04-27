@@ -31,6 +31,8 @@ import {
 import { MembersDropdown } from 'components/MembersDropdown';
 import { Input } from 'components/ui-kit/Input';
 import { Stepper } from 'components/ui-kit/Stepper';
+import { TxFailedCallback } from 'types';
+import { extractError } from 'utils/errors';
 
 import styles from './DaoBounty.module.scss';
 
@@ -67,11 +69,11 @@ export function DaoBountyInfo() {
     setBeneficiary(null);
   }, [modalOpen]);
 
-  const onFailed = () => {
+  const onFailed: TxFailedCallback = (result) => {
     toast.error(
       <Notification
         title="Transaction declined"
-        body="Transaction was declined."
+        body={extractError(api, result)}
         variant="error"
       />
     );
@@ -151,7 +153,7 @@ export function DaoBountyInfo() {
         params={[bounty?.dao.id, bounty?.index]}
         tx={api?.tx.daoBounties.claimBounty}
         onSuccess={onSuccess}
-        onFailed={onFailed}
+        onFailed={(result) => onFailed(result)}
       >
         {text}
       </TxButton>
