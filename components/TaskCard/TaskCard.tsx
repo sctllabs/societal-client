@@ -5,11 +5,12 @@ import { useAtomValue } from 'jotai';
 import { currentDaoAtom } from 'store/dao';
 import { tokenDecimalsAtom, tokenSymbolAtom } from 'store/token';
 import { accountsAtom } from 'store/account';
-import { chainDecimalsAtom, chainSymbolAtom } from 'store/api';
+import { apiAtom, chainDecimalsAtom, chainSymbolAtom } from 'store/api';
 
 import { getProposalSettings } from 'utils/getProposalSettings';
 import { maskAddress } from 'utils/maskAddress';
 import { parseMeta } from 'utils/parseMeta';
+import { extractErrorFromString } from 'utils/errors';
 import { formatBalance } from '@polkadot/util';
 import type {
   AddMemberProposal,
@@ -27,6 +28,12 @@ import { Icon } from 'components/ui-kit/Icon';
 import { Typography } from 'components/ui-kit/Typography';
 import { Chip } from 'components/ui-kit/Chip';
 import { Countdown } from 'components/Countdown';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger
+} from 'components/ui-kit/Tooltip';
 
 import styles from './TaskCard.module.scss';
 
@@ -69,6 +76,7 @@ export function TaskCard({ proposal, currentBlock }: TaskCardProps) {
     }
   }, [proposal]);
 
+  const api = useAtomValue(apiAtom);
   const currentDao = useAtomValue(currentDaoAtom);
   const tokenSymbol = useAtomValue(tokenSymbolAtom);
   const tokenDecimals = useAtomValue(tokenDecimalsAtom);
@@ -151,6 +159,26 @@ export function TaskCard({ proposal, currentBlock }: TaskCardProps) {
             )}
           />
           <Typography variant="title7">{taskStatus}</Typography>
+          {(proposal.__typename === 'CouncilProposal' ||
+            proposal.__typename === 'EthGovernanceProposal') &&
+          taskStatus === 'Failed' ? (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span>
+                    <Icon
+                      className={styles['hint-logo-icon']}
+                      name="noti-info-stroke"
+                      size="xs"
+                    />
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent>
+                  {extractErrorFromString(api, proposal.reason)}
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          ) : null}
         </div>
         {proposal.status === 'Open' && currentDao && currentBlock && (
           <Countdown

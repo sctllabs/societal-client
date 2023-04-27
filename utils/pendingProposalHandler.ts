@@ -121,7 +121,8 @@ export function pendingCouncilProposalHandler(
     kind,
     meta: Buffer.from(meta).toString('utf8'),
     status: 'Pending',
-    voteThreshold: threshold
+    voteThreshold: threshold,
+    reason: ''
   };
 }
 
@@ -164,7 +165,8 @@ export function pendingEthGovernanceProposalHandler(
     kind,
     meta: Buffer.from(meta).toString('utf8'),
     status: 'Pending',
-    voteThreshold: threshold
+    voteThreshold: threshold,
+    reason: ''
   };
 }
 
