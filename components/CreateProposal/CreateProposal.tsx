@@ -41,6 +41,7 @@ import {
   DialogTitle,
   DialogTrigger
 } from 'components/ui-kit/Dialog';
+import { extractError } from 'utils/errors';
 
 import {
   BountyProposalEnum,
@@ -401,11 +402,11 @@ export function CreateProposal({
     }
   };
 
-  const onFailed: TxFailedCallback = () => {
+  const onFailed: TxFailedCallback = (result) => {
     toast.error(
       <Notification
         title="Transaction declined"
-        body="Transaction was declined."
+        body={extractError(api, result)}
         variant="error"
       />
     );
@@ -474,7 +475,7 @@ export function CreateProposal({
                     disabled={disabled}
                     tx={extrinsic}
                     onSuccess={onSuccess}
-                    onFailed={onFailed}
+                    onFailed={(result) => onFailed(result)}
                   >
                     Submit
                   </TxButton>

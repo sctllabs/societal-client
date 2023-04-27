@@ -29,6 +29,7 @@ import { Button } from 'components/ui-kit/Button';
 import { Icon } from 'components/ui-kit/Icon';
 import { Typography } from 'components/ui-kit/Typography';
 import { Notification } from 'components/ui-kit/Notifications';
+import { extractError } from 'utils/errors';
 
 import styles from './ProposalCard.module.scss';
 
@@ -190,11 +191,11 @@ export function CouncilProposalActions({
     );
   };
 
-  const onFailed: TxFailedCallback = () => {
+  const onFailed: TxFailedCallback = (result) => {
     toast.error(
       <Notification
         title="Transaction declined"
-        body="Transaction was declined."
+        body={extractError(api, result)}
         variant="error"
       />
     );
@@ -299,7 +300,7 @@ export function CouncilProposalActions({
                   variant="ghost"
                   className={styles['button-vote']}
                   onSuccess={onFinishSuccess}
-                  onFailed={onFailed}
+                  onFailed={(result) => onFailed(result)}
                 >
                   <Icon name="send" />
                 </TxButton>
