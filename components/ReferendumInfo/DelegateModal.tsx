@@ -36,7 +36,8 @@ import {
 import { TxButton } from 'components/TxButton';
 
 import { appConfig } from 'config';
-import { GovernanceV1 } from 'types';
+import { GovernanceV1, TxFailedCallback } from 'types';
+import { extractError } from 'utils/errors';
 
 import styles from './ReferendumInfo.module.scss';
 
@@ -109,9 +110,13 @@ export function DelegateModal() {
     }));
   };
 
-  const onFailed = () => {
+  const onFailed: TxFailedCallback = (result) => {
     toast.error(
-      <Notification title="Error" body="Delegation failed." variant="error" />
+      <Notification
+        title="Error"
+        body={extractError(api, result)}
+        variant="error"
+      />
     );
   };
 
@@ -254,7 +259,7 @@ export function DelegateModal() {
                   disabled={disabled}
                   tx={extrinsic}
                   onSuccess={onSuccess}
-                  onFailed={onFailed}
+                  onFailed={(result) => onFailed(result)}
                 >
                   Submit delegation
                 </TxButton>
