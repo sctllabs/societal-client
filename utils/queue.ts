@@ -73,8 +73,6 @@ export function handleTxResults(
 
     const status = result.status.type.toLowerCase() as QueueTxStatus;
 
-    console.log(`${handler}: status :: ${JSON.stringify(result)}`);
-
     queueSetTxStatus({ id, status, result });
     txUpdateCb(result);
 
@@ -188,11 +186,6 @@ export async function wrapTx(
       ),
       tx.paymentInfo(multiRoot)
     ]);
-
-    console.log(
-      'multisig max weight=',
-      (weight as unknown as string).toString()
-    );
 
     const { threshold, who } = extractExternal(multiRoot, keyring);
     const others = who.filter((w: string) => w !== signAddress);

@@ -29,6 +29,7 @@ import {
   DialogTitle,
   DialogTrigger
 } from 'components/ui-kit/Dialog';
+import { extractError } from 'utils/errors';
 
 import styles from './ProposalCard.module.scss';
 
@@ -89,12 +90,12 @@ export function DemocracyProposalCardActions({
 
   const handleCancelClick = () => setModalOpen(false);
 
-  const onFailed: TxFailedCallback = () => {
+  const onFailed: TxFailedCallback = (result) => {
     // eslint-disable-next-line no-console
     toast.error(
       <Notification
         title="Transaction failed"
-        body="Transaction failed"
+        body={extractError(api, result)}
         variant="error"
       />
     );
@@ -193,7 +194,7 @@ export function DemocracyProposalCardActions({
                         params={[proposal.dao.id, proposal.index]}
                         variant="filled"
                         onSuccess={onSuccess}
-                        onFailed={onFailed}
+                        onFailed={(result) => onFailed(result)}
                       >
                         Second
                       </TxButton>
