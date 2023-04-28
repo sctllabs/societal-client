@@ -114,8 +114,9 @@ export function ProposalInputs({
 
   const selectedBounty = state.bountyIndex
     ? bounties?.[
+        // eslint-disable-next-line no-restricted-globals
         !isNaN(state.bountyIndex as any)
-          ? parseInt(state.bountyIndex as any)
+          ? parseInt(state.bountyIndex as any, 10)
           : -1
       ]
     : null;
