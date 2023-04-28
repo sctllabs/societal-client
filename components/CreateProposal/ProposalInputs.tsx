@@ -22,6 +22,13 @@ import {
 import { Input } from 'components/ui-kit/Input';
 import { Typography } from 'components/ui-kit/Typography';
 import { MembersDropdown } from 'components/MembersDropdown';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger
+} from 'components/ui-kit/Tooltip';
+import { Icon } from 'components/ui-kit/Icon';
 
 import {
   BountyProposalEnum,
@@ -311,9 +318,34 @@ export function ProposalInputs({
             type="tel"
             required
             endAdornment={
-              <Typography className={styles['select-currency']} variant="body2">
-                {tokenSymbol}
-              </Typography>
+              <span>
+                <Typography
+                  className={styles['select-currency']}
+                  variant="body2"
+                >
+                  {tokenSymbol}
+                </Typography>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <span>
+                        <Icon
+                          className={styles['hint-logo-icon']}
+                          name="noti-info-stroke"
+                          size="xs"
+                        />
+                      </span>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      Minimum Deposit is{' '}
+                      {currentDao?.policy?.governance?.__typename ===
+                        'GovernanceV1' &&
+                        currentDao?.policy?.governance?.minimumDeposit}{' '}
+                      {tokenSymbol}
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </span>
             }
           />
         </div>
