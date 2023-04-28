@@ -112,6 +112,14 @@ export function ProposalInputs({
   const onBountyValueChange = (bountyIndex: string) =>
     setState((prevState) => ({ ...prevState, bountyIndex }));
 
+  const selectedBounty = state.bountyIndex
+    ? bounties?.[
+        !isNaN(state.bountyIndex as any)
+          ? parseInt(state.bountyIndex as any)
+          : -1
+      ]
+    : null;
+
   return (
     <>
       {(proposalType === BountyProposalEnum.BOUNTY_CURATOR ||
@@ -221,31 +229,62 @@ export function ProposalInputs({
               type="tel"
               required
               endAdornment={
-                proposalType === BountyProposalEnum.BOUNTY &&
-                (currentDao?.fungibleToken?.id && tokenSymbol ? (
-                  <Select
-                    defaultValue={chainSymbol}
-                    onValueChange={onCurrencyValueChange}
-                  >
-                    <SelectTrigger datatype="input">
-                      <SelectValue defaultValue={chainSymbol} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value={chainSymbol}>
-                        <Typography variant="body2">{chainSymbol}</Typography>
-                      </SelectItem>
-                      <SelectItem value={tokenSymbol}>
-                        <Typography variant="body2">{tokenSymbol}</Typography>
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                ) : (
-                  <Typography
-                    className={styles['select-currency']}
-                    variant="body2"
-                  >
-                    {chainSymbol}
-                  </Typography>
+                (proposalType === BountyProposalEnum.BOUNTY &&
+                  (currentDao?.fungibleToken?.id && tokenSymbol ? (
+                    <Select
+                      defaultValue={chainSymbol}
+                      onValueChange={onCurrencyValueChange}
+                    >
+                      <SelectTrigger datatype="input">
+                        <SelectValue defaultValue={chainSymbol} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value={chainSymbol}>
+                          <Typography variant="body2">{chainSymbol}</Typography>
+                        </SelectItem>
+                        <SelectItem value={tokenSymbol}>
+                          <Typography variant="body2">{tokenSymbol}</Typography>
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  ) : (
+                    <Typography
+                      className={styles['select-currency']}
+                      variant="body2"
+                    >
+                      {chainSymbol}
+                    </Typography>
+                  ))) ||
+                (proposalType === BountyProposalEnum.BOUNTY_CURATOR && (
+                  <span>
+                    <Typography
+                      className={styles['select-currency']}
+                      variant="body2"
+                    >
+                      {selectedBounty &&
+                        (selectedBounty.nativeToken
+                          ? chainSymbol
+                          : tokenSymbol)}
+                    </Typography>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <span>
+                            <Icon
+                              className={styles['hint-logo-icon']}
+                              name="noti-info-stroke"
+                              size="xs"
+                            />
+                          </span>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          The reserved upfront payment for a curator for work
+                          related to the bounty. <br />
+                          Should be equal or more than bounty amount.
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </span>
                 ))
               }
             />
