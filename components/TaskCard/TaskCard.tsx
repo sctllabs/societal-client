@@ -248,11 +248,14 @@ export function TaskCard({ proposal, currentBlock }: TaskCardProps) {
                     <Typography variant="title5">
                       {/* TODO */}
                       {!Number.isNaN(proposal.kind.amount)
-                        ? formatBalance(proposal.kind.amount, {
-                            decimals: decimals || 0,
-                            withSi: false,
-                            forceUnit: '-'
-                          })
+                        ? formatBalance(
+                            proposal.kind.amount.replaceAll(',', ''),
+                            {
+                              decimals: decimals || 0,
+                              withSi: false,
+                              forceUnit: '-'
+                            }
+                          )
                         : ''}
                     </Typography>
                     <Typography variant="body2">{currency}</Typography>
