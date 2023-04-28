@@ -16,6 +16,7 @@ subscription SubscribeDaoById($id: String!) {
           launchPeriod
           votingPeriod
           enactmentPeriod
+          minimumDeposit
         }
       }
     }

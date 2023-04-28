@@ -30,6 +30,13 @@ import {
   DialogTrigger
 } from 'components/ui-kit/Dialog';
 import { extractError } from 'utils/errors';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger
+} from 'components/ui-kit/Tooltip';
+import { Icon } from 'components/ui-kit/Icon';
 
 import styles from './ProposalCard.module.scss';
 
@@ -142,69 +149,93 @@ export function DemocracyProposalCardActions({
             {times === 1 ? 'time' : 'times'}
           </Typography>
         )}
-        {proposal.status === 'Open' && (
-          <Dialog open={modalOpen} onOpenChange={setModalOpen}>
-            <DialogTrigger asChild>
-              <Button variant="filled">Second</Button>
-            </DialogTrigger>
 
-            <DialogContent>
-              <DialogTitle asChild>
+        <Dialog open={modalOpen} onOpenChange={setModalOpen}>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <DialogTrigger asChild>
+                  <Button variant="filled">Second</Button>
+                </DialogTrigger>
+              </TooltipTrigger>
+              <TooltipContent>
+                Signals agreement with a particular proposal.
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+
+          <DialogContent>
+            <DialogTitle asChild>
+              <div>
                 <Typography variant="title1">
                   Tokens required to second the proposal
                 </Typography>
-              </DialogTitle>
+              </div>
+            </DialogTitle>
 
-              <DialogDescription asChild>
-                <>
-                  <div className={styles['democracy-modal-deposit-container']}>
-                    <span className={styles['democracy-modal-deposit']}>
-                      <Typography variant="title4">
-                        {proposal.deposit}
-                      </Typography>
-                      <Typography variant="body2">
-                        {currentDao?.fungibleToken.symbol}
-                      </Typography>
-                    </span>
-                  </div>
-                  <div className={styles['buttons-container']}>
+            <DialogDescription asChild>
+              <>
+                <div className={styles['democracy-modal-deposit-container']}>
+                  <span className={styles['democracy-modal-deposit']}>
+                    <Typography variant="title4">{proposal.deposit}</Typography>
+                    <Typography variant="body2">
+                      {currentDao?.fungibleToken.symbol}
+                    </Typography>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <span>
+                            <Icon
+                              className={styles['hint-logo-icon']}
+                              name="noti-info-stroke"
+                              size="xs"
+                            />
+                          </span>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          Equals to the proposal deposit.
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </span>
+                </div>
+                <div className={styles['buttons-container']}>
+                  <Button
+                    variant="outlined"
+                    color="destructive"
+                    className={styles['democracy-modal-button']}
+                    onClick={handleCancelClick}
+                  >
+                    Cancel
+                  </Button>
+                  {metamaskAccount ? (
                     <Button
-                      variant="outlined"
-                      color="destructive"
                       className={styles['democracy-modal-button']}
-                      onClick={handleCancelClick}
+                      disabled={disabled}
+                      variant="filled"
+                      onClick={handleProposalSecond}
                     >
-                      Cancel
+                      Second
                     </Button>
-                    {metamaskAccount ? (
-                      <Button
-                        className={styles['democracy-modal-button']}
-                        disabled={disabled}
-                        variant="filled"
-                        onClick={handleProposalSecond}
-                      >
-                        Second
-                      </Button>
-                    ) : (
-                      <TxButton
-                        className={styles['democracy-modal-button']}
-                        disabled={disabled}
-                        accountId={substrateAccount?.address}
-                        tx={api?.tx.daoDemocracy.second}
-                        params={[proposal.dao.id, proposal.index]}
-                        variant="filled"
-                        onSuccess={onSuccess}
-                        onFailed={(result) => onFailed(result)}
-                      >
-                        Second
-                      </TxButton>
-                    )}
-                  </div>
-                </>
-              </DialogDescription>
-            </DialogContent>
-          </Dialog>
-        )}
+                  ) : (
+                    <TxButton
+                      className={styles['democracy-modal-button']}
+                      disabled={disabled}
+                      accountId={substrateAccount?.address}
+                      tx={api?.tx.daoDemocracy.second}
+                      params={[proposal.dao.id, proposal.index]}
+                      variant="filled"
+                      onSuccess={onSuccess}
+                      onFailed={(result) => onFailed(result)}
+                    >
+                      Second
+                    </TxButton>
+                  )}
+                </div>
+              </>
+            </DialogDescription>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );

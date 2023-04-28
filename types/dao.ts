@@ -24,6 +24,7 @@ export type GovernanceV1 = Readonly<{
   launchPeriod: number;
   votingPeriod: number;
   enactmentPeriod: number;
+  minimumDeposit: number;
 }>;
 
 type OwnershipWeightedVoting = Readonly<{
