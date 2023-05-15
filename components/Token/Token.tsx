@@ -8,6 +8,7 @@ import { formatBalance } from '@polkadot/util';
 import { Typography } from 'components/ui-kit/Typography';
 import { Card } from 'components/ui-kit/Card';
 import { Chip } from 'components/ui-kit/Chip';
+import { Icon } from 'components/ui-kit/Icon';
 import {
   Tooltip,
   TooltipContent,
@@ -50,19 +51,26 @@ export function Token() {
             </Chip>
           </div>
 
-          <Typography variant="title1">
+          <div className={styles.balance}>
+            <Typography variant="title1">
+              {quantity &&
+                (address
+                  ? quantity
+                  : formatBalance(quantity, {
+                      decimals: decimals || 0,
+                      withSi: false,
+                      forceUnit: '-'
+                    }))}
+            </Typography>
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <span>
-                    {quantity &&
-                      (address
-                        ? quantity
-                        : formatBalance(quantity, {
-                            decimals: decimals || 0,
-                            withSi: false,
-                            forceUnit: '-'
-                          }))}
+                  <span className={styles['hint-balance-icon']}>
+                    <Icon
+                      name="eye-open"
+                      size="xs"
+                      className={styles['hint-balance-icon']}
+                    />
                   </span>
                 </TooltipTrigger>
                 {address ? (
@@ -78,7 +86,7 @@ export function Token() {
                 )}
               </Tooltip>
             </TooltipProvider>
-          </Typography>
+          </div>
         </>
       )}
     </Card>

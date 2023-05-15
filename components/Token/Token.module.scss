@@ -25,3 +25,15 @@
     color: #{colors.$purple-2};
   }
 }
+
+.balance {
+  display: flex;
+}
+
+.hint-balance-icon {
+  margin-top: auto;
+  margin-bottom: auto;
+  margin-left: 2px;
+  color: #{colors.$grayscale-55};
+  cursor: pointer;
+}
