@@ -47,9 +47,9 @@ export function GovernanceType() {
 
   return (
     <div className={styles.section}>
-      <Typography variant="h3">Governance Token</Typography>
+      <Typography variant="h3">Governance Type</Typography>
       <Typography variant="body1">
-        Choose the type of your Governance token.
+        Choose your Governance type for the platform.
       </Typography>
       <div className={styles['radio-checkbox-group']}>
         {Object.values(
