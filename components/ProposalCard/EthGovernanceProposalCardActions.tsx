@@ -5,6 +5,7 @@ import { toast } from 'react-toastify';
 import { useAtomValue } from 'jotai';
 import { metamaskAccountAtom } from 'store/account';
 import { apiAtom } from 'store/api';
+import { tokenDecimalsAtom } from 'store/token';
 
 import { useSubscription } from '@apollo/client';
 import SUBSCRIBE_VOTES_BY_PROPOSAL_ID from 'query/subscribeEthGovernanceVotesByProposalId.graphql';
@@ -14,6 +15,7 @@ import type {
   SubscribeEthVotesByProposalId
 } from 'types';
 import { extractErrorFromString } from 'utils/errors';
+import { convertTokenAmount } from 'utils/convertTokenAmount';
 
 import { Button } from 'components/ui-kit/Button';
 import { Typography } from 'components/ui-kit/Typography';
@@ -62,6 +64,7 @@ export function EthGovernanceProposalActions({
   const api = useAtomValue(apiAtom);
   const metamaskAccount = useAtomValue(metamaskAccountAtom);
   const daoEthGovernanceContract = useDaoEthGovernanceContract();
+  const tokenDecimals = useAtomValue(tokenDecimalsAtom);
 
   useEffect(() => {
     setVoteState(INITIAL_STATE);
@@ -111,7 +114,7 @@ export function EthGovernanceProposalActions({
           proposal.hash,
           proposal.index,
           aye,
-          voteState.amount,
+          convertTokenAmount(voteState.amount, tokenDecimals || 0),
           stringToHex(metamaskAccount?._address)
         );
       toast.success(

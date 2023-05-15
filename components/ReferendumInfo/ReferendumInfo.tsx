@@ -180,9 +180,11 @@ export function ReferendumInfo() {
 
               <Typography variant="title2">
                 {delegation
-                  ? (accounts?.find(
-                      (_account) => _account.address === delegation.target
-                    )?.meta.name as string) ?? maskAddress(delegation.target)
+                  ? maskAddress(
+                      (accounts?.find(
+                        (_account) => _account.address === delegation.target
+                      )?.meta.name as string) ?? delegation.target
+                    )
                   : '-'}
               </Typography>
             </div>
@@ -229,9 +231,11 @@ export function ReferendumInfo() {
                       Delegated account:
                     </Typography>
                     <Typography variant="title7">
-                      {(accounts?.find(
-                        (_account) => _account.address === delegation.target
-                      )?.meta.name as string) ?? maskAddress(delegation.target)}
+                      {maskAddress(
+                        (accounts?.find(
+                          (_account) => _account.address === delegation.target
+                        )?.meta.name as string) ?? delegation.target
+                      )}
                     </Typography>
                   </span>
                   <span>

@@ -231,9 +231,11 @@ export function TaskCard({ proposal, currentBlock }: TaskCardProps) {
               <span className={styles['proposal-item']}>
                 <Icon name="user-profile" size="xs" />
                 <Typography variant="title5">
-                  {(accounts?.find(
-                    (_account) => _account.address === proposal.account.id
-                  )?.meta.name as string) ?? maskAddress(proposal.account.id)}
+                  {maskAddress(
+                    (accounts?.find(
+                      (_account) => _account.address === proposal.account.id
+                    )?.meta.name as string) ?? proposal.account.id
+                  )}
                 </Typography>
               </span>
             </span>
@@ -266,13 +268,14 @@ export function TaskCard({ proposal, currentBlock }: TaskCardProps) {
                   <span className={styles['proposal-item']}>
                     <Icon name="user-profile" size="xs" />
                     <Typography variant="title5">
-                      {(accounts?.find(
-                        (_account) =>
-                          _account.address ===
-                          (proposal.kind as TransferProposal | SpendProposal)
-                            .beneficiary
-                      )?.meta.name as string) ??
-                        maskAddress(proposal.kind.beneficiary)}
+                      {maskAddress(
+                        (accounts?.find(
+                          (_account) =>
+                            _account.address ===
+                            (proposal.kind as TransferProposal | SpendProposal)
+                              .beneficiary
+                        )?.meta.name as string) ?? proposal.kind.beneficiary
+                      )}
                     </Typography>
                   </span>
                 </span>
@@ -285,15 +288,17 @@ export function TaskCard({ proposal, currentBlock }: TaskCardProps) {
                 <span className={styles['proposal-item']}>
                   <Icon name="user-profile" size="xs" />
                   <Typography variant="title5">
-                    {(accounts?.find(
-                      (_account) =>
-                        _account.address ===
-                        (
-                          proposal.kind as
-                            | AddMemberProposal
-                            | RemoveMemberProposal
-                        ).who
-                    )?.meta.name as string) ?? maskAddress(proposal.kind.who)}
+                    {maskAddress(
+                      (accounts?.find(
+                        (_account) =>
+                          _account.address ===
+                          (
+                            proposal.kind as
+                              | AddMemberProposal
+                              | RemoveMemberProposal
+                          ).who
+                      )?.meta.name as string) ?? proposal.kind.who
+                    )}
                   </Typography>
                 </span>
               </span>
@@ -328,12 +333,13 @@ export function TaskCard({ proposal, currentBlock }: TaskCardProps) {
                 <span className={styles['proposal-item']}>
                   <Icon name="user-profile" size="xs" />
                   <Typography variant="title5">
-                    {(accounts?.find(
-                      (_account) =>
-                        _account.address ===
-                        (proposal.kind as ProposeCuratorProposal).curator
-                    )?.meta.name as string) ??
-                      maskAddress(proposal.kind.curator)}
+                    {maskAddress(
+                      (accounts?.find(
+                        (_account) =>
+                          _account.address ===
+                          (proposal.kind as ProposeCuratorProposal).curator
+                      )?.meta.name as string) ?? proposal.kind.curator
+                    )}
                   </Typography>
                 </span>
               </span>
