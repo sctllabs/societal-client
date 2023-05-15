@@ -288,7 +288,20 @@ export function ProposalCard({ proposal }: ProposalCardProps) {
               </div>
               <div className={styles['header-item']}>
                 <Typography variant="caption2">Total Supply</Typography>
-                <Typography variant="title5">{voteThreshold}</Typography>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Typography variant="title5">
+                        {formatBalance(voteThreshold || 0, {
+                          decimals: tokenDecimals || 0,
+                          withSi: false,
+                          forceUnit: '-'
+                        })}
+                      </Typography>
+                    </TooltipTrigger>
+                    <TooltipContent>{voteThreshold}</TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               </div>
             </div>
           )}
