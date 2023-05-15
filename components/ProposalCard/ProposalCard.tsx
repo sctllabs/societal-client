@@ -306,11 +306,13 @@ export function ProposalCard({ proposal }: ProposalCardProps) {
             <div className={styles.curator}>
               <Typography variant="caption2">Curator:</Typography>
               <Typography variant="title5">
-                {(accounts?.find(
-                  (_account) =>
-                    _account.address ===
-                    (proposal.kind as ProposeCuratorProposal).curator
-                )?.meta.name as string) ?? maskAddress(proposal.kind.curator)}
+                {maskAddress(
+                  (accounts?.find(
+                    (_account) =>
+                      _account.address ===
+                      (proposal.kind as ProposeCuratorProposal).curator
+                  )?.meta.name as string) ?? proposal.kind.curator
+                )}
               </Typography>
             </div>
             <div className={styles.bounty}>
@@ -326,9 +328,11 @@ export function ProposalCard({ proposal }: ProposalCardProps) {
             <span className={styles['proposal-item']}>
               <Icon name="user-profile" size="xs" />
               <Typography variant="title5">
-                {(accounts?.find(
-                  (_account) => _account.address === proposal.account.id
-                )?.meta.name as string) ?? maskAddress(proposal.account.id)}
+                {maskAddress(
+                  (accounts?.find(
+                    (_account) => _account.address === proposal.account.id
+                  )?.meta.name as string) ?? proposal.account.id
+                )}
               </Typography>
             </span>
           </div>
@@ -393,13 +397,14 @@ export function ProposalCard({ proposal }: ProposalCardProps) {
               <div className={styles['proposal-item-container']}>
                 <Typography variant="caption3">Target</Typography>
                 <Typography variant="title5">
-                  {(accounts?.find(
-                    (_account) =>
-                      _account.address ===
-                      (proposal.kind as SpendProposal | TransferProposal)
-                        .beneficiary
-                  )?.meta.name as string) ??
-                    maskAddress(proposal.kind.beneficiary)}
+                  {maskAddress(
+                    (accounts?.find(
+                      (_account) =>
+                        _account.address ===
+                        (proposal.kind as SpendProposal | TransferProposal)
+                          .beneficiary
+                    )?.meta.name as string) ?? proposal.kind.beneficiary
+                  )}
                 </Typography>
               </div>
             </>
@@ -411,15 +416,17 @@ export function ProposalCard({ proposal }: ProposalCardProps) {
               <span className={styles['proposal-member-address']}>
                 <Icon name="user-profile" size="xs" />
                 <Typography variant="title5">
-                  {(accounts?.find(
-                    (_account) =>
-                      _account.address ===
-                      (
-                        proposal.kind as
-                          | AddMemberProposal
-                          | RemoveMemberProposal
-                      ).who
-                  )?.meta.name as string) ?? proposal.kind.who}
+                  {maskAddress(
+                    (accounts?.find(
+                      (_account) =>
+                        _account.address ===
+                        (
+                          proposal.kind as
+                            | AddMemberProposal
+                            | RemoveMemberProposal
+                        ).who
+                    )?.meta.name as string) ?? proposal.kind.who
+                  )}
                 </Typography>
               </span>
             </div>
