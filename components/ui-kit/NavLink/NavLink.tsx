@@ -4,6 +4,12 @@ import clsx from 'clsx';
 
 import { Icon, IconNamesType } from 'components/ui-kit/Icon';
 import { Typography, TypographyVariants } from 'components/ui-kit/Typography';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger
+} from 'components/ui-kit/Tooltip';
 
 import styles from './NavLink.module.scss';
 
@@ -40,10 +46,21 @@ export function NavLink({
       {...props}
     >
       {icon && (
-        <Icon
-          className={clsx(styles.icon, { [styles['active-icon']]: active })}
-          name={icon}
-        />
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span className={styles.icon}>
+                <Icon
+                  className={clsx(styles.icon, {
+                    [styles['active-icon']]: active
+                  })}
+                  name={icon}
+                />
+              </span>
+            </TooltipTrigger>
+            <TooltipContent>{title}</TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       )}
       {active && <Typography variant={titleVariant}>{title}</Typography>}
     </NextLink>
