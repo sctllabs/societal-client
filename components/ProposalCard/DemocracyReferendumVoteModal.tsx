@@ -5,6 +5,7 @@ import { formatDistance } from 'date-fns';
 import { useAtomValue } from 'jotai';
 import { metamaskAccountAtom, substrateAccountAtom } from 'store/account';
 import { apiAtom } from 'store/api';
+import { tokenDecimalsAtom } from 'store/token';
 
 import { ConvictionOptions, ConvictionToEth } from 'constants/conviction';
 import { useDaoDemocracyContract } from 'hooks/useDaoDemocracyContract';
@@ -38,6 +39,7 @@ import { TxButton } from 'components/TxButton';
 import { appConfig } from 'config';
 import { currentDaoAtom } from 'store/dao';
 import { extractError } from 'utils/errors';
+import { convertTokenAmount } from 'utils/convertTokenAmount';
 
 import styles from './ProposalCard.module.scss';
 
@@ -74,6 +76,7 @@ export function DemocracyReferendumVoteModal({
   const metamaskAccount = useAtomValue(metamaskAccountAtom);
   const substrateAccount = useAtomValue(substrateAccountAtom);
   const api = useAtomValue(apiAtom);
+  const tokenDecimals = useAtomValue(tokenDecimalsAtom);
 
   const daoDemocracyContract = useDaoDemocracyContract();
 
@@ -128,7 +131,7 @@ export function DemocracyReferendumVoteModal({
           proposal.dao.id,
           proposal.index,
           approvedVote,
-          voteState.amount,
+          convertTokenAmount(voteState.amount, tokenDecimals || 0),
           voteState.conviction
         );
       onSuccess();
@@ -148,7 +151,7 @@ export function DemocracyReferendumVoteModal({
           aye,
           conviction: voteState.conviction
         },
-        balance: voteState.amount
+        balance: convertTokenAmount(voteState.amount, tokenDecimals || 0)
       }
     };
     return [proposal.dao.id, proposal.index, vote];

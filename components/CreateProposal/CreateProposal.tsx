@@ -42,6 +42,7 @@ import {
   DialogTrigger
 } from 'components/ui-kit/Dialog';
 import { extractError } from 'utils/errors';
+import { convertTokenAmount } from 'utils/convertTokenAmount';
 
 import {
   BountyProposalEnum,
@@ -174,7 +175,7 @@ export function CreateProposal({
           ? tokenDecimals
           : decimals;
 
-      const amount = parseInt(state.amount, 10) * 10 ** (decimals || 0);
+      const amount = convertTokenAmount(state.amount, decimals || 0);
       switch (proposalType) {
         case ProposalEnum.ADD_MEMBER: {
           return api?.tx.daoCouncilMembers.addMember(_currentDao.id, target);
@@ -296,7 +297,7 @@ export function CreateProposal({
         return [
           currentDao.id,
           { Inline: _tx?.method.toHex() },
-          parseInt(state.balance, 10) * 10 ** (tokenDecimals || 0),
+          convertTokenAmount(state.balance, tokenDecimals || 0),
           meta
         ];
       case ProposalVotingAccessEnum.EthGovernance:
