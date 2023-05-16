@@ -1,5 +1,5 @@
 export enum ConvictionOptions {
-  'No Conviction' = 'None',
+  'No Conviction - Vote worth 10% of token amount. No lock on tokens' = 'None',
   '1x voting balance, locked for 1x enactment' = 'Locked1x',
   '2x voting balance, locked for 2x enactment' = 'Locked2x',
   '3x voting balance, locked for 4x enactment' = 'Locked3x',
