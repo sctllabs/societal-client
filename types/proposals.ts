@@ -191,6 +191,7 @@ export type CouncilVoteHistory = Readonly<{
   votedNo: number;
   votedYes: number;
   councillor: Account;
+  blockNum: number;
   __typename: 'CouncilVoteHistory';
 }>;
 
@@ -199,5 +200,6 @@ export type EthGovernanceVoteHistory = Readonly<{
   aye: boolean;
   balance: number;
   account: Account;
+  blockNum: number;
   __typename: 'EthGovernanceVoteHistory';
 }>;

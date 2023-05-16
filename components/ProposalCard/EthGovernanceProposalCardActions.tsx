@@ -6,16 +6,19 @@ import { useAtomValue } from 'jotai';
 import { metamaskAccountAtom } from 'store/account';
 import { apiAtom } from 'store/api';
 import { tokenDecimalsAtom } from 'store/token';
+import { eventsAtom } from 'store/events';
 
 import { useSubscription } from '@apollo/client';
 import SUBSCRIBE_VOTES_BY_PROPOSAL_ID from 'query/subscribeEthGovernanceVotesByProposalId.graphql';
 
 import type {
   EthGovernanceProposalMeta,
+  EthGovernanceVoteHistory,
   SubscribeEthVotesByProposalId
 } from 'types';
 import { extractErrorFromString } from 'utils/errors';
 import { convertTokenAmount } from 'utils/convertTokenAmount';
+import usePrevious from 'utils/usePrevious';
 
 import { Button } from 'components/ui-kit/Button';
 import { Typography } from 'components/ui-kit/Typography';
@@ -60,11 +63,17 @@ export function EthGovernanceProposalActions({
 }: EthGovernanceProposalActionsProps) {
   const [modalOpen, setModalOpen] = useState(false);
   const [voteState, setVoteState] = useState(INITIAL_STATE);
+  const [votes, setVotes] = useState<EthGovernanceVoteHistory[] | null>([]);
+  const prevVotes = usePrevious(votes);
 
   const api = useAtomValue(apiAtom);
   const metamaskAccount = useAtomValue(metamaskAccountAtom);
   const daoEthGovernanceContract = useDaoEthGovernanceContract();
   const tokenDecimals = useAtomValue(tokenDecimalsAtom);
+  const events = useAtomValue(eventsAtom);
+
+  const daoEthGovernanceVotedEventSignature =
+    api?.events.daoEthGovernance.Voted;
 
   useEffect(() => {
     setVoteState(INITIAL_STATE);
@@ -92,12 +101,53 @@ export function EthGovernanceProposalActions({
     }
   );
 
+  useEffect(() => {
+    const ethGovernanceVotedEvents = events
+      ?.filter(
+        (r) => r.event && daoEthGovernanceVotedEventSignature?.is(r.event)
+      )
+      .map((e) => e.toHuman())
+      .filter(
+        ({ event }) =>
+          `${(event as any)?.data?.daoId}-${
+            (event as any)?.data?.proposalIndex
+          }` === proposal.id
+      );
+
+    setVotes(
+      data?.ethGovernanceVoteHistories.map((voteHistory) => {
+        const { account, blockNum } = voteHistory;
+        const { id } = account;
+
+        const voteEvent = ethGovernanceVotedEvents?.find(
+          ({ event }) => id === (event as any)?.data.account
+        );
+
+        const prevVote = (prevVotes as any)?.find(
+          (vote: { blockNum: number }) => vote.blockNum === blockNum
+        );
+
+        if (voteEvent) {
+          const { data: voteData } = (voteEvent.event as any) || [];
+
+          return {
+            ...voteHistory,
+            aye: voteData?.aye,
+            balance: voteData?.balance
+          };
+        }
+
+        return prevVote || voteHistory;
+      }) as any
+    );
+  }, [events, data, proposal, prevVotes, daoEthGovernanceVotedEventSignature]);
+
   const ayes =
-    data?.ethGovernanceVoteHistories
+    votes
       ?.filter((x) => x.aye)
       .reduce((acc, vote) => acc + Number(vote.balance), 0) ?? 0;
   const nays =
-    data?.ethGovernanceVoteHistories
+    votes
       ?.filter((x) => !x.aye)
       .reduce((acc, vote) => acc + Number(vote.balance), 0) ?? 0;
 

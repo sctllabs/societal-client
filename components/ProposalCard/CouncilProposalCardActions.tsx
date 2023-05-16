@@ -1,9 +1,10 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-toastify';
 
 import { useAtomValue } from 'jotai';
 import { metamaskAccountAtom, substrateAccountAtom } from 'store/account';
 import { apiAtom } from 'store/api';
+import { eventsAtom } from 'store/events';
 
 import { useDaoCollectiveContract } from 'hooks/useDaoCollectiveContract';
 
@@ -19,6 +20,7 @@ import {
 } from 'constants/transaction';
 import type {
   CouncilProposalMeta,
+  CouncilVoteHistory,
   SubscribeCouncilVotesByProposalId,
   TxCallback,
   TxFailedCallback
@@ -30,6 +32,7 @@ import { Icon } from 'components/ui-kit/Icon';
 import { Typography } from 'components/ui-kit/Typography';
 import { Notification } from 'components/ui-kit/Notifications';
 import { extractError } from 'utils/errors';
+import usePrevious from 'utils/usePrevious';
 
 import styles from './ProposalCard.module.scss';
 
@@ -38,10 +41,16 @@ type CouncilProposalActionsProps = { proposal: CouncilProposalMeta };
 export function CouncilProposalActions({
   proposal
 }: CouncilProposalActionsProps) {
+  const [votes, setVotes] = useState<CouncilVoteHistory[] | null>([]);
+  const prevVotes = usePrevious(votes);
+
   const api = useAtomValue(apiAtom);
   const substrateAccount = useAtomValue(substrateAccountAtom);
   const metamaskAccount = useAtomValue(metamaskAccountAtom);
   const daoCollectiveContract = useDaoCollectiveContract();
+  const events = useAtomValue(eventsAtom);
+
+  const daoCouncilVotedEventSignature = api?.events.daoCouncil.Voted;
 
   const { data } = useSubscription<SubscribeCouncilVotesByProposalId>(
     SUBSCRIBE_VOTES_BY_PROPOSAL_ID,
@@ -49,6 +58,46 @@ export function CouncilProposalActions({
       variables: { proposalId: proposal.id }
     }
   );
+
+  useEffect(() => {
+    const councilVotedEvents = events
+      ?.filter((r) => r.event && daoCouncilVotedEventSignature?.is(r.event))
+      .map((e) => e.toHuman())
+      .filter(
+        ({ event }) =>
+          `${(event as any)?.data?.daoId}-${
+            (event as any)?.data?.proposalIndex
+          }` === proposal.id
+      );
+
+    setVotes(
+      data?.councilVoteHistories.map((voteHistory) => {
+        const { councillor, blockNum } = voteHistory;
+        const { id } = councillor;
+
+        const voteEvent = councilVotedEvents?.find(
+          ({ event }) => id === (event as any)?.data.account
+        );
+
+        const prevVote = (prevVotes as any)?.find(
+          (vote: { blockNum: number }) => vote.blockNum === blockNum
+        );
+
+        if (voteEvent) {
+          const { data: voteData } = (voteEvent.event as any) || [];
+
+          return {
+            ...voteHistory,
+            votedYes: voteData?.yes,
+            votedNo: voteData?.no,
+            approvedVote: !!parseInt(voteData?.yes as string, 10) || false
+          };
+        }
+
+        return prevVote || voteHistory;
+      }) as any
+    );
+  }, [events, data, proposal, prevVotes, daoCouncilVotedEventSignature]);
 
   const proposalWeightBound = useMemo(() => {
     const proposalWeightBoundArg = api?.tx.daoCouncil.close.meta.args.find(
@@ -204,12 +253,8 @@ export function CouncilProposalActions({
   const disabled = proposal.status !== 'Open';
   const disabledFinish =
     proposal.status === 'Executed' || proposal.status === 'Pending';
-  const ayes = data?.councilVoteHistories.filter(
-    (_vote) => _vote.approvedVote
-  ).length;
-  const nays = data?.councilVoteHistories.filter(
-    (_vote) => !_vote.approvedVote
-  ).length;
+  const ayes = votes?.filter((_vote) => _vote.approvedVote).length;
+  const nays = votes?.filter((_vote) => !_vote.approvedVote).length;
 
   return (
     <div className={styles['proposal-vote-buttons']}>

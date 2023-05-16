@@ -4,6 +4,7 @@ subscription SubscribeCouncilVotesByProposalId($proposalId: String!) {
     approvedVote
     votedNo
     votedYes
+    blockNum
     councillor {
       id
     }
