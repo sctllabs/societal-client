@@ -31,6 +31,10 @@ export type BountyMeta = {
   __typename: 'Bounty';
 };
 
+export type SubscribeBountyById = {
+  bountyById: BountyMeta;
+};
+
 export type SubscribeBountiesByDaoId = {
   bounties: BountyMeta[];
 };

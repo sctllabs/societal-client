@@ -1,16 +1,22 @@
-import { ChangeEventHandler, useEffect, useMemo, useState } from 'react';
-
+import {
+  ChangeEventHandler,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState
+} from 'react';
 import { toast } from 'react-toastify';
-
 import { useAtomValue } from 'jotai';
+import { formatBalance } from '@polkadot/util';
+
 import { bountiesAtom, selectedDaoBountyAtom } from 'store/bounty';
 import {
   accountsAtom,
   metamaskAccountAtom,
   substrateAccountAtom
 } from 'store/account';
-import { apiAtom, chainSymbolAtom } from 'store/api';
-import { tokenSymbolAtom } from 'store/token';
+import { apiAtom, chainDecimalsAtom, chainSymbolAtom } from 'store/api';
+import { tokenDecimalsAtom, tokenSymbolAtom } from 'store/token';
 
 import { parseMeta } from 'utils/parseMeta';
 import { bountySteps } from 'constants/steps';
@@ -45,6 +51,8 @@ export function DaoBountyInfo() {
   const chainSymbol = useAtomValue(chainSymbolAtom);
   const tokenSymbol = useAtomValue(tokenSymbolAtom);
   const accounts = useAtomValue(accountsAtom);
+  const chainDecimals = useAtomValue(chainDecimalsAtom);
+  const tokenDecimals = useAtomValue(tokenDecimalsAtom);
 
   const [modalOpen, setModalOpen] = useState(false);
   const [beneficiary, setBeneficiary] = useState<string | null>(null);
@@ -69,15 +77,18 @@ export function DaoBountyInfo() {
     setBeneficiary(null);
   }, [modalOpen]);
 
-  const onFailed: TxFailedCallback = (result) => {
-    toast.error(
-      <Notification
-        title="Transaction declined"
-        body={extractError(api, result)}
-        variant="error"
-      />
-    );
-  };
+  const onFailed: TxFailedCallback = useCallback(
+    (result) => {
+      toast.error(
+        <Notification
+          title="Transaction declined"
+          body={extractError(api, result)}
+          variant="error"
+        />
+      );
+    },
+    [api]
+  );
 
   const extendButton = useMemo(() => {
     const icon = <Icon name="refresh" size="xs" />;
@@ -112,7 +123,8 @@ export function DaoBountyInfo() {
     bounty?.dao.id,
     bounty?.index,
     metamaskAccount,
-    substrateAccount?.address
+    substrateAccount?.address,
+    onFailed
   ]);
 
   const awardButton = useMemo(() => {
@@ -138,7 +150,8 @@ export function DaoBountyInfo() {
     bounty?.dao.id,
     bounty?.index,
     metamaskAccount,
-    substrateAccount?.address
+    substrateAccount?.address,
+    onFailed
   ]);
 
   const claimButton = useMemo(() => {
@@ -163,7 +176,8 @@ export function DaoBountyInfo() {
     bounty?.dao.id,
     bounty?.index,
     metamaskAccount,
-    substrateAccount?.address
+    substrateAccount?.address,
+    onFailed
   ]);
 
   if (!bounty) {
@@ -238,7 +252,15 @@ export function DaoBountyInfo() {
           bounty.status === 'Extended') && (
           <div className={styles['award-container']}>
             <Typography variant="value3">
-              {bounty.value} {bounty.nativeToken ? chainSymbol : tokenSymbol}
+              {!Number.isNaN(bounty.value)
+                ? formatBalance(bounty.value?.replaceAll(',', '') || 0, {
+                    decimals:
+                      (bounty.nativeToken ? chainDecimals : tokenDecimals) || 0,
+                    withSi: false,
+                    forceUnit: '-'
+                  })
+                : ''}{' '}
+              {bounty.nativeToken ? chainSymbol : tokenSymbol}
             </Typography>
 
             <Dialog open={modalOpen} onOpenChange={handleModalOpen}>
@@ -281,7 +303,15 @@ export function DaoBountyInfo() {
         {bounty.status === 'Awarded' && (
           <div className={styles['award-container']}>
             <Typography variant="value3">
-              {bounty.value} {bounty.nativeToken ? chainSymbol : tokenSymbol}
+              {!Number.isNaN(bounty.value)
+                ? formatBalance(bounty.value?.replaceAll(',', '') || 0, {
+                    decimals:
+                      (bounty.nativeToken ? chainDecimals : tokenDecimals) || 0,
+                    withSi: false,
+                    forceUnit: '-'
+                  })
+                : ''}{' '}
+              {bounty.nativeToken ? chainSymbol : tokenSymbol}
             </Typography>
             {claimButton}
           </div>

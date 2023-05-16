@@ -1,12 +1,13 @@
 import { useCallback, useMemo, useState } from 'react';
-
 import { toast } from 'react-toastify';
 import { useAtomValue } from 'jotai';
-import { apiAtom, chainSymbolAtom } from 'store/api';
-import { metamaskAccountAtom, substrateAccountAtom } from 'store/account';
-import { tokenSymbolAtom } from 'store/token';
-
+import { formatBalance } from '@polkadot/util';
 import { evmToAddress } from '@polkadot/util-crypto';
+
+import { apiAtom, chainDecimalsAtom, chainSymbolAtom } from 'store/api';
+import { metamaskAccountAtom, substrateAccountAtom } from 'store/account';
+import { tokenDecimalsAtom, tokenSymbolAtom } from 'store/token';
+
 import type { BountyMeta } from 'types';
 
 import { Typography } from 'components/ui-kit/Typography';
@@ -35,6 +36,8 @@ export function BountyCardActions({ bounty }: BountyCardActionsProps) {
   const metamaskAccount = useAtomValue(metamaskAccountAtom);
   const chainSymbol = useAtomValue(chainSymbolAtom);
   const tokenSymbol = useAtomValue(tokenSymbolAtom);
+  const chainDecimals = useAtomValue(chainDecimalsAtom);
+  const tokenDecimals = useAtomValue(tokenDecimalsAtom);
 
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -196,7 +199,19 @@ export function BountyCardActions({ bounty }: BountyCardActionsProps) {
                         >
                           <div className={styles['democracy-modal-deposit']}>
                             <Typography variant="title4">
-                              {bounty.fee}
+                              {!Number.isNaN(bounty.fee)
+                                ? formatBalance(
+                                    bounty.fee?.replaceAll(',', '') || 0,
+                                    {
+                                      decimals:
+                                        (bounty.nativeToken
+                                          ? chainDecimals
+                                          : tokenDecimals) || 0,
+                                      withSi: false,
+                                      forceUnit: '-'
+                                    }
+                                  )
+                                : ''}
                             </Typography>
                             <Typography variant="body2">
                               {bounty.nativeToken ? chainSymbol : tokenSymbol}

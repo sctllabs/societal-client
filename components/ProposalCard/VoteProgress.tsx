@@ -1,7 +1,17 @@
 import { useMemo } from 'react';
+import { useAtomValue } from 'jotai';
+import { formatBalance } from '@polkadot/util';
+
+import { tokenDecimalsAtom } from 'store/token';
 
 import { Typography } from 'components/ui-kit/Typography';
 import { Icon } from 'components/ui-kit/Icon';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger
+} from 'components/ui-kit/Tooltip';
 
 import styles from './ProposalCard.module.scss';
 
@@ -11,6 +21,8 @@ type VoteProgressProps = {
 };
 
 export function VoteProgress({ ayes, nays }: VoteProgressProps) {
+  const tokenDecimals = useAtomValue(tokenDecimalsAtom);
+
   const [ayesPercentage, naysPercentage] = useMemo(() => {
     let _ayesPercentage = (ayes / (ayes + nays)) * 100;
     let _naysPercentage = (nays / (ayes + nays)) * 100;
@@ -33,7 +45,29 @@ export function VoteProgress({ ayes, nays }: VoteProgressProps) {
           style={{ left: `${naysPercentage / 2}%` }}
           className={styles.percentage}
         >
-          <Typography variant="value5">{nays}</Typography>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Typography variant="value5">
+                  {tokenDecimals
+                    ? formatBalance(`${nays}`, {
+                        decimals: tokenDecimals || 0,
+                        withSi: false,
+                        forceUnit: '-'
+                      })
+                    : nays}
+                </Typography>
+              </TooltipTrigger>
+              <TooltipContent>
+                {tokenDecimals
+                  ? (Number(nays) / Number(10 ** tokenDecimals)).toFixed(
+                      tokenDecimals
+                    )
+                  : nays}
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+
           <Typography variant="caption2">
             {naysPercentage.toFixed(0)}%
           </Typography>
@@ -48,7 +82,29 @@ export function VoteProgress({ ayes, nays }: VoteProgressProps) {
           style={{ right: `${(100 - naysPercentage) / 2}%` }}
           className={styles.percentage}
         >
-          <Typography variant="value5">{ayes}</Typography>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Typography variant="value5">
+                  {tokenDecimals
+                    ? formatBalance(`${ayes}`, {
+                        decimals: tokenDecimals || 0,
+                        withSi: false,
+                        forceUnit: '-'
+                      })
+                    : ayes}
+                </Typography>
+              </TooltipTrigger>
+              <TooltipContent>
+                {tokenDecimals
+                  ? (Number(ayes) / Number(10 ** tokenDecimals)).toFixed(
+                      tokenDecimals
+                    )
+                  : ayes}
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+
           <Typography variant="caption2">
             {ayesPercentage.toFixed(0)}%
           </Typography>
