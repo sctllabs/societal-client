@@ -312,7 +312,7 @@ export function TaskCard({ proposal, currentBlock }: TaskCardProps) {
                   <Typography variant="title5">
                     {/* TODO */}
                     {!Number.isNaN(proposal.kind.value)
-                      ? formatBalance(proposal.kind.value, {
+                      ? formatBalance(proposal.kind.value.replaceAll(',', ''), {
                           decimals: decimals || 0,
                           withSi: false,
                           forceUnit: '-'

@@ -292,11 +292,17 @@ export function ProposalCard({ proposal }: ProposalCardProps) {
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <Typography variant="title5">
-                        {formatBalance(voteThreshold || 0, {
-                          decimals: tokenDecimals || 0,
-                          withSi: false,
-                          forceUnit: '-'
-                        })}
+                        {/* TODO */}
+                        {!Number.isNaN(voteThreshold)
+                          ? formatBalance(
+                              voteThreshold?.replaceAll(',', '') || 0,
+                              {
+                                decimals: tokenDecimals || 0,
+                                withSi: false,
+                                forceUnit: '-'
+                              }
+                            )
+                          : ''}
                       </Typography>
                     </TooltipTrigger>
                     <TooltipContent>{voteThreshold}</TooltipContent>
@@ -357,7 +363,7 @@ export function ProposalCard({ proposal }: ProposalCardProps) {
                 <Typography variant="title5">
                   {/* TODO */}
                   {!Number.isNaN(proposal.kind.value)
-                    ? formatBalance(proposal.kind.value, {
+                    ? formatBalance(proposal.kind.value.replaceAll(',', ''), {
                         decimals: decimals || 0,
                         withSi: false,
                         forceUnit: '-'
@@ -375,7 +381,7 @@ export function ProposalCard({ proposal }: ProposalCardProps) {
                 <Typography variant="title5">
                   {/* TODO */}
                   {!Number.isNaN(proposal.kind.fee)
-                    ? formatBalance(proposal.kind.fee, {
+                    ? formatBalance(proposal.kind.fee.replaceAll(',', ''), {
                         decimals: decimals || 0,
                         withSi: false,
                         forceUnit: '-'
