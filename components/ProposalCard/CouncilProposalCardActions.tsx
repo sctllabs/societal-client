@@ -70,10 +70,13 @@ export function CouncilProposalActions({
           }` === proposal.id
       );
 
-    setVotes(
+    const accounts: string[] = [];
+    let voteAggregator =
       data?.councilVoteHistories.map((voteHistory) => {
         const { councillor, blockNum } = voteHistory;
         const { id } = councillor;
+
+        accounts.push(id);
 
         const voteEvent = councilVotedEvents?.find(
           ({ event }) => id === (event as any)?.data.account
@@ -90,13 +93,52 @@ export function CouncilProposalActions({
             ...voteHistory,
             votedYes: voteData?.yes,
             votedNo: voteData?.no,
-            approvedVote: !!parseInt(voteData?.yes as string, 10) || false
+            approvedVote: voteData?.voted
           };
         }
 
         return prevVote || voteHistory;
-      }) as any
-    );
+      }) || [];
+
+    const newVotes =
+      councilVotedEvents
+        ?.filter(
+          ({ event }) => !accounts.includes((event as any)?.data.account)
+        )
+        .map((event) => {
+          const { data: voteData } = (event.event as any) || [];
+          const { daoId, proposalIndex, account, yes, no } = voteData || {};
+
+          accounts.push(account);
+
+          return {
+            id: `${daoId}-${proposalIndex}-${account}`,
+            approvedVote: !!parseInt(voteData?.yes as string, 10) || false,
+            votedNo: no,
+            votedYes: yes,
+            councillor: { id: account },
+            blockNum: undefined,
+            __typename: 'CouncilVoteHistory'
+          };
+        }) || [];
+    if (newVotes.length) {
+      voteAggregator = voteAggregator.concat(newVotes);
+    }
+
+    const oldPendingVotes =
+      (prevVotes as any)?.filter(
+        (vote: { councillor: { id: string } }) =>
+          !accounts.includes(vote.councillor.id)
+      ) || [];
+    if (oldPendingVotes.length) {
+      voteAggregator = voteAggregator.concat(oldPendingVotes);
+    }
+
+    if (!voteAggregator.length) {
+      return;
+    }
+
+    setVotes(voteAggregator);
   }, [events, data, proposal, prevVotes, daoCouncilVotedEventSignature]);
 
   const proposalWeightBound = useMemo(() => {

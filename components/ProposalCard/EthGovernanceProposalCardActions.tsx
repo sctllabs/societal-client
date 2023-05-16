@@ -114,10 +114,14 @@ export function EthGovernanceProposalActions({
           }` === proposal.id
       );
 
-    setVotes(
+    const accounts: string[] = [];
+
+    let voteAggregator =
       data?.ethGovernanceVoteHistories.map((voteHistory) => {
         const { account, blockNum } = voteHistory;
         const { id } = account;
+
+        accounts.push(id);
 
         const voteEvent = ethGovernanceVotedEvents?.find(
           ({ event }) => id === (event as any)?.data.account
@@ -129,17 +133,59 @@ export function EthGovernanceProposalActions({
 
         if (voteEvent) {
           const { data: voteData } = (voteEvent.event as any) || [];
+          const { aye, balance } = (voteData as any)?.vote || {};
 
           return {
             ...voteHistory,
-            aye: voteData?.aye,
-            balance: voteData?.balance
+            aye,
+            balance
           };
         }
 
         return prevVote || voteHistory;
-      }) as any
-    );
+      }) || [];
+
+    const newVotes =
+      ethGovernanceVotedEvents
+        ?.filter(
+          ({ event }) => !accounts.includes((event as any)?.data.account)
+        )
+        .map((event) => {
+          const { data: voteData } = (event.event as any) || [];
+          const { daoId, proposalIndex, account, vote } = voteData || {};
+          const { aye, balance } = vote || {};
+
+          accounts.push(account);
+
+          return {
+            id: `${daoId}-${proposalIndex}-${account}`,
+            account: { id: account },
+            aye,
+            balance: (balance as string).includes(',')
+              ? balance.replaceAll(',', '')
+              : balance,
+            blockNum: undefined,
+            __typename: 'EthGovernanceVoteHistory'
+          };
+        }) || [];
+    if (newVotes.length) {
+      voteAggregator = voteAggregator.concat(newVotes);
+    }
+
+    const oldPendingVotes =
+      (prevVotes as any)?.filter(
+        (vote: { account: { id: string } }) =>
+          !accounts.includes(vote.account.id)
+      ) || [];
+    if (oldPendingVotes.length) {
+      voteAggregator = voteAggregator.concat(oldPendingVotes);
+    }
+
+    if (!voteAggregator.length) {
+      return;
+    }
+
+    setVotes(voteAggregator);
   }, [events, data, proposal, prevVotes, daoEthGovernanceVotedEventSignature]);
 
   const ayes =
