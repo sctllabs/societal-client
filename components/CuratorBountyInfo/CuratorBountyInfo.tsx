@@ -1,4 +1,10 @@
-import { ChangeEventHandler, useEffect, useMemo, useState } from 'react';
+import {
+  ChangeEventHandler,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState
+} from 'react';
 
 import { toast } from 'react-toastify';
 
@@ -71,15 +77,18 @@ export function CuratorBountyInfo() {
     setBeneficiary(null);
   }, [modalOpen]);
 
-  const onFailed: TxFailedCallback = (result) => {
-    toast.error(
-      <Notification
-        title="Transaction declined"
-        body={extractError(api, result)}
-        variant="error"
-      />
-    );
-  };
+  const onFailed: TxFailedCallback = useCallback(
+    (result) => {
+      toast.error(
+        <Notification
+          title="Transaction declined"
+          body={extractError(api, result)}
+          variant="error"
+        />
+      );
+    },
+    [api]
+  );
 
   const extendButton = useMemo(() => {
     const icon = <Icon name="refresh" size="xs" />;
@@ -114,7 +123,8 @@ export function CuratorBountyInfo() {
     bounty?.dao.id,
     bounty?.index,
     metamaskAccount,
-    substrateAccount?.address
+    substrateAccount?.address,
+    onFailed
   ]);
 
   const awardButton = useMemo(() => {
@@ -140,7 +150,8 @@ export function CuratorBountyInfo() {
     bounty?.dao.id,
     bounty?.index,
     metamaskAccount,
-    substrateAccount?.address
+    substrateAccount?.address,
+    onFailed
   ]);
 
   const claimButton = useMemo(() => {
@@ -165,7 +176,8 @@ export function CuratorBountyInfo() {
     bounty?.dao.id,
     bounty?.index,
     metamaskAccount,
-    substrateAccount?.address
+    substrateAccount?.address,
+    onFailed
   ]);
 
   if (!bounty) {
