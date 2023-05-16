@@ -1,6 +1,8 @@
 import { useMemo } from 'react';
 import clsx from 'clsx';
 import { useAtomValue } from 'jotai';
+import { useSubscription } from '@apollo/client';
+
 import { accountsAtom } from 'store/account';
 import { currentDaoAtom } from 'store/dao';
 import {
@@ -10,6 +12,7 @@ import {
   currentBlockAtom
 } from 'store/api';
 import { tokenDecimalsAtom, tokenSymbolAtom } from 'store/token';
+import SUBSCRIBE_BOUNTY_BY_ID from 'query/subscribeBountyById.graphql';
 
 import { getProposalSettings } from 'utils/getProposalSettings';
 import { parseMeta } from 'utils/parseMeta';
@@ -28,6 +31,7 @@ import type {
   ProposeCuratorProposal,
   RemoveMemberProposal,
   SpendProposal,
+  SubscribeBountyById,
   TransferProposal
 } from 'types';
 
@@ -78,6 +82,20 @@ export function ProposalCard({ proposal }: ProposalCardProps) {
   const chainDecimals = useAtomValue(chainDecimalsAtom);
   const tokenSymbol = useAtomValue(tokenSymbolAtom);
   const tokenDecimals = useAtomValue(tokenDecimalsAtom);
+
+  const { data } = useSubscription<SubscribeBountyById>(
+    SUBSCRIBE_BOUNTY_BY_ID,
+    {
+      variables: {
+        id: `${proposal.dao.id}-${
+          (proposal.kind as ProposeCuratorProposal).bountyId
+        }`
+      },
+      skip: proposal.kind.__typename !== 'ProposeCurator'
+    }
+  );
+
+  const bounty = data?.bountyById;
 
   const proposalStatus: ProposalStatus = useMemo(() => {
     switch (proposal.status) {
@@ -164,6 +182,13 @@ export function ProposalCard({ proposal }: ProposalCardProps) {
       case 'CreateBounty': {
         return chainDecimals;
       }
+      case 'ProposeCurator': {
+        if (bounty) {
+          return bounty.nativeToken ? chainDecimals : tokenDecimals;
+        }
+
+        return chainDecimals;
+      }
       case 'CreateTokenBounty': {
         return tokenDecimals;
       }
@@ -177,7 +202,7 @@ export function ProposalCard({ proposal }: ProposalCardProps) {
         return null;
       }
     }
-  }, [proposal.kind.__typename, chainDecimals, tokenDecimals]);
+  }, [proposal.kind.__typename, chainDecimals, tokenDecimals, bounty]);
 
   const blockNumber = useMemo(
     () =>
@@ -292,7 +317,6 @@ export function ProposalCard({ proposal }: ProposalCardProps) {
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <Typography variant="title5">
-                        {/* TODO */}
                         {!Number.isNaN(voteThreshold)
                           ? formatBalance(
                               voteThreshold?.replaceAll(',', '') || 0,
@@ -305,7 +329,13 @@ export function ProposalCard({ proposal }: ProposalCardProps) {
                           : ''}
                       </Typography>
                     </TooltipTrigger>
-                    <TooltipContent>{voteThreshold}</TooltipContent>
+                    <TooltipContent>
+                      {tokenDecimals
+                        ? (
+                            Number(voteThreshold) / Number(10 ** tokenDecimals)
+                          ).toFixed(tokenDecimals)
+                        : voteThreshold}
+                    </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
               </div>

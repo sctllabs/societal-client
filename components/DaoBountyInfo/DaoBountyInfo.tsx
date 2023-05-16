@@ -5,18 +5,18 @@ import {
   useMemo,
   useState
 } from 'react';
-
 import { toast } from 'react-toastify';
-
 import { useAtomValue } from 'jotai';
+import { formatBalance } from '@polkadot/util';
+
 import { bountiesAtom, selectedDaoBountyAtom } from 'store/bounty';
 import {
   accountsAtom,
   metamaskAccountAtom,
   substrateAccountAtom
 } from 'store/account';
-import { apiAtom, chainSymbolAtom } from 'store/api';
-import { tokenSymbolAtom } from 'store/token';
+import { apiAtom, chainDecimalsAtom, chainSymbolAtom } from 'store/api';
+import { tokenDecimalsAtom, tokenSymbolAtom } from 'store/token';
 
 import { parseMeta } from 'utils/parseMeta';
 import { bountySteps } from 'constants/steps';
@@ -51,6 +51,8 @@ export function DaoBountyInfo() {
   const chainSymbol = useAtomValue(chainSymbolAtom);
   const tokenSymbol = useAtomValue(tokenSymbolAtom);
   const accounts = useAtomValue(accountsAtom);
+  const chainDecimals = useAtomValue(chainDecimalsAtom);
+  const tokenDecimals = useAtomValue(tokenDecimalsAtom);
 
   const [modalOpen, setModalOpen] = useState(false);
   const [beneficiary, setBeneficiary] = useState<string | null>(null);
@@ -250,7 +252,15 @@ export function DaoBountyInfo() {
           bounty.status === 'Extended') && (
           <div className={styles['award-container']}>
             <Typography variant="value3">
-              {bounty.value} {bounty.nativeToken ? chainSymbol : tokenSymbol}
+              {!Number.isNaN(bounty.value)
+                ? formatBalance(bounty.value?.replaceAll(',', '') || 0, {
+                    decimals:
+                      (bounty.nativeToken ? chainDecimals : tokenDecimals) || 0,
+                    withSi: false,
+                    forceUnit: '-'
+                  })
+                : ''}{' '}
+              {bounty.nativeToken ? chainSymbol : tokenSymbol}
             </Typography>
 
             <Dialog open={modalOpen} onOpenChange={handleModalOpen}>
@@ -293,7 +303,15 @@ export function DaoBountyInfo() {
         {bounty.status === 'Awarded' && (
           <div className={styles['award-container']}>
             <Typography variant="value3">
-              {bounty.value} {bounty.nativeToken ? chainSymbol : tokenSymbol}
+              {!Number.isNaN(bounty.value)
+                ? formatBalance(bounty.value?.replaceAll(',', '') || 0, {
+                    decimals:
+                      (bounty.nativeToken ? chainDecimals : tokenDecimals) || 0,
+                    withSi: false,
+                    forceUnit: '-'
+                  })
+                : ''}{' '}
+              {bounty.nativeToken ? chainSymbol : tokenSymbol}
             </Typography>
             {claimButton}
           </div>

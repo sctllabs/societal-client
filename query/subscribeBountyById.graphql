@@ -1,0 +1,6 @@
+subscription SubscribeBountyById($id: String!) {
+  bountyById(id: $id) {
+    id
+    nativeToken
+  }
+}
