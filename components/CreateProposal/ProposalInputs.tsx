@@ -281,7 +281,7 @@ export function ProposalInputs({
                         <TooltipContent>
                           The reserved upfront payment for a curator for work
                           related to the bounty. <br />
-                          Should be equal or more than bounty amount.
+                          Should be less than bounty amount.
                         </TooltipContent>
                       </Tooltip>
                     </TooltipProvider>
