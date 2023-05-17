@@ -5,8 +5,8 @@ import { formatDistance } from 'date-fns';
 import { useAtom, useAtomValue } from 'jotai';
 import {
   chainDecimalsAtom,
-  chainSymbolAtom,
-  currentBlockAtom
+  chainSymbolAtom
+  // currentBlockAtom
 } from 'store/api';
 import { tokenDecimalsAtom, tokenSymbolAtom } from 'store/token';
 import { selectedDaoBountyAtom } from 'store/bounty';
@@ -14,7 +14,7 @@ import { formatBalance } from '@polkadot/util';
 
 import type { BountyMeta } from 'types';
 import { Card } from 'components/ui-kit/Card';
-import { Countdown } from 'components/Countdown';
+// import { Countdown } from 'components/Countdown';
 import { Typography } from 'components/ui-kit/Typography';
 import { Icon } from 'components/ui-kit/Icon';
 import { Avatar } from 'components/ui-kit/Avatar';
@@ -27,7 +27,7 @@ export type BountyCardProps = {
 };
 
 export function BountyCard({ bounty }: BountyCardProps) {
-  const currentBlock = useAtomValue(currentBlockAtom);
+  // const currentBlock = useAtomValue(currentBlockAtom);
   const tokenSymbol = useAtomValue(tokenSymbolAtom);
   const currencySymbol = useAtomValue(chainSymbolAtom);
   const chainDecimals = useAtomValue(chainDecimalsAtom);
@@ -56,30 +56,30 @@ export function BountyCard({ bounty }: BountyCardProps) {
     }
   }, [bounty.status]);
 
-  const countdown = useMemo(() => {
-    if (!currentBlock) {
-      return null;
-    }
+  // const countdown = useMemo(() => {
+  //   if (!currentBlock) {
+  //     return null;
+  //   }
 
-    if (bounty.status === 'Created') {
-      return null;
-    }
+  //   if (bounty.status === 'Created') {
+  //     return null;
+  //   }
 
-    return (
-      <Countdown
-        endBlock={
-          bounty.blockNum + bounty.dao.policy.bountyUpdatePeriod - currentBlock
-        }
-        orientation="horizontal"
-        typography="value5"
-      />
-    );
-  }, [
-    bounty.blockNum,
-    bounty.dao.policy.bountyUpdatePeriod,
-    bounty.status,
-    currentBlock
-  ]);
+  //   return (
+  //     <Countdown
+  //       endBlock={
+  //         bounty.blockNum + bounty.dao.policy.bountyUpdatePeriod - currentBlock
+  //       }
+  //       orientation="horizontal"
+  //       typography="value5"
+  //     />
+  //   );
+  // }, [
+  //   bounty.blockNum,
+  //   bounty.dao.policy.bountyUpdatePeriod,
+  //   bounty.status,
+  //   currentBlock
+  // ]);
 
   const distance = formatDistance(new Date(bounty.createdAt), new Date());
   const { title, description } = bounty.description
@@ -106,7 +106,7 @@ export function BountyCard({ bounty }: BountyCardProps) {
             />
             <Typography variant="title7">{bountyStatus}</Typography>
           </div>
-          {countdown}
+          {/* {countdown} */}
         </div>
         <div className={styles.content}>
           <div className={styles['title-container']}>

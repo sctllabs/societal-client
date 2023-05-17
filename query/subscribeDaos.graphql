@@ -1,7 +1,11 @@
 subscription DaosSubscription {
-  daos(limit: 100) {
+  daos(
+    orderBy: blockNum_ASC
+    limit: 100
+  ) {
     id
     name
     metadata
+    blockNum
   }
 }
