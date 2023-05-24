@@ -7,8 +7,10 @@ import { evmToAddress } from '@polkadot/util-crypto';
 import { apiAtom, chainDecimalsAtom, chainSymbolAtom } from 'store/api';
 import { metamaskAccountAtom, substrateAccountAtom } from 'store/account';
 import { tokenDecimalsAtom, tokenSymbolAtom } from 'store/token';
+import { useDaoBountiesContract } from 'hooks/useDaoBountiesContract';
+import { extractError } from 'utils/errors';
 
-import type { BountyMeta } from 'types';
+import type { BountyMeta, TxFailedCallback } from 'types';
 
 import { Typography } from 'components/ui-kit/Typography';
 import { Button } from 'components/ui-kit/Button';
@@ -39,6 +41,8 @@ export function BountyCardActions({ bounty }: BountyCardActionsProps) {
   const chainDecimals = useAtomValue(chainDecimalsAtom);
   const tokenDecimals = useAtomValue(tokenDecimalsAtom);
 
+  const daoBountiesContract = useDaoBountiesContract();
+
   const [modalOpen, setModalOpen] = useState(false);
 
   const onSuccess = useCallback(() => {
@@ -52,21 +56,67 @@ export function BountyCardActions({ bounty }: BountyCardActionsProps) {
     setModalOpen(false);
   }, []);
 
-  const onFailed = useCallback(() => {
-    toast.error(
-      <Notification
-        title="Transaction declined"
-        body="Transaction was declined."
-        variant="error"
-      />
-    );
-  }, []);
+  const onFailed: TxFailedCallback = useCallback(
+    (result) =>
+      toast.error(
+        <Notification
+          title="Transaction declined"
+          body={extractError(api, result)}
+          variant="error"
+        />
+      ),
+    [api]
+  );
 
   const handleModalOpen = (value: boolean) => setModalOpen(value);
 
-  const handleUnassign = useCallback(() => {}, []);
+  const handleUnassign = useCallback(async () => {
+    if (!metamaskAccount) {
+      return;
+    }
 
-  const handleAccept = useCallback(() => {}, []);
+    try {
+      await daoBountiesContract
+        ?.connect(metamaskAccount)
+        .unassignCurator(bounty.dao.id, bounty.index);
+      onSuccess();
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error(e);
+      onFailed(null);
+    }
+  }, [
+    daoBountiesContract,
+    bounty.dao.id,
+    bounty.index,
+    metamaskAccount,
+    onSuccess,
+    onFailed
+  ]);
+
+  const handleAccept = useCallback(async () => {
+    if (!metamaskAccount) {
+      return;
+    }
+
+    try {
+      await daoBountiesContract
+        ?.connect(metamaskAccount)
+        .acceptCurator(bounty.dao.id, bounty.index);
+      onSuccess();
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error(e);
+      onFailed(null);
+    }
+  }, [
+    daoBountiesContract,
+    bounty.dao.id,
+    bounty.index,
+    metamaskAccount,
+    onSuccess,
+    onFailed
+  ]);
 
   const unassignButton = useMemo(() => {
     if (metamaskAccount) {

@@ -17,6 +17,7 @@ import {
 } from 'store/account';
 import { apiAtom, chainDecimalsAtom, chainSymbolAtom } from 'store/api';
 import { tokenDecimalsAtom, tokenSymbolAtom } from 'store/token';
+import { useDaoBountiesContract } from 'hooks/useDaoBountiesContract';
 
 import { parseMeta } from 'utils/parseMeta';
 import { bountySteps } from 'constants/steps';
@@ -54,6 +55,8 @@ export function CuratorBountyInfo() {
   const chainDecimals = useAtomValue(chainDecimalsAtom);
   const tokenDecimals = useAtomValue(tokenDecimalsAtom);
 
+  const daoBountiesContract = useDaoBountiesContract();
+
   const [modalOpen, setModalOpen] = useState(false);
   const [beneficiary, setBeneficiary] = useState<string | null>(null);
 
@@ -63,7 +66,7 @@ export function CuratorBountyInfo() {
     (_bounty) => _bounty.id === selectedCuratorBounty
   );
 
-  const onSuccess = () => {
+  const onSuccess = useCallback(() => {
     toast.success(
       <Notification
         title="Transaction"
@@ -73,7 +76,7 @@ export function CuratorBountyInfo() {
     );
 
     setModalOpen(false);
-  };
+  }, []);
 
   useEffect(() => {
     setBeneficiary(null);
@@ -92,13 +95,86 @@ export function CuratorBountyInfo() {
     [api]
   );
 
+  const handleAward = useCallback(async () => {
+    if (!metamaskAccount) {
+      return;
+    }
+
+    try {
+      await daoBountiesContract
+        ?.connect(metamaskAccount)
+        .awardBounty(bounty?.dao.id, bounty?.index, beneficiary);
+      onSuccess();
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error(e);
+      onFailed(null);
+    }
+  }, [
+    daoBountiesContract,
+    bounty?.dao.id,
+    bounty?.index,
+    beneficiary,
+    metamaskAccount,
+    onSuccess,
+    onFailed
+  ]);
+
+  const handleClaim = useCallback(async () => {
+    if (!metamaskAccount) {
+      return;
+    }
+
+    try {
+      await daoBountiesContract
+        ?.connect(metamaskAccount)
+        .claimBounty(bounty?.dao.id, bounty?.index);
+      onSuccess();
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error(e);
+      onFailed(null);
+    }
+  }, [
+    daoBountiesContract,
+    bounty?.dao.id,
+    bounty?.index,
+    metamaskAccount,
+    onSuccess,
+    onFailed
+  ]);
+
+  const handleExtend = useCallback(async () => {
+    if (!metamaskAccount) {
+      return;
+    }
+
+    try {
+      await daoBountiesContract
+        ?.connect(metamaskAccount)
+        .extendBounty(bounty?.dao.id, bounty?.index);
+      onSuccess();
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error(e);
+      onFailed(null);
+    }
+  }, [
+    daoBountiesContract,
+    bounty?.dao.id,
+    bounty?.index,
+    metamaskAccount,
+    onSuccess,
+    onFailed
+  ]);
+
   const extendButton = useMemo(() => {
     const icon = <Icon name="refresh" size="xs" />;
     const text = 'Extend Bounty';
 
     if (metamaskAccount) {
       return (
-        <Button variant="text">
+        <Button variant="text" onClick={handleExtend}>
           {icon}
           {text}
         </Button>
@@ -126,13 +202,19 @@ export function CuratorBountyInfo() {
     bounty?.index,
     metamaskAccount,
     substrateAccount?.address,
-    onFailed
+    handleExtend,
+    onFailed,
+    onSuccess
   ]);
 
   const awardButton = useMemo(() => {
     const text = 'Award';
     if (metamaskAccount) {
-      return <Button>{text}</Button>;
+      return (
+        <Button variant="filled" onClick={handleAward}>
+          {text}
+        </Button>
+      );
     }
 
     return (
@@ -153,13 +235,17 @@ export function CuratorBountyInfo() {
     bounty?.index,
     metamaskAccount,
     substrateAccount?.address,
-    onFailed
+    handleAward,
+    onFailed,
+    onSuccess
   ]);
 
   const claimButton = useMemo(() => {
     const text = 'Claim';
     if (metamaskAccount) {
-      return <Button>{text}</Button>;
+      <Button variant="filled" onClick={handleClaim}>
+        {text}
+      </Button>;
     }
 
     return (
@@ -179,7 +265,9 @@ export function CuratorBountyInfo() {
     bounty?.index,
     metamaskAccount,
     substrateAccount?.address,
-    onFailed
+    handleClaim,
+    onFailed,
+    onSuccess
   ]);
 
   if (!bounty) {
