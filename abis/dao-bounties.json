@@ -88,6 +88,25 @@
     "type": "event"
   },
   {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint32",
+        "name": "dao_id",
+        "type": "uint32"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint32",
+        "name": "bounty_id",
+        "type": "uint32"
+      }
+    ],
+    "name": "BountyExtended",
+    "type": "event"
+  },
+  {
     "inputs": [
       {
         "internalType": "uint32",
@@ -161,6 +180,24 @@
       }
     ],
     "name": "claimBounty",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint32",
+        "name": "dao_id",
+        "type": "uint32"
+      },
+      {
+        "internalType": "uint32",
+        "name": "bounty_id",
+        "type": "uint32"
+      }
+    ],
+    "name": "extendBounty",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
