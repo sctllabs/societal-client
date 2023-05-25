@@ -25,6 +25,13 @@ import {
 } from 'components/ui-kit/Dialog';
 import { CreateProposal } from 'components/CreateProposal';
 import { BountyProposalEnum } from 'components/CreateProposal/types';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger
+} from 'components/ui-kit/Tooltip';
+import { Icon } from 'components/ui-kit/Icon';
 
 import styles from './BountyCard.module.scss';
 
@@ -218,10 +225,18 @@ export function BountyCardActions({ bounty }: BountyCardActionsProps) {
       {bounty.status === 'CuratorProposed' &&
         bounty.curator?.id === accountAddress && (
           <>
-            <Typography variant="body2">
-              You have been designated curator for this bounty
-            </Typography>
-
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className={styles['hint-logo-icon']}>
+                    <Icon name="noti-info-stroke" size="xs" />
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent>
+                  You have been designated curator for this bounty
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
             <div className={styles['buttons-container']}>
               {unassignButton}
 
