@@ -22,6 +22,7 @@ export type AppConfig = {
   daoMembershipContractAddress: string;
   daoDemocracyContractAddress: string;
   daoEthGovernanceContractAddress: string;
+  daoBountiesContractAddress: string;
   tokenNetwork: string;
   tokenApiKey: string;
   expectedBlockTimeInSeconds: number;
@@ -47,6 +48,8 @@ const daoDemocracyContractAddress =
   process.env.NEXT_PUBLIC_DAO_DEMOCRACY_CONTRACT_ADDRESS;
 const daoEthGovernanceContractAddress =
   process.env.NEXT_PUBLIC_DAO_ETH_GOVERNANCE_CONTRACT_ADDRESS;
+const daoBountiesContractAddress =
+  process.env.NEXT_PUBLIC_DAO_BOUNTIES_CONTRACT_ADDRESS;
 const tokenNetwork = process.env.NEXT_PUBLIC_TOKEN_NETWORK;
 const tokenApiKey = process.env.NEXT_PUBLIC_TOKEN_API_KEY;
 const expectedBlockTimeInSecondsString =
@@ -84,6 +87,10 @@ assert(
   daoEthGovernanceContractAddress,
   'DAO_ETH_GOVERNANCE_CONTRACT_ADDRESS was not provided.'
 );
+assert(
+  daoBountiesContractAddress,
+  'NEXT_PUBLIC_DAO_BOUNTIES_CONTRACT_ADDRESS was not provided.'
+);
 assert(tokenNetwork, 'TOKEN_NETWORK was not provided.');
 assert(tokenApiKey, 'TOKEN_API_KEY was not provided.');
 assert(
@@ -112,6 +119,7 @@ export const appConfig: AppConfig = {
   daoMembershipContractAddress,
   daoDemocracyContractAddress,
   daoEthGovernanceContractAddress,
+  daoBountiesContractAddress,
   tokenNetwork,
   tokenApiKey,
   expectedBlockTimeInSeconds,

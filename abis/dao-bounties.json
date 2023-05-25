@@ -1,0 +1,186 @@
+[
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint32",
+        "name": "dao_id",
+        "type": "uint32"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint32",
+        "name": "bounty_id",
+        "type": "uint32"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "beneficiary",
+        "type": "address"
+      }
+    ],
+    "name": "BountyAwarded",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint32",
+        "name": "dao_id",
+        "type": "uint32"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint32",
+        "name": "bounty_id",
+        "type": "uint32"
+      }
+    ],
+    "name": "BountyClaimed",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint32",
+        "name": "dao_id",
+        "type": "uint32"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint32",
+        "name": "bounty_id",
+        "type": "uint32"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "curator",
+        "type": "address"
+      }
+    ],
+    "name": "BountyCuratorAccepted",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint32",
+        "name": "dao_id",
+        "type": "uint32"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint32",
+        "name": "bounty_id",
+        "type": "uint32"
+      }
+    ],
+    "name": "BountyCuratorUnassigned",
+    "type": "event"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint32",
+        "name": "dao_id",
+        "type": "uint32"
+      },
+      {
+        "internalType": "uint32",
+        "name": "bounty_id",
+        "type": "uint32"
+      }
+    ],
+    "name": "acceptCurator",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint32",
+        "name": "dao_id",
+        "type": "uint32"
+      },
+      {
+        "internalType": "uint32",
+        "name": "bounty_id",
+        "type": "uint32"
+      },
+      {
+        "internalType": "address",
+        "name": "beneficiary",
+        "type": "address"
+      }
+    ],
+    "name": "awardBounty",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint32",
+        "name": "dao_id",
+        "type": "uint32"
+      }
+    ],
+    "name": "bountyCount",
+    "outputs": [
+      {
+        "internalType": "uint32",
+        "name": "count",
+        "type": "uint32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint32",
+        "name": "dao_id",
+        "type": "uint32"
+      },
+      {
+        "internalType": "uint32",
+        "name": "bounty_id",
+        "type": "uint32"
+      }
+    ],
+    "name": "claimBounty",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint32",
+        "name": "dao_id",
+        "type": "uint32"
+      },
+      {
+        "internalType": "uint32",
+        "name": "bounty_id",
+        "type": "uint32"
+      }
+    ],
+    "name": "unassignCurator",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+]
