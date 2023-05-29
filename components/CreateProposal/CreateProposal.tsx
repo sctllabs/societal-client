@@ -72,7 +72,8 @@ const INITIAL_STATE: State = {
   amount: '',
   target: '',
   balance: '',
-  bountyIndex: undefined
+  bountyIndex: undefined,
+  errors: null
 };
 
 const INITIAL_BASIC_STATE: ProposalBasicState = {
@@ -323,6 +324,7 @@ export function CreateProposal({
   ]);
 
   const disabled =
+    state.errors ||
     !proposalVotingAccess ||
     !proposalType ||
     !proposalBasicState.title ||

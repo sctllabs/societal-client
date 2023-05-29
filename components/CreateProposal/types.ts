@@ -3,6 +3,7 @@ export type State = {
   target: string;
   balance: string;
   bountyIndex: string | undefined;
+  errors: any;
 };
 
 export type ProposalBasicState = {
