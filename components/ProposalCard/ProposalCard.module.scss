@@ -280,7 +280,8 @@
   --referendum-border-color: #{colors.$green-1};
 }
 
-.failed {
+.failed,
+.disapproved {
   --referendum-background-color: #{rgba(colors.$red-1, 0.1)};
   --referendum-border-color: #{colors.$red-1};
 }
@@ -383,4 +384,5 @@
 
 .hint-logo-icon {
   color: #{colors.$blue-1};
+  margin-left: 5px;
 }
