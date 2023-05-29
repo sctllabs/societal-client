@@ -391,8 +391,7 @@ export function ProposalCard({ proposal }: ProposalCardProps) {
               <span className={styles['proposal-item-container']}>
                 <Typography variant="caption3">Amount</Typography>
                 <Typography variant="title5">
-                  {/* TODO */}
-                  {!Number.isNaN(proposal.kind.value)
+                  {proposal.kind.value && !Number.isNaN(proposal.kind.value)
                     ? formatBalance(proposal.kind.value.replaceAll(',', ''), {
                         decimals: decimals || 0,
                         withSi: false,

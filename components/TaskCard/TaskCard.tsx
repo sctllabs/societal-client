@@ -311,7 +311,7 @@ export function TaskCard({ proposal, currentBlock }: TaskCardProps) {
                   <Icon name="treasury" size="xs" />
                   <Typography variant="title5">
                     {/* TODO */}
-                    {!Number.isNaN(proposal.kind.value)
+                    {proposal.kind.value && !Number.isNaN(proposal.kind.value)
                       ? formatBalance(proposal.kind.value.replaceAll(',', ''), {
                           decimals: decimals || 0,
                           withSi: false,
