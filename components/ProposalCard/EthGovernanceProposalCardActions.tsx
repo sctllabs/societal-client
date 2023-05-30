@@ -338,7 +338,9 @@ export function EthGovernanceProposalActions({
                     </span>
                   </TooltipTrigger>
                   <TooltipContent>
-                    {extractErrorFromString(api, proposal.reason)}
+                    {proposal.status === 'Disapproved'
+                      ? 'Disapproved'
+                      : extractErrorFromString(api, proposal.reason)}
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>

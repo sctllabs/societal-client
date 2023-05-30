@@ -67,6 +67,31 @@ export function ProposalInputs({
 
   let _accounts: KeyringPair[] | undefined;
 
+  const validate = (target: any) => {
+    let errors: { member: string } | null = null;
+    switch (proposalType) {
+      case ProposalEnum.ADD_MEMBER: {
+        if (currentDao?.council.includes(target)) {
+          errors = { member: 'Already a Member' };
+        }
+
+        break;
+      }
+      case ProposalEnum.REMOVE_MEMBER: {
+        if (!currentDao?.council.includes(target)) {
+          errors = { member: 'Not a Member' };
+        }
+
+        break;
+      }
+      default: {
+        break;
+      }
+    }
+
+    return errors;
+  };
+
   switch (proposalType) {
     case ProposalEnum.ADD_MEMBER: {
       _accounts = accounts?.filter(
@@ -89,21 +114,24 @@ export function ProposalInputs({
   const onAccountValueChange = (target: string) => {
     setState((prevState) => ({
       ...prevState,
-      target
+      target,
+      errors: validate(target)
     }));
   };
 
   const onInputChange: ChangeEventHandler = (e) => {
     const target = e.target as HTMLInputElement;
-    const targetName = target.name;
-    const targetValue = target.value;
+    const { name, value } = target;
+
+    let { errors } = state;
+    if (name === InputName.TARGET) {
+      errors = validate(value);
+    }
 
     setState((prevState) => ({
       ...prevState,
-      [targetName]:
-        targetName === InputName.AMOUNT
-          ? targetValue.replace(/[^0-9]/g, '')
-          : targetValue
+      [name]: name === InputName.AMOUNT ? value.replace(/[^0-9]/g, '') : value,
+      errors
     }));
   };
 
@@ -336,12 +364,21 @@ export function ProposalInputs({
             onValueChange={onAccountValueChange}
           >
             <Input
+              error={state.errors}
               onChange={onInputChange}
               name={InputName.TARGET}
               label={InputLabel.MEMBER}
               value={
                 (accounts?.find((_account) => _account.address === state.target)
                   ?.meta.name as string) ?? state.target
+              }
+              hint={
+                state.errors &&
+                state.errors.member && (
+                  <Typography variant="caption3">
+                    {state.errors.member}
+                  </Typography>
+                )
               }
               required
             />

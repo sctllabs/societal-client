@@ -235,4 +235,9 @@
   --input-wrapper-border-bottom-width: 2px;
   --input-wrapper-border-bottom-width-focus: 2px;
   --input-wrapper-border-bottom-width-hover: 2px;
+  color: #{colors.$red-1};
+}
+
+.error .hint-start {
+  color: #{colors.$red-1};
 }
