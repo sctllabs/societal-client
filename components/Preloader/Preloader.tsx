@@ -14,6 +14,7 @@ import { PreloaderProposals } from './PreloaderProposals';
 import { PreloaderProposalEvents } from './PreloaderProposalEvents';
 import { PreloaderMembers } from './PreloaderMembers';
 import { PreloaderEvents } from './PreloaderEvents';
+import { PreloaderDelegations } from './PreloaderDelegations';
 
 export function Preloader() {
   const router = useRouter();
@@ -38,6 +39,7 @@ export function Preloader() {
           <PreloaderBounties />
           <PreloaderProposals />
           <PreloaderProposalEvents />
+          <PreloaderDelegations />
         </>
       )}
       {isHomePage && <PreloaderCuratorBounties />}

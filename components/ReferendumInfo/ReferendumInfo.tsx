@@ -1,26 +1,23 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useAtomValue } from 'jotai';
-import { currentDaoAtom } from 'store/dao';
-import { apiAtom, currentBlockAtom } from 'store/api';
+
+import { formatBalance } from '@polkadot/util';
+import { evmToAddress } from '@polkadot/util-crypto';
+
+import { currentBlockAtom } from 'store/api';
 import {
   accountsAtom,
   currentAccountTokenBalanceAtom,
   metamaskAccountAtom,
   substrateAccountAtom
 } from 'store/account';
-import { tokenDecimalsAtom, tokenSymbolAtom } from 'store/token';
+import { currentDaoAtom } from 'store/dao';
+import { delegationsAtom } from 'store/delegations';
 import { currentReferendumAtom } from 'store/referendum';
+import { tokenDecimalsAtom, tokenSymbolAtom } from 'store/token';
 
 import { maskAddress } from 'utils/maskAddress';
-import { formatBalance } from '@polkadot/util';
-import { evmToAddress } from '@polkadot/util-crypto';
-import type {
-  AssetAccount,
-  Conviction,
-  DemocracyDelegation,
-  GovernanceV1
-} from 'types';
-import type { Voting } from '@polkadot/types/interfaces';
+import type { AssetAccount, GovernanceV1 } from 'types';
 
 import { Tabs, TabsList, TabsTrigger } from 'components/ui-kit/Tabs';
 import { Card } from 'components/ui-kit/Card';
@@ -33,9 +30,9 @@ import {
   CollapsibleContent,
   CollapsibleTrigger
 } from 'components/ui-kit/Collapsible';
+import { Delegation } from 'components/Delegation/Delegation';
 
 import { DelegateModal } from './DelegateModal';
-import { UndelegateModal } from './UndelegateModal';
 
 import styles from './ReferendumInfo.module.scss';
 
@@ -48,59 +45,28 @@ export function ReferendumInfo() {
   const accountTokenBalance = useAtomValue(currentAccountTokenBalanceAtom);
   const currentReferendum = useAtomValue(currentReferendumAtom);
   const currentBlock = useAtomValue(currentBlockAtom);
-  const api = useAtomValue(apiAtom);
   const currentDao = useAtomValue(currentDaoAtom);
   const substrateAccount = useAtomValue(substrateAccountAtom);
   const metamaskAccount = useAtomValue(metamaskAccountAtom);
   const accounts = useAtomValue(accountsAtom);
+  const delegations = useAtomValue(delegationsAtom);
 
   const [open, setOpen] = useState(false);
   const [tab, setTab] = useState<TabOption>('Upcoming');
-  const [delegation, setDelegation] = useState<DemocracyDelegation | null>(
-    null
+
+  let currentAccountId: string | undefined;
+
+  if (substrateAccount) {
+    currentAccountId = substrateAccount.address;
+  }
+
+  if (metamaskAccount?._address) {
+    currentAccountId = evmToAddress(metamaskAccount._address);
+  }
+
+  const delegation = delegations?.find(
+    ({ source }) => source === currentAccountId
   );
-
-  useEffect(() => {
-    let unsubscribe: any;
-    let accountId: string | undefined;
-
-    if (substrateAccount) {
-      accountId = substrateAccount.address;
-    }
-
-    if (metamaskAccount?._address) {
-      accountId = evmToAddress(metamaskAccount._address);
-    }
-
-    if (!currentDao || !accountId) {
-      return undefined;
-    }
-
-    api?.query.daoDemocracy
-      .votingOf(currentDao?.id, accountId, (votingCodec: Voting) =>
-        setDelegation(
-          votingCodec.isDelegating
-            ? {
-                target: votingCodec.asDelegating.target.toString(),
-                balance: votingCodec.asDelegating.balance.toString(),
-                conviction:
-                  votingCodec.asDelegating.conviction.toString() as Conviction
-              }
-            : null
-        )
-      )
-      .then((unsub) => {
-        unsubscribe = unsub;
-      });
-
-    return () => unsubscribe && unsubscribe();
-  }, [
-    api?.query.daoDemocracy,
-    currentDao,
-    currentDao?.id,
-    metamaskAccount,
-    substrateAccount
-  ]);
 
   const isReferendumActive = !!currentReferendum;
 
@@ -217,52 +183,7 @@ export function ReferendumInfo() {
               </Typography>
             </div>
           ) : null}
-          {delegation && (
-            <div className={styles['item-container']}>
-              <div className={styles['undelegate-container']}>
-                <Typography variant="title2">Delegated votes</Typography>
-                <UndelegateModal />
-              </div>
-
-              <div className={styles['delegations-container']}>
-                <div className={styles.delegation} key={delegation.target}>
-                  <span>
-                    <Typography variant="caption3">
-                      Delegated account:
-                    </Typography>
-                    <Typography variant="title7">
-                      {maskAddress(
-                        (accounts?.find(
-                          (_account) => _account.address === delegation.target
-                        )?.meta.name as string) ?? delegation.target
-                      )}
-                    </Typography>
-                  </span>
-                  <span>
-                    <Typography variant="caption3">Locked balance:</Typography>
-                    <span className={styles['locked-balance']}>
-                      <Typography variant="value8">
-                        {formatBalance(delegation.balance, {
-                          decimals: currentDao?.fungibleToken.decimals,
-                          withSi: false,
-                          forceUnit: '-'
-                        })}
-                      </Typography>
-                      {tokenSymbol && (
-                        <Typography variant="title7">{tokenSymbol}</Typography>
-                      )}
-                    </span>
-                  </span>
-                  <span>
-                    <Typography variant="caption3">Conviction:</Typography>
-                    <Typography variant="title7">
-                      {delegation.conviction}
-                    </Typography>
-                  </span>
-                </div>
-              </div>
-            </div>
-          )}
+          <Delegation />
           <div className={styles['item-container']}>
             <Typography variant="title2">Delegate Voting</Typography>
             <Typography variant="body1">

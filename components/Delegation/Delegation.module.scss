@@ -1,0 +1,64 @@
+@use "styles/colors";
+
+.item-container {
+  border-top: 1px solid #{colors.$grayscale-90};
+  padding: 10px 0px;
+
+  &:last-child {
+    padding: 10px 10px 0px;
+  }
+}
+
+.delegations-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 16px;
+  margin-bottom: 16px;
+}
+
+.delegation {
+  align-items: center;
+  border: 1px solid #{colors.$purple-3};
+  border-radius: 8px;
+  display: flex;
+  padding: 16px;
+  width: 100%;
+
+
+  > span {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    &:nth-child(1) {
+      flex-grow: 3;
+    }
+
+    &:nth-child(2) {
+      flex-grow: 1;
+    }
+
+    &:nth-child(3) {
+      flex-grow: 1;
+    }
+  }
+}
+
+.locked-balance {
+  align-items: center;
+  display: flex;
+  gap: 4px;
+}
+
+.undelegate-container {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+
+.undelegate-description {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}

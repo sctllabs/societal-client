@@ -9,6 +9,7 @@ export type Conviction =
 
 export type DemocracyDelegation = Readonly<{
   target: string;
+  source: string;
   balance: string;
   conviction: Conviction;
 }>;

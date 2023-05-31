@@ -20,6 +20,8 @@ import { Card } from 'components/ui-kit/Card';
 import { TxButton } from 'components/TxButton';
 import { Button } from 'components/ui-kit/Button';
 import { Icon } from 'components/ui-kit/Icon';
+import { Delegation } from 'components/Delegation/Delegation';
+
 import { AssetAccount, TxFailedCallback } from 'types';
 import {
   Tooltip,
@@ -208,6 +210,7 @@ export function AccountTokenBalance() {
               )
             )}
           </div>
+          <Delegation captionSize="title4" />
         </div>
       )}
     </Card>
