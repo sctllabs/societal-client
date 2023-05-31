@@ -7,12 +7,7 @@ import { appConfig } from 'config';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { currentDaoAtom } from 'store/dao';
 import { apiAtom } from 'store/api';
-import {
-  resetTokenAtom,
-  tokenAtom,
-  tokenLoadingAtom,
-  tokenQuantityAtom
-} from 'store/token';
+import { resetTokenAtom, tokenAtom, tokenLoadingAtom } from 'store/token';
 
 import type { AssetBalance } from '@polkadot/types/interfaces';
 import type { Option } from '@polkadot/types';
@@ -23,7 +18,6 @@ export function PreloaderToken() {
   const api = useAtomValue(apiAtom);
   const setToken = useSetAtom(tokenAtom);
   const setTokenLoading = useSetAtom(tokenLoadingAtom);
-  const setTokenQuantity = useSetAtom(tokenQuantityAtom);
   const resetToken = useSetAtom(resetTokenAtom);
 
   useEffect(
@@ -96,32 +90,6 @@ export function PreloaderToken() {
       });
     })();
   }, [api, currentDao, setToken]);
-
-  useEffect(() => {
-    if (!api) {
-      return undefined;
-    }
-    let unsubscribe: any | null = null;
-
-    if (!currentDao || !currentDao.fungibleToken) {
-      return undefined;
-    }
-
-    api.query.assets
-      .account(
-        currentDao.fungibleToken.id,
-        currentDao.account.id,
-        (_assetBalance: Option<AssetBalance>) =>
-          setTokenQuantity(_assetBalance.value.balance.toString())
-      )
-      .then((unsub) => {
-        unsubscribe = unsub;
-      })
-      // eslint-disable-next-line no-console
-      .catch(console.error);
-
-    return () => unsubscribe && unsubscribe();
-  }, [api, currentDao, setToken, setTokenQuantity]);
 
   return null;
 }
