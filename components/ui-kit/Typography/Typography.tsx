@@ -26,6 +26,7 @@ export type TypographyVariants =
   | 'caption1'
   | 'caption2'
   | 'caption3'
+  | 'caption4'
   | 'value1'
   | 'value2'
   | 'value3'
@@ -66,6 +67,7 @@ const elementsByVariants: Record<TypographyVariants, ElementType> = {
   caption1: 'span',
   caption2: 'span',
   caption3: 'span',
+  caption4: 'span',
   value1: 'p',
   value2: 'p',
   value3: 'p',

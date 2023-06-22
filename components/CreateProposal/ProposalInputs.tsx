@@ -32,6 +32,7 @@ import { Icon } from 'components/ui-kit/Icon';
 
 import {
   BountyProposalEnum,
+  Currency,
   InputLabel,
   InputName,
   ProposalEnum,
@@ -44,7 +45,7 @@ type ProposalInputsProps = {
   proposalType: ProposalEnum | BountyProposalEnum | undefined;
   state: State;
   setState: Dispatch<SetStateAction<State>>;
-  setCurrency: Dispatch<SetStateAction<string | null>>;
+  setCurrency: Dispatch<SetStateAction<Currency | null>>;
   members: KeyringPair[];
   proposalVotingAccess: ProposalVotingAccessEnum | null;
 };
@@ -135,8 +136,7 @@ export function ProposalInputs({
     }));
   };
 
-  const onCurrencyValueChange = (currency: string) => setCurrency(currency);
-
+  const onCurrencyValueChange = (currency: Currency) => setCurrency(currency);
   const onBountyValueChange = (bountyIndex: string) =>
     setState((prevState) => ({ ...prevState, bountyIndex }));
 
@@ -261,18 +261,29 @@ export function ProposalInputs({
                 (proposalType === BountyProposalEnum.BOUNTY &&
                   (currentDao?.fungibleToken?.id && tokenSymbol ? (
                     <Select
-                      defaultValue={chainSymbol}
-                      onValueChange={onCurrencyValueChange}
+                      defaultValue={`${chainSymbol}-${'native'}`}
+                      onValueChange={(value) => {
+                        const isNative = !value.includes('gov');
+                        const currency: Currency = {
+                          currency: isNative ? chainSymbol : tokenSymbol,
+                          type: isNative ? 'Native' : 'Governance Token'
+                        };
+
+                        onCurrencyValueChange(currency);
+                      }}
                     >
                       <SelectTrigger datatype="input">
-                        <SelectValue defaultValue={chainSymbol} />
+                        <SelectValue
+                          defaultValue={`${chainSymbol}-${'native'}`}
+                        />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value={chainSymbol}>
+                        <SelectItem value={`${chainSymbol}-${'native'}`}>
                           <Typography variant="body2">{chainSymbol}</Typography>
                         </SelectItem>
-                        <SelectItem value={tokenSymbol}>
+                        <SelectItem value={`${tokenSymbol}-${'gov'}`}>
                           <Typography variant="body2">{tokenSymbol}</Typography>
+                          <Typography variant="caption4">governance</Typography>
                         </SelectItem>
                       </SelectContent>
                     </Select>
