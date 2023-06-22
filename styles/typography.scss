@@ -177,6 +177,14 @@
   );
 }
 
+%caption-4 {
+  @include mixins.typography(
+    $font-size: 0.5875rem,
+    $font-weight: 500,
+    $line-height: 1rem
+  );
+}
+
 %value-1 {
   @include mixins.typography(
     $font-size: 2.25rem,

@@ -46,6 +46,7 @@ import { convertTokenAmount } from 'utils/convertTokenAmount';
 
 import {
   BountyProposalEnum,
+  Currency,
   ProposalBasicState,
   ProposalEnum,
   ProposalVariant,
@@ -101,7 +102,7 @@ export function CreateProposal({
     useState(INITIAL_BASIC_STATE);
   const [state, setState] = useState<State>(INITIAL_STATE);
   const [members, setMembers] = useState<KeyringPair[]>([]);
-  const [currency, setCurrency] = useState<string | null>(null);
+  const [currency, setCurrency] = useState<Currency | null>(null);
 
   const api = useAtomValue(apiAtom);
   const metamaskAccount = useAtomValue(metamaskAccountAtom);
@@ -122,7 +123,7 @@ export function CreateProposal({
       return;
     }
 
-    setCurrency(chainSymbol);
+    setCurrency({ currency: chainSymbol, type: 'Native' });
   }, [chainSymbol]);
 
   const extrinsic = useMemo(() => {
@@ -170,7 +171,8 @@ export function CreateProposal({
         ? evmToAddress(state.target)
         : state.target;
 
-      let decimals = currency === 'SCTL' ? chainDecimals : tokenDecimals;
+      let decimals =
+        currency?.type === 'Native' ? chainDecimals : tokenDecimals;
       decimals =
         proposalType === ProposalEnum.TRANSFER_GOVERNANCE_TOKEN
           ? tokenDecimals
@@ -201,7 +203,7 @@ export function CreateProposal({
               description: proposalBasicState.description.trim()
             })
           );
-          if (currency === chainSymbol) {
+          if (currency?.type === 'Native') {
             return api?.tx.daoBounties.createBounty(
               currentDao?.id,
               amount,
@@ -247,7 +249,6 @@ export function CreateProposal({
       proposalBasicState.title,
       proposalBasicState.description,
       currency,
-      chainSymbol,
       chainDecimals,
       tokenDecimals
     ]

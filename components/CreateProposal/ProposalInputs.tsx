@@ -1,4 +1,10 @@
-import { ChangeEventHandler, Dispatch, SetStateAction, Fragment } from 'react';
+import {
+  ChangeEventHandler,
+  Dispatch,
+  SetStateAction,
+  Fragment,
+  useEffect
+} from 'react';
 import { format } from 'date-fns';
 
 import { useAtomValue } from 'jotai';
@@ -32,6 +38,7 @@ import { Icon } from 'components/ui-kit/Icon';
 
 import {
   BountyProposalEnum,
+  Currency,
   InputLabel,
   InputName,
   ProposalEnum,
@@ -44,7 +51,7 @@ type ProposalInputsProps = {
   proposalType: ProposalEnum | BountyProposalEnum | undefined;
   state: State;
   setState: Dispatch<SetStateAction<State>>;
-  setCurrency: Dispatch<SetStateAction<string | null>>;
+  setCurrency: Dispatch<SetStateAction<Currency | null>>;
   members: KeyringPair[];
   proposalVotingAccess: ProposalVotingAccessEnum | null;
 };
@@ -135,19 +142,31 @@ export function ProposalInputs({
     }));
   };
 
-  const onCurrencyValueChange = (currency: string) => setCurrency(currency);
-
+  const onCurrencyValueChange = (currency: Currency) => setCurrency(currency);
   const onBountyValueChange = (bountyIndex: string) =>
     setState((prevState) => ({ ...prevState, bountyIndex }));
 
-  const selectedBounty = state.bountyIndex
-    ? bounties?.[
-        // eslint-disable-next-line no-restricted-globals
-        !isNaN(state.bountyIndex as any)
-          ? parseInt(state.bountyIndex as any, 10)
-          : -1
-      ]
-    : null;
+  const selectedBounty = bounties?.find(
+    ({ index }) =>
+      index ===
+      // eslint-disable-next-line no-restricted-globals
+      (!isNaN(state.bountyIndex as any)
+        ? parseInt(state.bountyIndex as any, 10)
+        : -1)
+  );
+
+  useEffect(() => {
+    if (!chainSymbol) {
+      return;
+    }
+
+    let currency: Currency = { currency: chainSymbol, type: 'Native' };
+    if (selectedBounty && !selectedBounty.nativeToken && tokenSymbol) {
+      currency = { currency: tokenSymbol, type: 'Governance Token' };
+    }
+
+    setCurrency(currency);
+  }, [selectedBounty, chainSymbol, tokenSymbol, setCurrency]);
 
   return (
     <>
@@ -261,18 +280,33 @@ export function ProposalInputs({
                 (proposalType === BountyProposalEnum.BOUNTY &&
                   (currentDao?.fungibleToken?.id && tokenSymbol ? (
                     <Select
-                      defaultValue={chainSymbol}
-                      onValueChange={onCurrencyValueChange}
+                      defaultValue={`${chainSymbol}-${'native'}`}
+                      onValueChange={(value) => {
+                        const isNative = !value.includes('gov');
+                        const currency: Currency = {
+                          currency: isNative ? chainSymbol : tokenSymbol,
+                          type: isNative ? 'Native' : 'Governance Token'
+                        };
+
+                        onCurrencyValueChange(currency);
+                      }}
                     >
                       <SelectTrigger datatype="input">
-                        <SelectValue defaultValue={chainSymbol} />
+                        <SelectValue
+                          defaultValue={`${chainSymbol}-${'native'}`}
+                        />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value={chainSymbol}>
+                        <SelectItem value={`${chainSymbol}-${'native'}`}>
                           <Typography variant="body2">{chainSymbol}</Typography>
                         </SelectItem>
-                        <SelectItem value={tokenSymbol}>
+                        <SelectItem value={`${tokenSymbol}-${'gov'}`}>
                           <Typography variant="body2">{tokenSymbol}</Typography>
+                          {chainSymbol === tokenSymbol && (
+                            <Typography variant="caption4">
+                              governance
+                            </Typography>
+                          )}
                         </SelectItem>
                       </SelectContent>
                     </Select>
@@ -285,16 +319,23 @@ export function ProposalInputs({
                     </Typography>
                   ))) ||
                 (proposalType === BountyProposalEnum.BOUNTY_CURATOR && (
-                  <span>
-                    <Typography
-                      className={styles['select-currency']}
-                      variant="body2"
-                    >
-                      {selectedBounty &&
-                        (selectedBounty.nativeToken
-                          ? chainSymbol
-                          : tokenSymbol)}
-                    </Typography>
+                  <>
+                    <div style={{ textAlign: 'center' }}>
+                      <Typography
+                        className={styles['select-currency']}
+                        variant="body2"
+                      >
+                        {selectedBounty &&
+                          (selectedBounty.nativeToken
+                            ? chainSymbol
+                            : tokenSymbol)}
+                      </Typography>
+                      {chainSymbol === tokenSymbol &&
+                      selectedBounty &&
+                      !selectedBounty.nativeToken ? (
+                        <Typography variant="caption4">governance</Typography>
+                      ) : null}
+                    </div>
                     <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger asChild>
@@ -313,7 +354,7 @@ export function ProposalInputs({
                         </TooltipContent>
                       </Tooltip>
                     </TooltipProvider>
-                  </span>
+                  </>
                 ))
               }
             />

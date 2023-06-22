@@ -54,3 +54,8 @@ export enum ProposalVotingAccessEnum {
   Democracy = 'Governance V1',
   EthGovernance = 'Ownership Weighted Voting'
 }
+
+export type Currency = {
+  currency: string;
+  type: 'Native' | 'Governance Token';
+};
