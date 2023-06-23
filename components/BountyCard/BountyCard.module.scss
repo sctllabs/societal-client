@@ -10,6 +10,7 @@
   cursor: pointer;
   flex-grow: 1;
   height: max-content;
+  flex-basis: 40%;
 
   &:hover {
     border-color: #{colors.$purple-5};

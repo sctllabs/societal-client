@@ -6,8 +6,10 @@
 
 .content {
   display: flex;
-  flex-grow: 5;
-  gap: 44px;
+  flex-grow: 1;
+  gap: 40px;
+  flex-wrap: wrap;
+  flex-basis: 50%;
 }
 
 .empty-card {
