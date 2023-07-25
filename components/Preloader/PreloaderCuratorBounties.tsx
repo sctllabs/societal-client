@@ -27,7 +27,8 @@ export function PreloaderCuratorBounties() {
   const { data } = useSubscription<SubscribeBountiesByCuratorIdOrBeneficiaryId>(
     SUBSCRIBE_BOUNTIES_BY_CURATOR_ID_OR_BENEFICIARY_ID,
     {
-      variables: { curatorId: accountId, beneficiaryId: accountId }
+      variables: { curatorId: accountId, beneficiaryId: accountId },
+      skip: !accountId
     }
   );
 

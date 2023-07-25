@@ -1,11 +1,12 @@
 subscription SubscribeBountiesByCuratorIdOrBeneficiary(
   $curatorId: String!,
-  $beneficiaryId: String!)
+  $beneficiaryId: String!
+)
 {
   bounties(
     where: {
       curator: { id_eq: $curatorId },
-      OR: {beneficiary: {id_eq: $beneficiaryId}}
+      OR: { beneficiary: { id_eq: $beneficiaryId } }
     },
     limit: 100
     orderBy: blockNum_DESC
