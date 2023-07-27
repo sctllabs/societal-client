@@ -19,6 +19,8 @@ runs:
       tags: |
         type=raw,value=latest
         type=raw,value=${{ env.DOCKER_ENV_TAG }}
+        type=raw,value=${{ env.RELEASE_VERSION }}
+        type=raw,value=${{ env.RELEASE_VERSION }}-${{ github.event.inputs.environment }}
         type=raw,value=${{ github.event.inputs.environment }}-latest
         type=ref,event=branch,suffix=-latest
         type=sha,prefix=,format=long
