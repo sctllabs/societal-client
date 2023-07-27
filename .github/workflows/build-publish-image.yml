@@ -84,5 +84,9 @@ jobs:
         id: rev
         run: echo "value=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
+      # Get the tag if available to use as a docker tag
+      - name: Set tag if available
+        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+
       - name: Docker Build Publish
         uses: ./.github/actions/docker-build-publish
