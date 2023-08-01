@@ -26,7 +26,7 @@ export function PreloaderDao() {
     if (loading) {
       return;
     }
-    if (!data || !data.daoById) {
+    if (!data || !data.daoById || data?.daoById?.removed) {
       router.push('/404');
     }
   }, [data, loading, router]);

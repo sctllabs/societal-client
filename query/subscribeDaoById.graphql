@@ -36,5 +36,6 @@ subscription SubscribeDaoById($id: String!) {
     policy {
       id
     }
+    removed
   }
 }
