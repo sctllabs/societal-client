@@ -1,5 +1,6 @@
 subscription DaosSubscription {
   daos(
+    where: { removed_isNull: true, OR: { removed_not_eq: true } }
     orderBy: blockNum_ASC
     limit: 100
   ) {

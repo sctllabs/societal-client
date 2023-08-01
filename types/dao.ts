@@ -61,6 +61,7 @@ export type Dao = Readonly<{
   fungibleToken: FungibleToken;
   ethTokenAddress?: string;
   policy: Policy;
+  removed: boolean;
 }>;
 
 type DaoPolicyProportionType = 'AtLeast' | 'MoreThan';
